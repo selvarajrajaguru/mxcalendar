@@ -96,6 +96,7 @@
 ----
 *NOT IN USE IN RELEASE 0.0.1*
 
+
 == fullCalendarPgId ==
 ----
 *Purpose*
@@ -107,6 +108,7 @@
 *Default*
   Non-linked heading
 
+
 == linkText ==
 ----
 *Purpose*
@@ -117,3 +119,30 @@
 
 *Default*
   Language file defined value
+
+
+== excludeWeekends ==
+----
+*Purpose*
+  Enable / Disable weekend days from view (Saturday, Sunday)
+
+*Options*
+  true (1) / false (0)
+
+*Defautl*
+  _false_ = _Display weekends_
+
+
+== startDayID ==
+----
+*Purpose*
+  Set which week day to start from in the _full_ type view
+
+*Options*
+  _Numeric_ [0 - 6]  (0=Sunday,1=Monday,2=Tuesday,....)
+
+*Default*
+  _Numeric_ 0 (Sunday) 
+
+*Override*
+  when _excludeWeekends_ is set to _true_ this defaults to 0
