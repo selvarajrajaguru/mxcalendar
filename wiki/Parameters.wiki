@@ -1,7 +1,5 @@
 #labels parameters
-#mxCalendar 0.0.1 Snippet Parameters
-
-= Parameters =
+= Parameters :: mxCalendar 0.0.1 Snippet  =
 
 == type ==
 ----
