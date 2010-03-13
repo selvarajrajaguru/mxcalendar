@@ -1,0 +1,106 @@
+#labels parameters
+#mxCalendar 0.0.1 Snippet Parameters
+
+= Parameters =
+
+== type ==
+----
+*Purpose*
+  Set the rendering mode for the calendar to display in.
+
+*Options*
+  "full"
+  "list" 
+
+*Default*
+  "full"
+
+
+== tplWrap ==
+----
+*Purpose*
+  Set list type chunk outer wrapper template name.
+
+*Options*
+  Any valid MODx chunk with valid markers contained within
+  * title
+  * class
+  * id
+
+*Default*
+  mxCalendar configured default
+
+
+== tplWrapClass ==
+----
+*Purpose*
+  User defined class name to tplWrap container.
+
+*Options*
+  Any valid user defined CSS class name
+
+*Default*
+  blank
+
+== tplWrapId ==
+----
+*Purpose*
+  User defined ID property to tplWrap container.
+
+*Options*
+  Any valid user defined CSS ID name
+
+*Default*
+  blank
+
+== tplEvent ==
+----
+*Purpose*
+  User defined chunk for inner Event detail list.
+
+*Options*
+  Any valid MODx chunk with valid markers contained within
+  * month
+  * day
+  * title
+  * location
+
+*Default*
+  mxCalendar configured default
+
+== maxCnt ==
+----
+*Purpose*
+  Define max number of events to return
+
+*Options*
+  _Numeric_ [0-9]
+
+*Default*
+  _Numeric_ 5
+
+== ajaxPaginate ==
+----
+*NOT IN USE IN RELEASE 0.0.1*
+
+== fullCalendarPgId ==
+----
+*Purpose*
+  Enable / Disable event listing linking from event list to calendar details
+
+*Options*
+  Valid ModX document ID of the _full_ type calendar page.
+
+*Default*
+  Non-linked heading
+
+== linkText ==
+----
+*Purpose*
+  Set button label to view full calendar at end of event _list_ type.
+
+*Options*
+  Any combination of characters [a-z], underscores, spaces, and numbers [0-9]
+
+*Default*
+  Language file defined value
