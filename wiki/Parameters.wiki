@@ -66,6 +66,21 @@
 *Default*
   mxCalendar configured default
 
+== tplEventDetail ==
+*Purpose*
+  Usesr defined chunk for Event Detail view.
+
+*Options*
+  Any valid MDOx chunk with valid markers contained within
+  * title
+  * strDTLabel
+  * startTime
+  * endTime
+  * content
+
+*Default*
+  mxCaledar configured default
+
 == maxCnt ==
 ----
 *Purpose*
