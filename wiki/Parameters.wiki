@@ -146,3 +146,25 @@
 
 *Override*
   when _excludeWeekends_ is set to _true_ this defaults to 0
+
+== showTimeSpan ==
+----
+*Purpose*
+  Enable / Disable the _startTime_ and _endTime_ in display
+
+*Options*
+  true (1) / false (0)
+
+*Default*
+  true
+
+== showDuration ==
+----
+*Purpose*
+  Enable / Disable the event total duration in display
+
+*Options*
+  true (1) / false (0)
+
+*Default*
+  false
