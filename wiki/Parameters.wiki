@@ -73,10 +73,13 @@
 *Options*
   Any valid MDOx chunk with valid markers contained within
   * title
-  * strDTLabel
+  * strDTLabel (text label before time range)
   * startTime
   * endTime
   * content
+  * location
+
+  *_Google Map_* when option checked will display under all other chunk content
 
 *Default*
   mxCaledar configured default
