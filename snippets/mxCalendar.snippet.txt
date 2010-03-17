@@ -1,0 +1,61 @@
+<?php
+/**
+ * Author: Charles Sanders
+ * Date: 02/14/2009
+ * Version: 0.0.1
+ * 
+ * Purpose: Creates a easy module for administrators to manage events.
+ * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
+ *
+ * Visit http://code.google.com/p/mxcalendar/ for full list of parameters
+ *
+ * Enjoy!
+**/
+global $modx;
+
+//-- Get LANGUAGE file
+include_once $modx->config['base_path'].'assets/modules/mxCalendar/lang/en-EN.lang';
+
+//-- include core class file
+include_once $modx->config['base_path'].'assets/modules/mxCalendar/mxCalendar.class.php';
+
+//-- Example Use ----- //
+// [!mxcalendar? &ajaxPageId=`50` &showTimeSpan=`false` &showDuration=`true`!]
+// @ajaxPageId is the resource (page) on your site with the same snippet call to the calendar
+//             with the "Uses Template" set to (blank)
+// ------------------- //
+
+//-- Setup the parameters for calendar
+//**** THE BASICS JUST TO MAKE SURE ****//
+$bsCalParams = array(
+ 'type'=>(isset($type)?$type:'full'),
+ 'fullCalendarPgId'=>(isset($fullCalendarPgId)?$fullCalendarPgId:$modx->documentIdentifier),
+ 'ajaxPageId'=> (isset($ajaxPageId)?$ajaxPageId:NULL),
+ 'showTimeSpan' => (isset($showTimeSpan)? $showTimeSpan : true),
+ 'showDuration' => (isset($showDuration)? $showDuration : false),
+ 'excludeWeekends' => (isset($excludeWeekends)? $excludeWeekends : false),
+ 'startDayID'=>(isset($startDayID)? $startDayID: 0),
+);
+
+//**** Aux Parameters ****//
+if(isset($type))
+  $bsCalParams['type'] = $type;
+if(isset($tplWrap))
+  $bsCalParams['tplWrap'] = $tplWrap;
+if(isset($tplWrapClass))
+  $bsCalParams['tplWrapClass'] = $tplWrapClass;
+if(isset($tplWrapId))
+  $bsCalParams['tplWrapId'] = $tplWrapId;
+if(isset($tplEvent))
+  $bsCalParams['tplEvent'] = $tplEvent;
+if(isset($maxCnt))
+  $bsCalParams['maxCnt'] = $maxCnt;
+if(isset($ajaxPaginate))
+  $bsCalParams['ajaxPaginate'] = $ajaxPaginate;
+if(isset($fullCalendarPgId))
+  $bsCalParams['fullCalendarPgId'] = $fullCalendarPgId;
+if(isset($linkText))
+  $bsCalParams['linkText'] = $linkText;
+
+return $mxCalApp->MakeCalendar($bsCalParams);
+?>
