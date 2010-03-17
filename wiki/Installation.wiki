@@ -105,6 +105,15 @@ return $mxCalApp->MakeCalendar($bsCalParams);
 ?>
 }}}
 
+= Template Udates for CSS/JS =
+  # Add the following to your template head area
+{{{
+<link rel="stylesheet" type="text/css" href="assets/modules/mxCalendar/styles/mxCalendar.css" /> 
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+}}}
+   _note: This is assuming (a): your site is at web-root (b): you set the `<base href="``[(site_url``)]"></base>` 
+
 = Give it a Try =
   # Now simply place the snippet cod block into your resource page where you want the calendar to display using default settings. 
   {{{ [!mxcalendar?!] }}}
