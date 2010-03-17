@@ -1,7 +1,7 @@
 #labels examples,demonstration
 # Demonstration of sample Snippet calls.
 
-= Calendar with AJAX (defaults time stamp) =
+= Calendar with Defaults =
 
 `[!mxcalendar!]`
 
