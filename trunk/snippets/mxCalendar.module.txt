@@ -1,0 +1,15 @@
+/**
+ * Author: Charles Sanders @ BIGSHOT Interactive
+ * Date: 02/14/2010
+ * Version: 0.0.1
+ * 
+ * Purpose: Creates a easy module for administrators to manage events.
+ * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
+**/
+//-- Get the language file 
+include_once $modx->config['base_path'].'assets/modules/mxCalendar/lang/en-EN.lang';
+
+//-- include core class file
+include_once $modx->config['base_path'].'assets/modules/mxCalendar/mxCalendar.tpl.php';
+
+return $output;
