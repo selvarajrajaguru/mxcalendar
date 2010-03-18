@@ -1,5 +1,5 @@
+#summary Release version 0.0.4b noates
 #labels Phase-Implementation
-#Release notes for version 0.0.4b
 
 = Release Notes: 0.0.4b - Mar 17, 2010 =
 
