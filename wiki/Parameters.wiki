@@ -1,4 +1,6 @@
+#summary comprehensive list of snippet parameters and properties
 #labels parameters
+
 = Parameters :: mxCalendar 0.0.1 Snippet  =
 
 == type ==
@@ -78,6 +80,7 @@
   * endTime
   * content
   * location
+  * repeatDates
 
   *_Google Map_* when option checked will display under all other chunk content
 
