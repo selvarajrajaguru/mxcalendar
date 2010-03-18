@@ -1,5 +1,5 @@
+#summary Demonstration of sample Snippet calls and common uses
 #labels examples,demonstration
-# Demonstration of sample Snippet calls.
 
 = Calendar with Defaults =
 
