@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Release 0.0.3b notes
 #labels Phase-Implementation
 
 = Release Notes: 0.0.3b - Mar 17, 2010 =
