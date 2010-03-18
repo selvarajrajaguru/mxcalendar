@@ -1,4 +1,4 @@
-#Release notes for mxCalendar 0.0.2b
+#summary Release 0.0.2b notes
 
 = Release Notes for mxCalendar 0.0.2b =
 == Mar 17, 2010 21:58 GMT ==
