@@ -1,0 +1,53 @@
+#summary installation of release 0.0.05b how to guide step-by-step
+#labels Phase-Implementation
+
+= Installation::Manager =
+
+  # Download the Modx_mxCalendar.zip file
+  # Unzip folder to your favorite place 
+  # Upload mxCalendar folder to your sites root */assets/modules/* folder
+  # Copy contents of "snippets/mxCalendar.module.txt" file from the unzipped folder
+  # Log into your Manager interface and goto the Modules > Manage Modules section
+  # Select the *New Module* button
+  # In the *Module name* field place *mxcalendar*
+  # Past the content of "snippets/mxCalendar.module.txt" into the *Module code (php)* section 
+  # Select *Save*
+  # Click the gear icon next to the new entry "mxcalendar" and select *Run Module*
+  # You should see a screen saying the installation was successful, so click the *Start* button
+  # Now you are in the new manager
+
+_note: you need to select another menu tab or log-out and back in to view the new Menu item under the tabs for Modules, which should be labeled "mxcalendar"._
+
+
+= Installation::Snippet =
+  # Assuming you are still logged into the Manager select *Elements > Manage Elements > Snippets*
+  # Select *New Snippet*
+  # In the Snippet name field put *mxcalendar*
+  # Copy and past content of "snippets/mxCalendar.snippet.txt" into the *Snippet code (php)* section
+
+
+= Template Udates for CSS/JS =
+  # These are now automatically added to your rendered HTML head area via the module, no coding or template changes required.
+  
+  
+= Give it a Try =
+  # Now simply place the snippet cod block into your resource page where you want the calendar to display using default settings. 
+  {{{ [!mxcalendar?!] }}}
+
+  # A quick example of the AJAX mode would be as follows, except make sure you also have a resource page with the same snippet code using the *(blank)* page template to return only the snippet results. @ajaxPageID = (blank) template resource id
+{{{ 
+[!mxcalendar? &mxcAjaxPageId=`50` !] 
+}}}
+{{{
+Note:
+@mxcAjaxPageID = (blank) template resource id
+}}}
+
+= Internationalization =
+This module now supports this via selecting the ModX CMS configuration langauage settings and checking for that matching language file in the mxCalendar language folder. If that language file is not present then the default English version will be used.
+
+To create a new language file, copy the current english.lang file in the /assets/modules/mxCalendar/lang/ folder and save it to the same folder with the proper language name before the ".lang" file extension. Then simply do your translations, please send your translated version to us so we can include them in future releases.
+
+= Theme =
+
+... working on documentation ...
