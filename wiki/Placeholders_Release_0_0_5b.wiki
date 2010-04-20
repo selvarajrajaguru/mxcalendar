@@ -5,22 +5,22 @@
 *Description: Outer most container*
 
 ===Placeholders:===
-  *mxcMonthContainerID - Outer most container CSS ID
-  *mxcMonthContianerClass - Outer most container CSS Class name
-  *mxcMonthCotianerHeading - Contianer for navigation, month, and year; not required if using place holders outside theme file
-  *mxcMonthInsideContianer - Inside container where calendar layout is wrapped
+  * mxcMonthContainerID - Outer most container CSS ID
+  * mxcMonthContianerClass - Outer most container CSS Class name
+  * mxcMonthCotianerHeading - Contianer for navigation, month, and year; not required if using place holders outside theme file
+  * mxcMonthInsideContianer - Inside container where calendar layout is wrapped
 
 
 ==File: month.heading.html==
 *Description: Used to display theme controlled layout of calendar navigation(prev/next), month, and year*
 
 ===Placeholders:===
-  *mxcMonthHeadingPrevious - Previous month navigation URL
-  *mxcMonthHeadingPreviousLabel - Previous month navigation link text value (ex: Previous)
-  *mxcMonthHeadingNext - Next month navigation URL
-  *mxcMonthHeadingNextLabel - Next month link text value (ex: Next)
-  *mxcMonthHeadingLabelMonth - Display the assigned month display (ex: April)
-  *mxcMonthHeadingLabelYear - Display the assigned year dispaly (ex: 2010)
+  * mxcMonthHeadingPrevious - Previous month navigation URL
+  * mxcMonthHeadingPreviousLabel - Previous month navigation link text value (ex: Previous)
+  * mxcMonthHeadingNext - Next month navigation URL
+  * mxcMonthHeadingNextLabel - Next month link text value (ex: Next)
+  * mxcMonthHeadingLabelMonth - Display the assigned month display (ex: April)
+  * mxcMonthHeadingLabelYear - Display the assigned year dispaly (ex: 2010)
 
 
 
@@ -28,9 +28,9 @@
 *Description: Inside container for the monthly calendar view.*
 
 ===Placeholders:===
-  *mxcMonthInnerContainerID - Inner container CSS ID
-  *mxcMonthInnerContainerClass - Inner container CSS Class name
-  *mxcMonthInnerRows - Inner container row item holder
+  * mxcMonthInnerContainerID - Inner container CSS ID
+  * mxcMonthInnerContainerClass - Inner container CSS Class name
+  * mxcMonthInnerRows - Inner container row item holder
 
 
 
@@ -39,9 +39,9 @@
 Chunk Override Parameter: &mxcTplMonthRow*
 
 ===Placeholders:===
-  *mxcMonthInnerRowID - Inner row container CSS ID
-  *mxcMonthInnerRowClass - Inner row container CSS Class name
-  *mxcMonthInnerRowDays - Inner row container row item holder
+  * mxcMonthInnerRowID - Inner row container CSS ID
+  * mxcMonthInnerRowClass - Inner row container CSS Class name
+  * mxcMonthInnerRowDays - Inner row container row item holder
 
 
 ==File: month.inner.day.base.html==
@@ -54,13 +54,13 @@ Chunk Override Parameter: &mxcTplMonthDayBase*
 Chunk Override Parameter: &mxcTplMonthDay*
 
 ===Placeholders:===
-  *mxcMonthInnerDayID - Day container CSS ID
-  *mxcMonthInnerDayClass - Day container CSS class (setup in config tab)
-  *mxcMonthInnerDayLabelClass - Day label CSS Class name
-  *mxcMonthInnerDayLabel - Day of the month (1-[29-31])
-  *mxcMonthOuterEventClass- Event list container CSS Class
-  *mxcMonthOuterEventID - Event list container CSS ID
-  *mxcMonthInnerEvents - Events listings
+  * mxcMonthInnerDayID - Day container CSS ID
+  * mxcMonthInnerDayClass - Day container CSS class (setup in config tab)
+  * mxcMonthInnerDayLabelClass - Day label CSS Class name
+  * mxcMonthInnerDayLabel - Day of the month (1-[29-31])
+  * mxcMonthOuterEventClass- Event list container CSS Class
+  * mxcMonthOuterEventID - Event list container CSS ID
+  * mxcMonthInnerEvents - Events listings
 
 
 ==File: month.inner.day.event.html==
@@ -68,14 +68,14 @@ Chunk Override Parameter: &mxcTplMonthDay*
 Chunk Override Parameter: &mxcTplMonthEvent*
 
 ===Placeholders:===
-  *mxcMonthInnerEventID - Event list container CSS ID 
-  *mxcMonthInnerEventClass- Event list container CSS Class [defalt=Tips1]
-  *mxcMonthInnerEventUID - Event unique id
-  *mxcMonthInnerEventDescription - Event content/description text
-  *mxcMonthInnerEventTitleClass - Event title CSS class [default=title]
-  *mxcMonthInnerEventTitle - Event title string
-  *mxcMonthInnerEventDuration - Events duration content
-  *mxcMonthInnerEventTimestamp - Event timestamp content
+  * mxcMonthInnerEventID - Event list container CSS ID 
+  * mxcMonthInnerEventClass- Event list container CSS Class [defalt=Tips1]
+  * mxcMonthInnerEventUID - Event unique id
+  * mxcMonthInnerEventDescription - Event content/description text
+  * mxcMonthInnerEventTitleClass - Event title CSS class [default=title]
+  * mxcMonthInnerEventTitle - Event title string
+  * mxcMonthInnerEventDuration - Events duration content
+  * mxcMonthInnerEventTimestamp - Event timestamp content
 
 
 
@@ -83,9 +83,9 @@ Chunk Override Parameter: &mxcTplMonthEvent*
 *Descript: Event duration rendered format*
 
 ===Placeholders:===
-  *mxcMonthInnerEventDurationClass - Duration CSS class
-  *mxcMonthInnerEventDurationDays - Duration of days (calculated days)
-  *mxcMonthInnerEventDurationTime - time in hh:mm
+  * mxcMonthInnerEventDurationClass - Duration CSS class
+  * mxcMonthInnerEventDurationDays - Duration of days (calculated days)
+  * mxcMonthInnerEventDurationTime - time in hh:mm
 
 
 
@@ -93,9 +93,9 @@ Chunk Override Parameter: &mxcTplMonthEvent*
 *Description: Event timestamp layout*
 
 ===Placeholders:===
-  *mxcMonthInnerEventTimestampClass - Event timestamp CSS class
-  *mxcMonthInnerEventTimestampStart - Event start date/time
-  *mxcMonthInnerEventTimestampEnd - Event end date/time
+  * mxcMonthInnerEventTimestampClass - Event timestamp CSS class
+  * mxcMonthInnerEventTimestampStart - Event start date/time
+  * mxcMonthInnerEventTimestampEnd - Event end date/time
 
 ----
 
@@ -105,30 +105,30 @@ Chunk Override Parameter: &mxcTplMonthEvent*
 *Description: Used to set the display for each event in the Event List (&mxcType=`list`) display*
 
 ===Placeholders:===
-  *mxcEventListItemId - event item container CSS ID property value
-  *mxcEventListItemClass - event item container CSS Class property value
-  *mxcEventListItemTitle - event item Title 
-  *mxcEventListItemLabelDateTime - *Not in use*
-  *mxcEventListItemMonth - event item month holder
-  *mxcEventListItemStartDateTime - event start date/time
-  *mxcEventListItemDateTimeSeperator - event defined seperator for start and end date/times
-  *mxcEventListItemEndDateTime - event end date/time
-  *mxcEventListItemDateTimeReoccurrences - event reoccuring date/times
-  *mxcEventListItemLabelLocation - heading over address; presented only when address fields is entered on event
-  *mxcEventListItemLocation - event location value
-  *mxcEventListItemDescription - event description/content value
+  * mxcEventListItemId - event item container CSS ID property value
+  * mxcEventListItemClass - event item container CSS Class property value
+  * mxcEventListItemTitle - event item Title 
+  * mxcEventListItemLabelDateTime - *Not in use*
+  * mxcEventListItemMonth - event item month holder
+  * mxcEventListItemStartDateTime - event start date/time
+  * mxcEventListItemDateTimeSeperator - event defined seperator for start and end date/times
+  * mxcEventListItemEndDateTime - event end date/time
+  * mxcEventListItemDateTimeReoccurrences - event reoccuring date/times
+  * mxcEventListItemLabelLocation - heading over address; presented only when address fields is entered on event
+  * mxcEventListItemLocation - event location value
+  * mxcEventListItemDescription - event description/content value
 
 
 ==File: event.list.container.html==
 *Description: Used to set the display for event list view*
 
 ===Placeholders:===
-  *mxcEventListContainerId
-  *mxcEventListContainerClass
-  *mxcEventListContainerTitle
-  *mxcEventList
-  *mxcEventListMoreClass
-  *mxcEventListMoreLabel
+  * mxcEventListContainerId
+  * mxcEventListContainerClass
+  * mxcEventListContainerTitle
+  * mxcEventList
+  * mxcEventListMoreClass
+  * mxcEventListMoreLabel
 
 ----
 
@@ -138,16 +138,16 @@ Chunk Override Parameter: &mxcTplMonthEvent*
 *Description: Used to set the display layout for the event detail view*
 
 ===Placeholders:===
-  *mxcEventDetailBackToCal - link back the full calendar view (see language file for example)
-  *mxcEventDetailId - Outer most container wrap CSS ID property value
-  *mxcEventDetailClass - Outer most container wrap CSS Class property value
-  *mxcEventDetailTitle - returned event item title
-  *mxcEventDetailLabelDateTime - event item time heading label
-  *mxcEventDetailStartDateTime - event item start date/time stamp (PHP date format)
-  *mxcEventDetailDateTimeSeperator - event start/end time stamp seperatation text
-  *mxcEventDetailEndDateTime - event item end date/time stamp (PHP date format)
-  *mxcEventDetailDateTimeReoccurrences - all repeat dates are listed here
-  *mxcEventDetailLabelLocation - Address/Location heading text label
-  *mxcEventDetailLocation - event item location
-  *mxcEventDetailDescription - event item description
-  *mxcEventDetailGoogleMap - display google map in this position if flag is set
+  * mxcEventDetailBackToCal - link back the full calendar view (see language file for example)
+  * mxcEventDetailId - Outer most container wrap CSS ID property value
+  * mxcEventDetailClass - Outer most container wrap CSS Class property value
+  * mxcEventDetailTitle - returned event item title
+  * mxcEventDetailLabelDateTime - event item time heading label
+  * mxcEventDetailStartDateTime - event item start date/time stamp (PHP date format)
+  * mxcEventDetailDateTimeSeperator - event start/end time stamp seperatation text
+  * mxcEventDetailEndDateTime - event item end date/time stamp (PHP date format)
+  * mxcEventDetailDateTimeReoccurrences - all repeat dates are listed here
+  * mxcEventDetailLabelLocation - Address/Location heading text label
+  * mxcEventDetailLocation - event item location
+  * mxcEventDetailDescription - event item description
+  * mxcEventDetailGoogleMap - display google map in this position if flag is set
