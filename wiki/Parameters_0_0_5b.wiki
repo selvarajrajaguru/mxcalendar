@@ -37,6 +37,12 @@ Possible parameters when using the snippet call with the &type=`full` and is als
   * mxcShowDuration - Enable or disable event duration display `[`true|false`]`
   * mxcExcludeWeekends - Enable or disable weekends from dispaly `[`true=no weekends|false=display weekends`]`
   * mxcStartDayID - Set the day of week to start the calendar display `[`integer 0-6`]`
+  * mxcMonthInnerContainerID - Inside container CSS ID property value `[`string`]`
+  * mxcMonthInnerContainerClass - Inside container CSS Class property value `[`string`]`
+  * mxcMonthContainerID- Inside container CSS ID property value `[`string`]`
+  * mxcMonthContianerClass- Inside container CSS Class property value `[`string`]`
+  * mxcTplMonthOuter - Chunk name for the outer most month container `[`month.container.html`]`
+  * mxcTplMonthInner - Chunk name for the inside month container `[`month.inner.container.html`]`
   * mxcTplMonthHeading - Chunk name for theme heading override `[`month.heading.html`]`
   * mxcTplMonthDayBase - Chunk name for theme day outer wrap override `[`month.inner.day.base.html`]`
   * mxcTplMonthRow - Chunk name for theme row outer wrap override `[`month.inner.row.html`]`
