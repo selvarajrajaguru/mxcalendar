@@ -43,7 +43,7 @@ Note:
 @mxcAjaxPageID = (blank) template resource id
 }}}
 
-  # *AJAX mxCalendar Page*: The AJAX response page would have the snippet call setup with the &mxcFullCalendarPgId parameter set to link back to full calendar view as follows
+  # *AJAX Response mxCalendar Page*: The AJAX response page would have the snippet call setup with the &mxcFullCalendarPgId parameter set to link back to full calendar view as follows
 {{{
 [!mxcalendar? &mxcFullCalendarPgId=`48` !]
 }}}
