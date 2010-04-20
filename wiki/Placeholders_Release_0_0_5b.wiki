@@ -1,4 +1,6 @@
+#summary Placeholders for theme and chunk use to mxCalendar 0.0.5b
 #labels Phase-Implementation
+
 =Calendar (monthly) View=
 
 ==File: month.container.html==
@@ -7,7 +9,7 @@
 ===Placeholders:===
   * mxcMonthContainerID - Outer most container CSS ID
   * mxcMonthContianerClass - Outer most container CSS Class name
-  * mxcMonthCotianerHeading - Contianer for navigation, month, and year; not required if using place holders outside theme file
+  * _1_mxcMonthCotianerHeading - Empty content container 
   * mxcMonthInsideContianer - Inside container where calendar layout is wrapped
 
 
