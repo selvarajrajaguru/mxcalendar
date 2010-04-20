@@ -31,16 +31,21 @@ _note: you need to select another menu tab or log-out and back in to view the ne
   
   
 = Give it a Try =
-  # Now simply place the snippet cod block into your resource page where you want the calendar to display using default settings. 
+  # *mxCalendar (default display)*: Place the basic snippet coed block into your resource page where you want the calendar to display using default settings. 
   {{{ [!mxcalendar?!] }}}
 
-  # A quick example of the AJAX mode would be as follows, except make sure you also have a resource page with the same snippet code using the *(blank)* page template to return only the snippet results. @ajaxPageID = (blank) template resource id
+  # *mxCalendar w/AJAX*: A quick example of the AJAX mode would be as follows, except make sure you also have a resource page with the same snippet code using the *(blank)* page template to return only the snippet results. @ajaxPageID = (blank) template resource id
 {{{ 
 [!mxcalendar? &mxcAjaxPageId=`50` !] 
 }}}
 {{{
 Note:
 @mxcAjaxPageID = (blank) template resource id
+}}}
+
+  # *AJAX mxCalendar Page*: The AJAX response page would have the snippet call setup with the &mxcFullCalendarPgId parameter set to link back to full calendar view as follows
+{{{
+[!mxcalendar? &mxcFullCalendarPgId=`48` !]
 }}}
 
 = Internationalization =
