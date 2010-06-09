@@ -1,4 +1,4 @@
-#summary Placeholders for theme and chunk use to mxCalendar 0.0.5b
+#summary Placeholders for theme and chunk use to mxCalendar >0.0.5b
 #labels Phase-Implementation
 
 =Calendar (monthly) View=
@@ -72,7 +72,7 @@ Chunk Override Parameter: &mxcTplMonthEvent*
   *mxcMonthInnerEventClass- Event list container CSS Class [default=Tips1]
   *mxcMonthInnerEventUID - Event unique id
   *mxcMonthInnerEventDescription - Event content/description text
-  *mxcMonthInnerEventCategory - Event Category name displayed
+  *mxcMonthInnerEventCategory - [r0.0.6] - Event Category name displayed
   *mxcMonthInnerEventTitleClass - Event title CSS class [default=title]
   *mxcMonthInnerEventTitle - Event title string
   *mxcMonthInnerEventDuration - Events duration content
@@ -118,6 +118,9 @@ Chunk Override Parameter: &mxcTplMonthEvent*
   *mxcEventListItemLabelLocation - heading over address; presented only when address fields is entered on event
   *mxcEventListItemLocation - event location value
   *mxcEventListItemDescription - event description/content value
+  *mxcEventListItemTimeStyle - [r0.0.6] - CSS style class name
+  *mxcEventListItemStateDateStamp - [r0.0.6] - Valid PHP strftime format for start date/time of event
+  *mxcEventListItemEndDateStamp - [r0.0.6] - Valid PHP strftime format for start date/time of event
 
 
 ==File: event.list.container.html==
