@@ -69,9 +69,10 @@ Chunk Override Parameter: &mxcTplMonthEvent*
 
 ===Placeholders:===
   *mxcMonthInnerEventID - Event list container CSS ID 
-  *mxcMonthInnerEventClass- Event list container CSS Class [defalt=Tips1]
+  *mxcMonthInnerEventClass- Event list container CSS Class [default=Tips1]
   *mxcMonthInnerEventUID - Event unique id
   *mxcMonthInnerEventDescription - Event content/description text
+  *mxcMonthInnerEventCategory - Event Category name displayed
   *mxcMonthInnerEventTitleClass - Event title CSS class [default=title]
   *mxcMonthInnerEventTitle - Event title string
   *mxcMonthInnerEventDuration - Events duration content
