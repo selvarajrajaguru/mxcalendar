@@ -1,5 +1,5 @@
 #summary installation of release 0.0.05b how to guide step-by-step
-#labels Phase-Implementation
+#labels Phase-Implementation,Deprecated
 
 = Installation::Manager =
 
