@@ -1,5 +1,5 @@
 #summary comprehensive list of snippet parameters and properties
-#labels parameters
+#labels parameters,Deprecated
 
 = Parameters :: mxCalendar 0.0.1 Snippet  =
 
