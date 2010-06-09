@@ -1,5 +1,5 @@
 #summary installation how to guide step-by-step
-#labels mxcalendar,installation
+#labels mxcalendar,installation,Deprecated
 
 = Installation::Manager =
 
