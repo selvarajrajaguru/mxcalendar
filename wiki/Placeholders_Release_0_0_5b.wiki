@@ -1,5 +1,5 @@
 #summary Placeholders for theme and chunk use to mxCalendar >0.0.5b
-#labels Phase-Implementation
+#labels Phase-Implementation,Deprecated
 
 =Calendar (monthly) View=
 
