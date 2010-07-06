@@ -1,4 +1,4 @@
-#summary installation of release 0.0.6 how to guide step-by-step
+#summary installation of release >0.0.6 how to guide step-by-step
 #labels Phase-Deploy
 
 = Installation::Manager =
