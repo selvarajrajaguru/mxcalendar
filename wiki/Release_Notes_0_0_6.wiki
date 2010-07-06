@@ -1,5 +1,5 @@
 #summary Release 0.0.6 update notes
-#labels Phase-Design
+#labels Phase-Design,Deprecated
 
 Release Notes: 0.0.6 - Apr 24, 2010
 * Updated FileList:
