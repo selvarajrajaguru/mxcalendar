@@ -1,4 +1,4 @@
-#summary Release 0.0.6 snippet parameters
+#summary Release >0.0.6 snippet parameters
 #labels Phase-Deploy
 
 = Introduction =
@@ -12,7 +12,10 @@ Global parameters used by all display functions inside the calendar class.
   * mxcFullCalendarPgId - ModX document resource ID of the page where the main full calendar view snippet call resides `[`integer`]`
   * mxcType - mxCalendar main flag to set which display to use `[`full=calendar (default), list=event list`]`
   * mxcAjaxPageId - mxCalendar Ajax response page; blank template page with snippet call `[`integer`]`
-
+  * mxcDefaultCatId - [r0.0.6-rc2] - (int) Set the default cateogry (id column in manager) of the events to disply
+  * mxcDefaultCatIdLock = (boolean; default false) Block the category listing when set to true; Also overrides the Manager 
+  * mxcStartDateFormat = Event details date/time format override; Valid PHP strftime() format
+  * mxcEndDateFormat = Event details date/time format override; Valid PHP strftime() format
 
 = Event List Parameters =
 
@@ -28,6 +31,8 @@ Possible parameters when using the snippet call with the &type=`list` call
   * mxcEventListItemId - event item CSS ID property value `[`string`]`
   * mxcEventListItemClass - event item CSS Class property value `[`string`]`
   * _1_ mxcEventListAjaxPaginate - set the mxCalendar pagination for event list `[`true|false`]`
+  * mxcStartDate = Set the event list start date using strtotime() format ex: &mxcStartDate=```last month``` &mxcStartDate=```-2 month```
+  * mxcEventListTitleLink = Disable event list title links `[`true|false; default false `]`
 
 = Calendar View Parameters =
 
