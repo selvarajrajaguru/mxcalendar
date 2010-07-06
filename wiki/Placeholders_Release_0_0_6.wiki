@@ -77,6 +77,7 @@ Chunk Override Parameter: &mxcTplMonthEvent*
   * mxcMonthInnerEventTitle - Event title string
   * mxcMonthInnerEventDuration - Events duration content
   * mxcMonthInnerEventTimestamp - Event timestamp content
+  * mxcMonthInnerEventCategory - [r0.0.06-rc2] - Event category title holder
 
 
 
@@ -121,6 +122,9 @@ Chunk Override Parameter: &mxcTplMonthEvent*
   * mxcEventListItemTimeStyle - [r0.0.6] - CSS style class name
   * mxcEventListItemStateDateStamp - [r0.0.6] - Valid PHP strftime format for start date/time of event
   * mxcEventListItemEndDateStamp - [r0.0.6] - Valid PHP strftime format for start date/time of event
+  * mxcEventListItemTimeStyle - [r0.0.6-rc2] - CSS style class name
+  * mxcEventListItemStateDateStamp - [r0.0.6-rc2] - Event start date/time stamp PHP strftime() format
+  * mxcEventListItemEndDateStamp - [r0.0.6-rc2] - Event start date/time stamp PHP strftime() format
 
 
 ==File: event.list.container.html==
@@ -133,3 +137,4 @@ Chunk Override Parameter: &mxcTplMonthEvent*
   * mxcEventList
   * mxcEventListMoreClass
   * mxcEventListMoreLabel
+  * mxcCategoryFilters - [r0.0.6-rc2] - Category listing position
