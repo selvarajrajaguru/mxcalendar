@@ -1,0 +1,32 @@
+Release Notes: 0.0.6-rc3 - July 10, 2010
+* Updated FileList:
+  |- mxCalendar.class.php
+  |- includes/calendar.inc.php
+  |-*snippets/mxCalendar.snippet.txt
+  |- themes/default/views/event.list.event.html
+  |- Release_Notes.txt
+  
+  * = Manual update required of Snippet and/or Module code in ModX manager using the new code file
+
+(0.0.6-rc3)
+Change Log (not all inclusive):
+- Bug fix: Internationalization support of calendar (full) display month text
+- Bug fix: Fixed malformed node tag mismatch on event list item title
+- Bug fix: mxcTplEventListWrap parameter for List view format; varible name mismatch correction
+- Bug fix: Manager tab nested div not closed rendering blank page on Categories and Configuration (Chrome, FF [varied], IE)
+- Enhancement: Extended AJAX event detail view to the Event List (list) display by extending the mxcAjaxPageId parameter
+
+New Parameters
+mxcEndDate = Set the event list end date using strtotime() format ex: &mxcStartDate=`last month` &mxcEndDate=`first day next month`
+mxcEventTitleLink = (boolean; default false) When set to true this will disable the monthly list events links completely. Note this will also in effect disable the AJAX pop-up as well.
+mxcEventTitleNode = (string; default span; used when mxcEventTitleLink is set to true) Sets the wrapper node type when mxcEventTitleLink is set to true.
+mxcMonthLabelFormat = (valid strftime() format; default %B) Enter a valid month format for PHP strftime() [%b, %B, %h, %m]
+
+------------------------------
+
+New Placeholders
+NONE
+
+SAMPLE USE:
+[!mxcalendar? &mxcType=`list` &mxcAjaxPageId=`48` &mxcFullCalendarPgId=`47`!]
+- Basic call to use the AJAX lightbox pop-up for event detail display in event list format
