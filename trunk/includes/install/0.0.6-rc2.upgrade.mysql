@@ -1,0 +1,4 @@
+--
+-- Database updates for release 0.0.6-rc2
+--
+ALTER IGNORE TABLE `#__mxcalendar_categories` ADD `disable` INT NOT NULL DEFAULT '0' AFTER `inlinecss`;

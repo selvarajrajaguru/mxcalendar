@@ -1,0 +1,7 @@
+--
+-- No current database updates for release 0.0.5b.5
+--
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value) VALUES(35,'mxcGoogleMapDisplayCanvasID','map_canvas');
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value) VALUES(36,'mxcGoogleMapDisplayWidth','250');
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value) VALUES(37,'mxcGoogleMapDisplayHeigh','225');
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value) VALUES(38,'mxcGoogleMapDisplayLngLat','0');

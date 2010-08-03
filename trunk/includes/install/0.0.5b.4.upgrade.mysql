@@ -1,0 +1,1 @@
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value) VALUES(34,'mxcEventListLabelLocation','');

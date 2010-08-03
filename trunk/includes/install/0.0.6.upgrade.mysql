@@ -1,0 +1,22 @@
+--
+-- Database updates for release 0.0.6
+--
+ALTER IGNORE TABLE `#__mxcalendar_config` ADD UNIQUE `idxParam` ( `param` ( 64 ) ) ;
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value)
+VALUES
+(34,'mxcEventListLabelLocation',''),
+(35,'mxcGoogleMapDisplayCanvasID','map_canvas'),
+(36,'mxcGoogleMapDisplayWidth','250px'),
+(37,'mxcGoogleMapDisplayHeigh','225px'),
+(38,'mxcGoogleMapDisplayLngLat','0'),
+(39,'mxcLocalization',''),
+(40,'mxcGetCategoryListUIFilterLabel','Categories'),
+(41,'mxcGetCategoryListUIFilterLabelTag','H3'),
+(42,'mxcGetCategoryListUIFilterLabelTagClass','mxcCategoryHeading'),
+(43,'mxcGetCategoryListUIFilterType','list'),
+(44,'mxcEventListItemMultiDayStyle','font-size:70%'),
+(45,'mxcGetCategoryListUIFilterActive','1'),
+(46,'mxcEventListItemStateDateStamp','%I:%M %p'),
+(47,'mxcEventListItemEndDateStamp','%I:%M %p'),
+(48,'mxcAdvancedDateEntry','0');
+UPDATE `#__mxcalendar_config` SET param=REPLACE(param, 'Calendear', 'Calendar') WHERE param REGEXP('Calendear');
