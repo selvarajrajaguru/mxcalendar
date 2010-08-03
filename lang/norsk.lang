@@ -1,0 +1,182 @@
+<?php
+/*--------------------------------*/
+/* mxCalendar Language File       */
+/* English (Western)              */
+/* 04/21/2010                     */
+/* Author: Charles Sanders        */
+/* Version: 0.0.5b.6              */
+/* Translator: Sylvaticus (MODx forums) - (Bj&oslash;rn Erik Sandbakk) */
+/*--------------------------------*/
+
+// -- Global::Kolonner
+define('_mxCalendar_gl_installSucceess','Vellykket installasjon...');
+define('_mxCalendar_gl_installFailTable','Kan ikke opprette tabeller for datalagring.');
+define('_mxCalendar_gl_installFail','Feil: Installasjonen mislyktes...');
+define('_mxCalendar_gl_columns','ID,Tittel,Kategori,Start,Slutt');
+define('_mxCalendar_gl_noevents','Ingen aktiviteter &aring; liste for n&aring;v&aelig;rende m&aring;ned');
+define('_mxCalendar_gl_quicklist','Neste 10 aktiviteter nedenfor');
+define('_mxCalendar_gl_datetimeseperator',' - ');
+define('_mxCalendar_gl_multipledaydurationsperator','/');
+
+// -- Global::Knapper
+define('_mxCalendar_btn_update','Oppdatér');
+define('_mxCalendar_btn_updateEvent','Oppdatér aktivitet');
+define('_mxCalendar_btn_addEvent','Legg til aktivitet');
+define('_mxCalendar_btn_save','Lagre');
+define('_mxCalendar_gl_btnEdit','Redigér');
+define('_mxCalendar_gl_btnDelete','slett');
+define('_mxCalendar_gl_btnConfirm','Er du sikker p&aring; at du vil fjerne dette elementet?');
+define('_mxCalendar_gl_btnPublish','Publisér');
+define('_mxCalendar_gl_btnUnPublish','Avpublisér');
+define('_mxCalendar_gl_MsgItemSaved','Element lagret:');
+
+// -- Manager::ToolTips
+define('_mxCalendar_gl_tt_title','Skriv inn aktivitetstittelen som skal vises i sammendragslisten');
+define('_mxCalendar_gl_tt_link','Oppgi dokument-ID eller full ressurs URL.');
+define('_mxCalendar_gl_tt_location','Hvis du bruker Google Maps, s&oslash;rg for at det en gyldig fysisk adresse; flere adresser kan brukes adskilt med pipe (|)');
+define('_mxCalendar_gl_tt_repeatCount','Angi antall ganger å forekomme innenfor start dato og slutt dato forekomst. Vil ikke overstige forbi slutt forekomst dato.');
+
+// -- Manager::Aktivitetslisting
+define('_mxCalendar_el_labels','ID, Tittel, Kategori, Aktivitet start, Aktivitet slutt, Gjentagelse siste dato');
+define('_mxCalendar_el_timeformat','Y-m-d  g:ia');
+define('_mxCalendar_el_timeformat_date','Y-m-d');
+//define('_mxCalendar_','');
+//define('_mxCalendar_','');
+
+// -- Manager::Leggtil aktivitet |*rec*| er erstattet med Db UID
+define('_mxCalendar_ae_headingAdd','Legg til ny aktivitet');
+define('_mxCalendar_ae_headingEdit','Redigér aktivitet:');
+define('_mxCalendar_ae_labels','Aktivitets tittel, Innhold, Kategori, Link, Link REL, Link Target, Sted, Vis kart, Start Date-Time, DO_NOT_REMVOE_ME, Slutt Date-Time, Gjentas, Vises, Vises p&aring;, Gjenta hver, Inntil');
+define('_mxCalendar_ae_success','Aktivitet ID |*rec*| lagret');
+define('_mxCalendar_ae_fail','Error: Unabled to save your event.');
+
+// -- Manager::Categories
+define('_mxCalendar_ct_labelHeadingAdd','Legg til ny kategori');
+define('_mxCalendar_ct_labelHeadingEdit','Endre kategori: ');
+define('_mxCalendar_ct_columns','ID,Navn,Standard,CSS Forgrunn,CSS Bakgrunn,CSS Class Navn');
+define('_mxCalendar_ct_labelName','Navn');
+define('_mxCalendar_ct_labelForeground','CSS Forgrunnsfarge');
+define('_mxCalendar_ct_labelBackground','CSS Bakgrunnsfarge');
+define('_mxCalendar_ct_labelClass','CSS Class Navn');
+define('_mxCalendar_ct_unpublish','Upublisert kategori.');
+define('_mxCalendar_ct_publish','Publisert kategori.');
+define('_mxCalendar_ct_deleted','Slettet kategori.');
+define('_mxCalendar_ct_ErrorIsdefault','Kan ikke slette standard kategori, vennligst gj&oslash;r en annen kategori til standard f&oslash;r sletting.');
+define('_mxCalendar_ct_ErrorForeground','Ugyldig CSS fargeverdi for Forgrunn.');
+define('_mxCalendar_ct_ErrorBackground','Ugyldig CSS fargeverdi for Bakgrunn.');
+
+// -- Manager::Configuration
+define('_mxcalendar_con_title','Konfigurasjonsinnstillinger');
+define('_mxcalendar_con_update','<strong>Innstillinger lagret...</strong><br />');
+define('_mxCalendar_con_LegendGlobal','Global');
+define('_mxCalendar_con_LabelTooltip','Aktiver verkt&oslash;ytips');
+define('_mxCalendar_con_LabelTooltipTT','Deaktivert i gjeldende versjon 0.0.5');
+define('_mxCalendar_con_LabelListLimit','Bruker aktivitetsliste begrensning');
+define('_mxCalendar_con_LabelListLimitTT','Angi standard antall aktiviteter sluttbruker kan se ved visning av aktivitetsliste');
+define('_mxCalendar_con_LabelDuration','Vis varighet (h m)');
+define('_mxCalendar_con_LabelDurationTT','Aktiverer visning av aktivitetens varighet i timer: minutter p&aring; kalendervisning');
+define('_mxCalendar_con_LabelTimespan','Display Time Span');
+define('_mxCalendar_con_LabelTimespanTT','Aktiverer tidsangivelsesvisning av arrangementets start/tid og slutt/tid i m&aring;nedsvisning');
+define('_mxCalendar_con_LegendEventList','Aktivitetsliste visningsmuligheter');
+//-- Depreceated define('_mxCalendar_con_LabelEventTime','Aktivitets tid');
+define('_mxCalendar_con_LabelLocation','Sted / Adresse');
+define('_mxCalendar_con_LabelLocationTT','Location or address heading theme override value');
+define('_mxCalendar_con_LabelClockType','24 timersvisning (mgr)');
+define('_mxCalendar_con_LabelClockTypeTT','Aktiver 24 timers klokke eller 12 timers klokke med AM/PM n&aring;r du legger til aktiviteter');
+define('_mxCalendar_con_LegendMonthView','Alternative kalendervisninger');
+define('_mxCalendar_con_LabelDetailId','Aktivitets detalj ID');
+define('_mxCalendar_con_LabelDetailIdTT','Din CSS ID (#) navn for kalenderaktivitet detaljvisning');
+define('_mxCalendar_con_LabelDetailClass','Aktivitetsdetalj Class');
+define('_mxCalendar_con_LabelDetailClassTT','Din CSS class (.) navn for kalenderaktivitet detaljvisning');
+define('_mxCalendar_con_LegendTheme','Utseende(r)');
+define('_mxCalendar_con_LabelTheme','Velg utseende');
+define('_mxCalendar_con_LabelThemeTT','Velg blant de installerte utseender');
+define('_mxCalendar_con_LabelMultiDayList','Vis flere forekomster');
+define('_mxCalendar_con_LabelMultiDayListTT','<strong>Aktivitetsdetalj & Typer aktivitetslister:</strong><br />Aktiverer visning av den gjentagende aktivitetens datoer. Vil liste den gjentagende aktivitets forekomster i aktivitetens detaljvisning eller ikke noe.');
+define('_mxCalendar_con_LabelWeekends','Eksludér helger');
+define('_mxCalendar_con_LabelWeekendsTT','Aktiver visningen av helgene (l&oslash;r, s&oslash;n) p&aring; kalendervisning. Vil sette startdagen i uken til Mandag');
+define('_mxCalendar_con_LabelStartDOW','Start Ukedag');
+define('_mxCalendar_con_LabelStartDOWTT','Angi hvilken dag i uken den m&aring;nedlige visningen skal begynne p&aring; (s&oslash;ndag - l&oslash;rdag)');
+define('_mxCalendar_con_LabelThemeDescription','Beskrivelse:');
+define('_mxCalendar_con_LabelThemeCreatedby','Opprettet av:');
+define('_mxCalendar_con_LegendGoogleMap','Google Map API');
+define('_mxCalendar_con_LabelGoogleMapHost','Map Host');
+define('_mxCalendar_con_LabelGoogleMapKey','API Key');
+define('_mxCalendar_con_LabelGoogleMapHostTT','Bruk dette til &aring; endre Google map api source code');
+define('_mxCalendar_con_LabelGoogleMapKeyTT','Sett inn din tilordnede Google Map API Key verdi');
+define('_mxCalendar_con_LabelCalFullWidth','Kalender bredde');
+define('_mxCalendar_con_LabelCalFullWidthTT','Angi bredden p&aring; kalenderen i m&aring;nedsvisning, dette p&aring;virkes ogs&aring; via klasse-navn og tema-innstillinger.');
+define('_mxCalendar_con_LabelCalMiniWidth','Mini-Kalender bredde');
+define('_mxCalendar_con_LabelCalMiniWidthTT','<strong>Ikke tilgjengelig i denne utgaven.</strong><br />Sett mini-kalenderens visningsbredde, dette p&aring;virkes ogs&aring; via klasse-navn og tema');
+define('_mxCalendar_con_LabelEventDetailBackBtnClass','Tilbakeknapp Aktivitet detalj Class');
+define('_mxCalendar_con_LabelEventDetailBackBtnClassTT','Setter CSS klasse (.) navn p&aring; tilbake-knappen p&aring; aktiviteten i detaljert visning');
+define('_mxCalendar_con_LabelCalendarActiveDayClass','Dag i m&aring;ned Class');
+define('_mxCalendar_con_LabelCalendarActiveDayClassTT','Setter CSS klasse (.) navn p&aring; hver m&aring;neds visning av gjeldende dag i m&aring;neden');
+define('_mxCalendar_con_LabelCalendarActiveDayDisplay','Aktiver Dag i m&aring;neden class (.)');
+define('_mxCalendar_con_LabelCalendarActiveDayDisplayTT','Aktiverer class navnet som skal settes p&aring; hver m&aring;ned for gjeldende dag i m&aring;neden');
+define('_mxCalendar_con_LabelEventDetailId','Aktivitet detalj CSS ID');
+define('_mxCalendar_con_LabelEventDetailIdTT','Angi CSS id (#) navn for hendelsens detaljvisnings wrapper');
+define('_mxCalendar_con_LabelEventDetailClass','Aktivitet detalj CSS class');
+define('_mxCalendar_con_LabelEventDetailClassTT','Angi CSS class (.) navn for hendelsens detaljvisnings wrapper');
+define('_mxCalendar_con_LabelEventDetailLabelDateTime','Etikett Timestamp');
+define('_mxCalendar_con_LabelEventDetailLabelDateTimeTT','Sett overskriftsetiketten for tidsangivelsen p&aring; hendelsen i detaljert visning (spr&aring;kfil overstyring)');
+define('_mxCalendar_con_LabelEventDetailLabelLocation','Etikett Location(address)');
+define('_mxCalendar_con_LabelEventDetailLabelLocationTT','Sett overskriftsetiketten for stedsvisning n&aring;r den er tilstede i aktivitetsdetalj (spr&aring;kfil overstyring)');
+define('_mxCalendar_con_LabelEventListHeading','Overskrift tekst');
+define('_mxCalendar_con_LabelEventListHeadingTT','Overstyr spr&aring;kfilen: Aktivitets liste tittel verdi');
+define('_mxCalendar_con_LabelEventListMoreLink','Se all lenketekst');
+define('_mxCalendar_con_LabelEventListMoreLinkTT','Overstyr spr&aring;kfilen: Lenketekst, p&aring; lenken for &aring; vise full kalender');
+define('_mxCalendar_con_LegendEventDetail','Aktivitet Detaljer Visningsmuligheter');
+define('_mxCalendar_con_LabelEventDetailBackToCalClass','Tilbake til Kalneder CSS Class');
+define('_mxCalendar_con_LabelEventDetailBackToCalClassTT','Tilbake til Kalender CSS Class egenskaps verdi for lenke');
+define('_mxCalendar_con_LabelEventDetailBackToCalTitle','Tilbake til Kalender tekst');
+define('_mxCalendar_con_LabelEventDetailBackToCalTitleTT','Tilbake til Kalender lenke tekst som vist');
+define('_mxCalendar_con_LabelEventListItemID','Aktivitets liste Item ID');
+define('_mxCalendar_con_LabelEventListItemIDTT','Sett Aktivitets liste Item CSS ID egenskaps verdi');
+define('_mxCalendar_con_LabelEventListItemClass','Aktivitets liste Item Class');
+define('_mxCalendar_con_LabelEventListItemClassTT','Sett Aktivitets liste Item CSS Class egenskaps verdi');
+define('_mxCalendar_con_LabelLocationEV','Steds etikett');
+define('_mxCalendar_con_LabelLocationEVTT','Sett steds etiketten for aktivitets liste visning');
+define('_mxCalendar_con_mxcGoogleMapDisplayCanvasID','Google Map DIV ID');
+define('_mxCalendar_con_mxcGoogleMapDisplayCanvasIDTT','Sett div ID egenskap for JS og CSS brukt av kartkontainer');
+define('_mxCalendar_con_mxcGoogleMapDisplayWidth','Kart bredde');
+define('_mxCalendar_con_mxcGoogleMapDisplayWidthTT','Sett visningsh&oslash;yde for kartet');
+define('_mxCalendar_con_mxcGoogleMapDisplayHeigh','Kart h&oslash;yde');
+define('_mxCalendar_con_mxcGoogleMapDisplayHeighTT','Sett visningsbredde for kartet');
+define('_mxCalendar_con_mxcGoogleMapDisplayLngLat','Aktiviér Long/Lat Visning');
+define('_mxCalendar_con_mxcGoogleMapDisplayLngLatTT','N&aring;r sjekket vil lengde/breddegrad av plasseringen(e) f&oslash;yes til bunnen av kartet');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabel','Kategori overskrift');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTT','Sett kopi/tekst til &aring; vises ved kategorivisning');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTag','Kategori visning Tag');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTagTT','Sett inn html-koden til &aring; legge kategorioverskriften inne i');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTagClass','Kategori overskrift Class Navn');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTagClassTT','Sett CSS class navn egenskap for overskriften');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterType','Kategori visnings type');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterTypeTT','Hvilken visning som skal brukes ved gjengivelse av kategorilisten: <br /><strong>liste</strong> - HTML UL LI format <br /><strong>Velg</strong> - HTML SELECT OPTION format (rullegardinliste)');
+define('_mxCalendar_con_mxcEventListItemMultiDayStyle','Flerdags aktivitet CSS');
+define('_mxCalendar_con_mxcEventListItemMultiDayStyleTT','Angi inline stil-egenskapen til aktiviteteselementer n&aring;r aktiviteten g&aring;r over flere kalenderdager. Krever Vis flere Forekomster satt til False for &aring; kombinere til én oppf&oslash;ring');
+
+// -- UI::Aktivitets detaljer
+define('_mxCalendar_ed_backToCaltitle','Tilbake til Kalender');
+define('_mxCalendar_ed_backToCal','<div class="[+mxcEventDetailBackBtnClass+]"><a href="[+mxcEventDetailBackBtnURL+]">[+mxcEventDetailBackBtnTitle+]</a></div>');
+define('_mxCalendar_ed_dt','Dato Tid:');
+define('_mxCalendar_ed_location', 'Sted:');
+define('_mxCalendar_ed_dateformat', 'M d g:iA'); //-- PHP strftime format
+define('_mxCalendar_ed_start_dateformat', 'M d g:iA'); //-- PHP strftime format
+define('_mxCalendar_ed_end_dateformat', 'M d g:iA'); //-- PHP strftime format
+
+// --- UI::EventListing
+define('_mxCalendar_ev_title','Kalender');
+define('_mxCalendar_ev_link','Se flere aktiviteter');
+define('_mxCalendar_ev_none','<p class="mxcNoEvents">Ingen aktiviteter &aring; vise</p>');
+define('_mxCalendar_ev_time', 'g:i a'); //-- PHP strftime format
+define('_mxCalendar_ev_labelLocation', 'Sted:');
+
+
+
+// -- UI::Full Calendar
+define('_mxCalendar_cl_headinWeekDays', 'S&oslash;ndag,Mandag,Tirsdag,Onsdag,Torsdag,Fredag,L&oslash;rdag');
+define('_mxCalendar_cl_labelPrevious','<< Forrige');
+define('_mxCalendar_cl_labelNext','Neste >>');
+
+?>

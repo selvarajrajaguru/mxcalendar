@@ -1,0 +1,203 @@
+<?php
+/*--------------------------------------*/
+/* mxCalendar Language File             */
+/* English (Western)                    */
+/* 07/02/2010                           */
+/* Author: Charles Sanders              */
+/* Email: charless.mxcalendar@gmail.com */
+/* Version: 0.0.6-rc2                   */
+/*--------------------------------------*/
+
+// -- Global::Columns
+define('_mxCalendar_gl_installSucceess','Installation Successful...');
+define('_mxCalendar_gl_installFailTable','Unable to create tables for database storage.');
+define('_mxCalendar_gl_installFail','Error: Installation failed...');
+define('_mxCalendar_gl_columns','ID,Title,Category,Start,End');
+define('_mxCalendar_gl_noevents','No Events to list for Current Month');
+define('_mxCalendar_gl_quicklist','Next 10 Events below');
+define('_mxCalendar_gl_datetimeseperator',' - ');
+define('_mxCalendar_gl_multipledaydurationsperator','/');
+define('_mxCalendar_gl_all','All');
+define('_mxCalendar_gl_pagesite','Per page');
+
+// -- Global::Buttons
+define('_mxCalendar_btn_update','Update');
+define('_mxCalendar_btn_updateEvent','Update Event');
+define('_mxCalendar_btn_addEvent','Add Event');
+define('_mxCalendar_btn_save','Save');
+define('_mxCalendar_btn_go','Go');
+define('_mxCalendar_gl_btnEdit','Edit');
+define('_mxCalendar_gl_btnDelete','delete');
+define('_mxCalendar_gl_btnConfirm','Are your sure you want to remove this item?');
+define('_mxCalendar_gl_btnPublish','Publish');
+define('_mxCalendar_gl_btnUnPublish','Un-Publish');
+define('_mxCalendar_gl_MsgItemSaved','Item saved:');
+define('_mxCalendar_gl_btnDisable','Disable');
+define('_mxCalendar_gl_btnEnable','Enable');
+
+// -- Manager::ToolTips
+define('_mxCalendar_gl_tt_title','Entry the event title to be displayed in summary list.');
+define('_mxCalendar_gl_tt_link','Enter number of Document ID or full resource URL');
+define('_mxCalendar_gl_tt_location','If using the Google Map display make sure it a valid physical address; Multiple addresses can be used seperated by pipe (|)');
+define('_mxCalendar_gl_tt_repeatCount','Set the number of time to occur within the start date and end occurance date. Will no exceed past the end occurance date.');
+
+// -- Manager::Event listing
+define('_mxCalendar_el_labels','ID, Title, Category, Event Start, Event End, Reoccurance Last Date');
+define('_mxCalendar_el_timeformat','Y-m-d  g:ia');
+define('_mxCalendar_el_timeformat_date','Y-m-d');
+define('_mxCalendar_el_dlAllCategories','-- All Categories --');
+//define('_mxCalendar_','');
+
+// -- Manager::AddEvent |*rec*| is replaced with Db UID
+define('_mxCalendar_ae_headingAdd','Add New Event');
+define('_mxCalendar_ae_headingEdit','Edit Event:');
+define('_mxCalendar_ae_labels','Event Title, Content, Category, Link, Link REL, Link Target, Location, Display Map, Start Date-Time, DO_NOT_REMVOE_ME, End Date-Time, Repeats, Occurs, Occurs On, Repeat Every, Until');
+define('_mxCalendar_ae_success','Event ID |*rec*| saved');
+define('_mxCalendar_ae_fail','Error: Unabled to save your event.');
+
+// -- Manager::Categories
+define('_mxCalendar_ct_labelHeadingAdd','Add New Cateogry');
+define('_mxCalendar_ct_labelHeadingEdit','Edit Cateogry: ');
+define('_mxCalendar_ct_columns','ID,Name,Default,CSS Foreground,CSS Background,CSS Class Name');
+define('_mxCalendar_ct_labelName','Name');
+define('_mxCalendar_ct_labelForeground','CSS Foreground Color');
+define('_mxCalendar_ct_labelBackground','CSS Background Color');
+define('_mxCalendar_ct_labelClass','CSS Class Name');
+define('_mxCalendar_ct_unpublish','Unpublished category.');
+define('_mxCalendar_ct_publish','Published category.');
+define('_mxCalendar_ct_deleted','Deleted category.');
+define('_mxCalendar_ct_ErrorIsdefault','Unable to delete default category, please make another category default prior to deleting.');
+define('_mxCalendar_ct_ErrorForeground','Invalid CSS color property for Foreground.');
+define('_mxCalendar_ct_ErrorBackground','Invalid CSS color property for Background.');
+define('_mxCalendar_ct_disable','Disabled category: No longer viewable by web users');
+define('_mxCalendar_ct_enable','Enabled category: Now viewable by web users');
+
+
+// -- Manager::Configuration
+define('_mxcalendar_con_title','Configuration Settings');
+define('_mxcalendar_con_update','<strong>Configuration saved...</strong><br />');
+define('_mxCalendar_con_LegendGlobal','Global');
+define('_mxCalendar_con_LabelTooltip','Enable Tooltip');
+define('_mxCalendar_con_LabelTooltipTT','Enables or disables the calendar title ToolTip on rollover.');
+define('_mxCalendar_con_LabelListLimit','User Event List Limit');
+define('_mxCalendar_con_LabelListLimitTT','Enter default number of events to display to the end user when viewing the Event List');
+define('_mxCalendar_con_LabelDuration','Display Duration (h m)');
+define('_mxCalendar_con_LabelDurationTT','Enables the display of events duration in hours:minutes on calendar view');
+define('_mxCalendar_con_LabelTimespan','Display Time Span');
+define('_mxCalendar_con_LabelTimespanTT','Enables the time stamp display of event start hour and end hour in monthly view');
+define('_mxCalendar_con_LegendEventList','Event List Display Options');
+//-- Depreceated define('_mxCalendar_con_LabelEventTime','Event Time');
+define('_mxCalendar_con_LabelLocation','Location/Address Label');
+define('_mxCalendar_con_LabelLocationTT','Location or address heading theme override value');
+define('_mxCalendar_con_LabelClockType','24 hour display (mgr)');
+define('_mxCalendar_con_LabelClockTypeTT','Enable 24 hour clock selection or 12 hour clock with AM/PM when adding events');
+define('_mxCalendar_con_LegendMonthView','Calendar Display Options');
+define('_mxCalendar_con_LabelDetailId','Event Detail ID');
+define('_mxCalendar_con_LabelDetailIdTT','Your CSS ID (#) name for calendar event detail view');
+define('_mxCalendar_con_LabelDetailClass','Event Detail Class');
+define('_mxCalendar_con_LabelDetailClassTT','Your CSS class (.) name for calendar event detail view');
+define('_mxCalendar_con_LegendTheme','Theme(s)');
+define('_mxCalendar_con_LabelTheme','Select Theme');
+define('_mxCalendar_con_LabelThemeTT','Select the theme to use from those installed');
+define('_mxCalendar_con_LabelMultiDayList','Display Multiple Occurance');
+define('_mxCalendar_con_LabelMultiDayListTT','<strong>Event Detail & Event List Views:</strong><br />Enables the display of the reoccuring event dates. Will list all event occurances in the event detail view or not any');
+define('_mxCalendar_con_LabelWeekends','Exclude Weekends');
+define('_mxCalendar_con_LabelWeekendsTT','Enable the display of weekends (Sat,Sun) on calendar view. Will force start day of week to Monday');
+define('_mxCalendar_con_LabelStartDOW','Start Day of Week');
+define('_mxCalendar_con_LabelStartDOWTT','Set which day of the week the monthly view should sart on (Sun - Sat)');
+define('_mxCalendar_con_LabelThemeDescription','Description:');
+define('_mxCalendar_con_LabelThemeCreatedby','Created by:');
+define('_mxCalendar_con_LegendGoogleMap','Google Map API');
+define('_mxCalendar_con_LabelGoogleMapHost','Map Host');
+define('_mxCalendar_con_LabelGoogleMapKey','API Key');
+define('_mxCalendar_con_LabelGoogleMapHostTT','Use this to change the google map api source code');
+define('_mxCalendar_con_LabelGoogleMapKeyTT','Enter your assigned Google Map API Key value');
+define('_mxCalendar_con_LabelCalFullWidth','Calendar Width');
+define('_mxCalendar_con_LabelCalFullWidthTT','Set the montly view calendar width, this is also effected via the class names and theme settings');
+define('_mxCalendar_con_LabelCalMiniWidth','Mini-Calendar Width');
+define('_mxCalendar_con_LabelCalMiniWidthTT','<strong>Not available in this release.</strong><br />Set the mini-calendar view width, this is also effected by the class names and theme');
+define('_mxCalendar_con_LabelEventDetailBackBtnClass','Back button Event Detail Class');
+define('_mxCalendar_con_LabelEventDetailBackBtnClassTT','Sets the CSS class (.) name for the back button on event detail view');
+define('_mxCalendar_con_LabelCalendarActiveDayClass','Day of Month Class');
+define('_mxCalendar_con_LabelCalendarActiveDayClassTT','Sets the CSS class (.) name on each months view of the current day of month');
+define('_mxCalendar_con_LabelCalendarActiveDayDisplay','Enable Day of Month class');
+define('_mxCalendar_con_LabelCalendarActiveDayDisplayTT','Enables the class name to be set on each month for the current day of the month');
+define('_mxCalendar_con_LabelEventDetailId','Event Details CSS ID');
+define('_mxCalendar_con_LabelEventDetailIdTT','Set the CSS id (#) name for the event detail view wrapper');
+define('_mxCalendar_con_LabelEventDetailClass','Event Detail CSS class');
+define('_mxCalendar_con_LabelEventDetailClassTT','Set the CSS class (.) name for the event detail view wrapper');
+define('_mxCalendar_con_LabelEventDetailLabelDateTime','Label Timestamp');
+define('_mxCalendar_con_LabelEventDetailLabelDateTimeTT','Set the heading label for the timestamp on event detail view (language file override)');
+define('_mxCalendar_con_LabelEventDetailLabelLocation','Label Location(address)');
+define('_mxCalendar_con_LabelEventDetailLabelLocationTT','Set the heading label for the location display when present in event detail (language file override)');
+define('_mxCalendar_con_LabelEventListHeading','Heading Text');
+define('_mxCalendar_con_LabelEventListHeadingTT','Override the language file event listing title value');
+define('_mxCalendar_con_LabelEventListMoreLink','View all link text');
+define('_mxCalendar_con_LabelEventListMoreLinkTT','Override the language file event listing link text to view full calendar');
+define('_mxCalendar_con_LegendEventDetail','Event Details Display Options');
+define('_mxCalendar_con_LabelEventDetailBackToCalClass','Back to Calendar CSS Class');
+define('_mxCalendar_con_LabelEventDetailBackToCalClassTT','Back to Calendar CSS Class property value for link');
+define('_mxCalendar_con_LabelEventDetailBackToCalTitle','Back to Calendar text');
+define('_mxCalendar_con_LabelEventDetailBackToCalTitleTT','Back to Calendar link text as displayed');
+define('_mxCalendar_con_LabelEventListItemID','Event List Item ID');
+define('_mxCalendar_con_LabelEventListItemIDTT','Set Event List Item CSS ID property value');
+define('_mxCalendar_con_LabelEventListItemClass','Event List Item Class');
+define('_mxCalendar_con_LabelEventListItemClassTT','Set Event List Item CSS Class property value');
+define('_mxCalendar_con_LabelLocationEV','Location Label');
+define('_mxCalendar_con_LabelLocationEVTT','Set the location label for the event list view');
+define('_mxCalendar_con_mxcGoogleMapDisplayCanvasID','Google Map DIV ID');
+define('_mxCalendar_con_mxcGoogleMapDisplayCanvasIDTT','Set the div ID property for JS and CSS to be applied to map container');
+define('_mxCalendar_con_mxcGoogleMapDisplayWidth','Map Width');
+define('_mxCalendar_con_mxcGoogleMapDisplayWidthTT','Set the display height for the map');
+define('_mxCalendar_con_mxcGoogleMapDisplayHeigh','Map Height');
+define('_mxCalendar_con_mxcGoogleMapDisplayHeighTT','Set the display width for the map');
+define('_mxCalendar_con_mxcGoogleMapDisplayLngLat','Enable Long/Lat Display');
+define('_mxCalendar_con_mxcGoogleMapDisplayLngLatTT','When checked this will append to the bottom of the map the longitude/latitude of the locations(s)');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterActive','Enanble Cateogry Filters');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterActiveTT','Setting enables the front-end view of the category filter selection');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabel','Category Heading');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTT','Set the copy/text to display by the category display');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTag','Category Heading Tag');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTagTT','Set the html tag to wrap the category heading inside of');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTagClass','Category Heading Class Name');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterLabelTagClassTT','Set the CSS class name property for the heading');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterType','Category Display Type');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterTypeTT','Which display type to use when rendering the category list:<br /><strong>list</strong> - HTML UL LI format<br /><strong>Select</strong> - HTML SELECT OPTION format (drop-down list)');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterType_A','list');
+define('_mxCalendar_con_mxcGetCategoryListUIFilterType_B','drop-down');
+define('_mxCalendar_con_mxcEventListItemMultiDayStyle','MultiDay Event CSS');
+define('_mxCalendar_con_mxcEventListItemMultiDayStyleTT','Set the inline style property of event items when the event spans more than one calendar day, requires Display Multiple Occurance set to False to combine into single entry');
+//r0.0.6
+define('_mxCalendar_con_mxcEventListItemStateDateStamp','Start TimeStamp');
+define('_mxCalendar_con_mxcEventListItemStateDateStampTT','Any valid PHP strftime() format for date display');
+define('_mxCalendar_con_mxcEventListItemEndDateStamp','End TimeStamp');
+define('_mxCalendar_con_mxcEventListItemEndDateStampTT','Any valid PHP strftime() format for date display');
+define('_mxCalendar_con_mxcAdvancedDateEntry','Advanced Date Entry (manual)');
+define('_mxCalendar_con_mxcAdvancedDateEntryTT','Enables or disables the calendar selector and dropdown list for adding events.');
+//r0.0.6-rc2
+define('_mxCalendar_con_LegendCategory','Cateogory List Options');
+
+// -- UI::EventDetail
+define('_mxCalendar_ed_backToCaltitle','Back to Calendar');
+define('_mxCalendar_ed_backToCal','<div class="[+mxcEventDetailBackBtnClass+]"><a href="[+mxcEventDetailBackBtnURL+]">[+mxcEventDetailBackBtnTitle+]</a></div>');
+define('_mxCalendar_ed_dt','Date Time:');
+define('_mxCalendar_ed_location', 'Location:');
+define('_mxCalendar_ed_dateformat', '%b %d %I:%M%p'); //-- PHP strftime format
+define('_mxCalendar_ed_start_dateformat', '%b %d %I:%M%p'); //-- PHP strftime format
+define('_mxCalendar_ed_end_dateformat', '%b %d %I:%M%p'); //-- PHP strftime format
+
+// --- UI::EventListing
+define('_mxCalendar_ev_title','Calendar of Events');
+define('_mxCalendar_ev_link','See More Events');
+define('_mxCalendar_ev_none','<p class="mxcNoEvents">No Events to list</p>');
+define('_mxCalendar_ev_time', '%I:%M%p'); //-- PHP strftime format
+define('_mxCalendar_ev_labelLocation', 'Location:');
+
+
+
+// -- UI::Full Calendar
+define('_mxCalendar_cl_headinWeekDays', 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday');
+define('_mxCalendar_cl_labelPrevious','<< Previous');
+define('_mxCalendar_cl_labelNext','Next >>');
+
+?>
