@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxCalendar>
+    <themename>mxCalendar - Default</themename>
+    <themedescription>Default mxCalendar theme as tested and displaying all possible properties. To create your own theme copy the "default" theme folder and rename it. Then update the theme.xml file with your information and start changing the view .html files as needed.</themedescription>
+    <themelogo>theme_icon_mxcalendar.png</themelogo>
+    <themecss>css/mxCalendar.css</themecss>
+    <author>
+        <name>Charles Sanders @mxCalendar</name>
+        <siteurl>http://thinkbigshot.com</siteurl>
+    </author>
+    <pubdate>04/15/2010</pubdate>
+</mxCalendar>
