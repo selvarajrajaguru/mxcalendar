@@ -1,13 +1,34 @@
 /**
- * Author: Charles Sanders @ BIGSHOT Interactive
- * Date: 02/14/2010
- * Version: 0.0.1
+ * Author: Charles Sanders (charless.mxcalendar@gmail.com)
+ * Date: 07/30/2010
+ * Version: 0.0.6-rc3
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
 **/
-//-- Get the language file 
-include_once $modx->config['base_path'].'assets/modules/mxCalendar/lang/en-EN.lang';
+
+
+//-- Get LANGUAGE file
+$manager_language = $modx->config['manager_language'];
+if($modx->getLoginUserID()){
+$sql = "SELECT setting_name, setting_value FROM ".$modx->getFullTableName('user_settings')." WHERE setting_name='manager_language' AND user=" . $modx->getLoginUserID();
+$rs = $modx->db->query($sql);
+if ($modx->db->getRecordCount($rs) > 0) {
+    $row = $modx->db->getRow($rs);
+    $manager_language = $row['setting_value'];
+}
+}
+
+if($manager_language!="english")
+{
+    if (file_exists($modx->config['base_path'].'assets/modules/mxCalendar/lang/'.$manager_language.'.lang'))
+    {
+         include_once $modx->config['base_path'].'assets/modules/mxCalendar/lang/'.$manager_language.'.lang';
+    } else
+     include_once $modx->config['base_path'].'assets/modules/mxCalendar/lang/english.lang';
+} else
+ include_once $modx->config['base_path'].'assets/modules/mxCalendar/lang/english.lang';
+
 
 //-- include core class file
 include_once $modx->config['base_path'].'assets/modules/mxCalendar/mxCalendar.tpl.php';
