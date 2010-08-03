@@ -1,8 +1,8 @@
 <?php
 /**
- * Author: Charles Sanders
- * Date: 02/14/2010
- * Version: 0.0.1
+ * Author: Charles Sanders (charless.mxcalendar@gmail.com)
+ * Date: 07/30/2010
+ * Version: 0.0.6-rc3
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X(www.modxcms.com)
@@ -22,33 +22,13 @@ $showPast = false;
 
 /** END CONFIGURATION SETTINGS **/
 
-define('CAL_URL', '');
-define('CAL_VERSION', '0.0.1');
+define('CAL_URL', 'http://code.google.com/p/mxcalendar');
+define('CAL_VERSION', '0.0.6-rc3');
 
 // define base path
 define('CAL_MOD_PATH', $basePath.'assets/modules/mxCalendar/');
 define('CAL_CONFIG_PATH', CAL_MOD_PATH . 'config/');
 
-
-/* No support for multi-lingual files currently
-//-- include language file
-$manager_language = $modx->config['manager_language'];
-$sql = "SELECT setting_name, setting_value FROM ".$modx->getFullTableName('user_settings')." WHERE setting_name='manager_language' AND user=" . $modx->getLoginUserID();
-$rs = $modx->db->query($sql);
-if ($modx->db->getRecordCount($rs) > 0) {
-    $row = $modx->db->getRow($rs);
-    $manager_language = $row['setting_value'];
-}
-
-include_once CAL_MOD_PATH.'lang/english.lang.php';
-if($manager_language!="english")
-{
-    if (file_exists(CAL_MOD_PATH.'lang/'.$manager_language.'.lang.php'))
-    {
-         include_once CAL_MOD_PATH.'lang/'.$manager_language.'.lang.php';
-    }
-}
-*/
 
 //-- get theme
 $tb_prefix = $modx->db->config['table_prefix'];
@@ -58,6 +38,9 @@ $theme = ($theme['setting_value'] <> '') ? '/' . $theme['setting_value'] : '';
 
 //-- include core class file
 include_once CAL_MOD_PATH.'mxCalendar.class.php';
+if(class_exists("mxCal_APP_CLASS")){
+	$mxCalApp = new mxCal_APP_CLASS();
+}
 
 //-- output
 //--- head
@@ -68,27 +51,32 @@ $output = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http:
                 <script type="text/javascript"></script>
 		<link rel="stylesheet" type="text/css" href="media/style' . $theme . '/style.css" />
                 
-                <link rel="stylesheet" type="text/css" href="'.$siteURL.'assets/modules/mxCalendar/styles/mxCalendar.css" />
+                <link rel="stylesheet" type="text/css" href="'.$siteURL.'assets/modules/mxCalendar/themes/default/css/mxCalendar.css" />
                 
                 <script type="text/javascript" src="'.$siteURL.'manager/media/script/tabpane.js"></script>
 		<script type="text/javascript" src="'.$siteURL.'assets/modules/mxCalendar/scripts/jquery-1.3.2.min.js"></script>
                 
     <script src="'.$siteURL.'manager/media/script/mootools/mootools.js" type="text/javascript"></script>
     <script src="'.$siteURL.'manager/media/script/mootools/moodx.js" type="text/javascript"></script>
-                        <script type="text/javascript" src="'.$siteURL.'manager/media/calendar/datepicker.js"></script>
-			<script type="text/javascript">
-                        window.addEvent(\'domready\', function(){
-                            var Tips1 = new Tips($$(\'.Tips1\'));
-                                var dpOffset = -9;
-                                var dpformat ="YYYY-mm-dd";
-                                //new DatePicker($(\'fmstartdate\'), {\'yearOffset\': dpOffset,\'format\':dpformat});	
-                        });
-                       </script>
+<script type="text/javascript" src="'.$siteURL.'assets/modules/mxCalendar/scripts/datepicker2/datepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="'.$siteURL.'assets/modules/mxCalendar/scripts/datepicker2/datepicker.css">
+<script type="text/javascript">
+                                        window.addEvent(\'domready\', function(){
+                                                //new DatePicker(\'.DatePicker\', { pickerClass: \'datepicker_vista\', timePicker: true, format: \'Y-m-d H:i\' });
+						$$(\'input.DatePicker\').each( function(el){
+							new DatePicker(el);
+						});
+
+                                        });
+                                       </script>
+
+		       
+		       
 </head>';
                 
 //--- body
 $output .= '<body>
-            <div class="sectionHeader">mxCalendar Manager</div>
+            <div class="sectionHeader">mxCalendar Manager <span id="mxcVersion">Version: '.$mxCalApp->_getConfigVersion().'</span></div>
             <div class="sectionBody">
                 <div class="tab-pane" id="tabPanel">
                     <script type="text/javascript"> 
@@ -97,11 +85,17 @@ $output .= '<body>
             ';
 
 //-- setup
-//-- setup
 if(!file_exists( CAL_CONFIG_PATH.'config.xml')){
     $output .= $mxCalApp->_install_mxCalendar();
+} elseif ($mxCalApp->_getConfigVersion() != CAL_VERSION){
+    //-- check for upgrade script next version
+    $output .= $mxCalApp->_upgrade_mxCalendar();
 } else {
-    //-- Render module actions
+    //-- Render module actions after form actions handled
+    $mxCalApp->update_Configuration();
+    $mxCalApp->_mgrAddEdit();
+   
+    
 
     //--- tab: Manage Items
     $output.= '<div class="tab-page" id="tabTemplateVariables">  
@@ -112,24 +106,31 @@ if(!file_exists( CAL_CONFIG_PATH.'config.xml')){
     $output.='<p>&nbsp;</p>
 	      </div>';
     
+    //--- tab: Add event       
+    $output.= "\n<!-- start event -->\n".'<div class="tab-page" id="tabTemplateVariables2">  
+		<h2 class="tab">Add/Edit Event</h2>
+		<script type="text/javascript">tpResources.addTabPage( document.getElementById( "tabTemplateVariables2" ) );</script> 
+		';
+    $output.= $mxCalApp->AddEvent(true);
+    $output.='</div><p>&nbsp;</p>'."\n<!-- end event -->";    
+
+
+    //--- tab: Category Manager
+    $output.= '<div class="tab-page" id="tabTemplateVariablesCat">  
+		<h2 class="tab">Categories</h2>
+		<script type="text/javascript">tpResources.addTabPage( document.getElementById( "tabTemplateVariablesCat" ) );</script> 
+		';
+    $output.= $mxCalApp->CategoryMgr(); 
+    $output.='<p>&nbsp;</p></div>';
+
     //--- tab: Configuration Manager
-    /*
     $output.= '<div class="tab-page" id="tabTemplateVariables3">  
 		<h2 class="tab">Configuration</h2>
 		<script type="text/javascript">tpResources.addTabPage( document.getElementById( "tabTemplateVariables3" ) );</script> 
 		';
     $output.= $mxCalApp->Configuration();
     $output.='<p>&nbsp;</p></div>';
-    */
     
-    //--- tab: Add event       
-    $output.= '<div class="tab-page" id="tabTemplateVariables2">  
-		<h2 class="tab">Add New Event</h2>
-		<script type="text/javascript">tpResources.addTabPage( document.getElementById( "tabTemplateVariables2" ) );</script> 
-		';
-    $output.= $mxCalApp->AddEvent(true);
-    $output.='<p>&nbsp;</p></div>';
-
     
     //-- end tab-pane
     $output .= '</div>';
