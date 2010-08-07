@@ -958,10 +958,10 @@ if(!class_exists("mxCal_APP_CLASS")){
                                   );
                     $param = array_merge($defaultParam, $params);
                     
-                    if(($param['mxcType']=='full' & empty($_REQUEST['details']) & $param['mxcTypeLocked'] != true ) || (!isset($param['mxcType']) & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ))
+                    if(($param['mxcType']=='full' & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ) || (!isset($param['mxcType']) & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ))
                         //-- DISPLAY FULL CALENDAR (roadmap -> change to tpl chunks)
 			include_once 'includes/calendar.inc.php';
-		    elseif(!empty($_REQUEST['details']))
+		    elseif(!empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true )
                         return $this->MakeEventDetail((int)$_REQUEST['details'],$param);
                     else
                         return $this->MakeUpcomingEventsList($param);
@@ -1465,7 +1465,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                 }		
                 
                 //-- Get Next (N) Events and return the array
-                function _getNEvents($date=null,$n=10,$CatId=null){
+                function _getNEvents($date=null,$n=10,$CatId=Null){
                     global $modx;
                     $date = (checkdate(strftime("%m",$date),strftime("%d",$date),strftime("%Y",$date) )) ? $date : strftime("%Y-%m-%d") ;
                     $enddate = strtotime ( "+1 month" , strtotime ( date("Y-m-1") ) ) ;
@@ -1474,8 +1474,8 @@ if(!class_exists("mxCal_APP_CLASS")){
                             FROM '.$modx->getFullTableName($this->tables['events']).' as E
                             LEFT JOIN '.$modx->getFullTableName($this->tables['categories']).' as C
                              ON E.category = C.id
-                            WHERE startdate >= \''.$date.'\' or enddate >= \''.$date.'\' or  `lastrepeat` >= \''.$date.'\' and E.active=1
-			    and C.active=1 '.($CatId ? ' and C.id IN ('.$CatId.') ' : '').'
+                            WHERE (startdate >= \''.$date.'\' or enddate >= \''.$date.'\' or  `lastrepeat` >= \''.$date.'\') and E.active=1
+			    and C.active=1 '.(!is_null($CatId) ? ' and C.id IN ('.$CatId.') ' : '').'
                             ORDER BY startdate
                             LIMIT '.$n;
                     $results = $modx->db->query($eventsSQL);
@@ -1749,30 +1749,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    $theme = $modx->config['manager_theme'];
 		    //cal_form
 		    $autoEndDateUpdate = ($field == 'startdate' ? 'document.forms[\'cal_form\'].elements[\'fmenddate\'].value=this.value;" ' : '');
-                    $formEntries .= <<<EOF
-                    <input id="fm{$field}" name="fm{$field}" class="DatePicker" value="{$fmDATE}" onblur="documentDirty=true;{$autoEndDateUpdate}" /><a title="Remove Date" onclick="this.previousSibling.value=''; return true;" onmouseover="window.status='Remove date'; return true;" onmouseout="window.status=''; return true;" style="position:relative;left:0;cursor:pointer; cursor:hand"><img src="media/style/{$theme}/images/icons/cal_nodate.gif" width="16" height="16" border="0" alt="Remove date" /></a><br /><em>YYYY-MM-DD</em>
-EOF;
+                    $formEntries .= '<input id="fm'.$field.'" name="fm'.$field.'" class="DatePicker" value="'.$fmDATE.'" onblur="documentDirty=true;{$autoEndDateUpdate}" /><a title="Remove Date" onclick="this.previousSibling.value=\'\'; return true;" onmouseover="window.status=\'Remove date\'; return true;" onmouseout="window.status=\'\'; return true;" style="position:relative;left:0;cursor:pointer; cursor:hand"><img src="media/style/'.$theme.'/images/icons/cal_nodate.gif" width="16" height="16" border="0" alt="Remove date" /></a><br /><em>YYYY-MM-DD</em>';
                     $formEntries .= $tooltip.'</div><div style="display:block;height:7px;clear:both;"></div>';
-                    /*
-		    $formEntries .= "\n<script type=\"text/javascript\">
-                                        window.addEvent('domready', function(){
-                                                var dpOffset = -9;
-                                                var dpformat =\"YYYY-mm-dd\"; //hh:mm
-						var dpTimePicker = false;
-                                                \t\t new DatePicker($('fm{$field}'), {'yearOffset': dpOffset,'format':dpformat,'timePicker':dpTimePicker});\n
-                                        });
-                                       </script></div>\n";
-				       
-		    */
-		    /*
-			$formEntries .= "\n".'<script type="text/javascript" src="'.$modx->config['site_url'].'assets/modules/mxCalendar/scripts/datepicker/datepicker.js"></script>';
-			$formEntries .= "\n".'<link rel="stylesheet" type="text/css" href="'.$modx->config['site_url'].'assets/modules/mxCalendar/scripts/datepicker/datepicker.css">';
-			$formEntries .= "\n<script type=\"text/javascript\">
-                                        window.addEvent('domready', function(){
-                                                new DatePicker('.DatePicker', { pickerClass: 'datepicker_vista', timePicker: true, format: 'Y-m-d H:i' });
-                                        });
-                                       </script>"."\n";
-			*/
                     return $formEntries;
                 }
                 
