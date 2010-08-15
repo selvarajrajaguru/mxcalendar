@@ -1,14 +1,36 @@
-Release Notes: 0.0.6-rc3 - July 10, 2010
+Release Notes: 0.0.7-rc4 - July 18, 2010
 * Updated FileList:
   |- mxCalendar.class.php
+  |- mxCalendar.tpl.php
   |- includes/calendar.inc.php
+  |- lang/english.lang
   |-*snippets/mxCalendar.snippet.txt
-  |- themes/default/views/event.list.event.html
+  |-*snippets/mxCalendar.module.txt
+  |- themes/default/[+]
   |- Release_Notes.txt
   
   * = Manual update required of Snippet and/or Module code in ModX manager using the new code file
 
-(0.0.6-rc3)
+--------------------------
+Release: (0.0.7-rc4)
+--------------------------
+Change Log (not all inclusive):
+- Bug fix: Updated default cateogry id filter (mxcDefaultCatId)
+- Bug fix: XMLReader changed out to standard core PHP library
+- Bug fix: CSS property for for fildset from generic to form ID specific
+- Bug fix: Default theme icon non-display on *nix environments
+- Bug fix: Module Manager tabs not displaying content for Category and Configuration
+- Enhancement: Added web user group based viewing permissions per event
+
+New Parameters
+- None
+
+New Placeholders
+- None
+
+--------------------------
+Release: (0.0.6-rc3)
+--------------------------
 Change Log (not all inclusive):
 - Bug fix: Internationalization support of calendar (full) display month text
 - Bug fix: Fixed malformed node tag mismatch on event list item title
@@ -21,8 +43,6 @@ mxcEndDate = Set the event list end date using strtotime() format ex: &mxcStartD
 mxcEventTitleLink = (boolean; default false) When set to true this will disable the monthly list events links completely. Note this will also in effect disable the AJAX pop-up as well.
 mxcEventTitleNode = (string; default span; used when mxcEventTitleLink is set to true) Sets the wrapper node type when mxcEventTitleLink is set to true.
 mxcMonthLabelFormat = (valid strftime() format; default %B) Enter a valid month format for PHP strftime() [%b, %B, %h, %m]
-
-------------------------------
 
 New Placeholders
 NONE

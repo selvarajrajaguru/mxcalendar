@@ -1,7 +1,7 @@
 <?php
 if(!class_exists("mxCal_APP_CLASS")){
 	class mxCal_APP_CLASS {
-		var $version = '0.0.7';
+		var $version = '0.0.7-rc4';
 		var $user_id;
 		var $params = array();
 		var $config = array();
@@ -1270,7 +1270,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			//-- Get Configuration Item for Category UI Filter display
 			$_mxcCalCategoryFilter = $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']);
 			
-			//-- Fix for multiple instances on single page (0.0.7-rc2)
+			//-- Fix for multiple instances on single page (0.0.6-rc2)
 			$ar_eventList['mxcEventListContainerId']='calendar';
 			$ar_eventList['mxcEventListContainerClass']='block';
 			$ar_eventList['mxcEventListContainerTitle']=$param['mxcTplEventListWrapTitle'];
@@ -1998,20 +1998,8 @@ EORTE;
 		//-- Get current configuration version number
 		function _getConfigVersion(){
 			global $modx;
-			$xml = new XMLReader();
-			$xml->open($modx->config['base_path']."assets/modules/mxCalendar/config/config.xml");
-			$xml->setParserProperty(2,true);
-			while ($xml->read()) {
-			    switch ($xml->name) {
-			    case "version":
-				$xml->read();
-				$configVersion = $xml->value;
-				$xml->read();
-				break;
-			    }
-			}
-			$xml->close();
-			return $configVersion;
+			$XML = simplexml_load_file($modx->config['base_path']."assets/modules/mxCalendar/config/config.xml");
+			return (string)$XML->version;
 		}
 		
 		//-- Get the active theme configuration using SimpleXML reader
