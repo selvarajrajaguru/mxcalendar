@@ -23,7 +23,7 @@
 	/** END CONFIGURATION SETTINGS **/
 	
 	define('CAL_URL', 'http://code.google.com/p/mxcalendar');
-	define('CAL_VERSION', '0.0.6-rc3');
+	define('CAL_VERSION', '0.0.7');
 	
 	// define base path
 	define('CAL_MOD_PATH', $basePath.'assets/modules/mxCalendar/');
@@ -112,7 +112,7 @@
 			<script type="text/javascript">tpResources.addTabPage( document.getElementById( "tabTemplateVariables2" ) );</script> 
 			';
 	    $output.= $mxCalApp->AddEvent(true);
-	    $output.='</div><p>&nbsp;</p></div></div>'."\n<!-- end event -->";    
+	    $output.='<p>&nbsp;</p></div>'."\n<!-- end event -->";    
 	
 	
 	    //--- tab: Category Manager
