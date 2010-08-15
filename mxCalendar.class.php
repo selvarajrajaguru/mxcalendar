@@ -1,7 +1,7 @@
 <?php
 if(!class_exists("mxCal_APP_CLASS")){
 	class mxCal_APP_CLASS {
-		var $version = '0.0.6-rc3';
+		var $version = '0.0.7';
 		var $user_id;
 		var $params = array();
 		var $config = array();
@@ -13,6 +13,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		var $message;
 		var $config_message;
                 var $debug = false;
+		var $userWebUserGroups = array();
                 
 		function __construct() {
                     //-- Form tooltips
@@ -36,21 +37,6 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    $this->default_limit = 100;
 		    $this->name = __CLASS__;
                     
-		    /*
-			SWITCH($this->params['fmaction']){
-                        case "edit":
-				$this->EditSpotting($_POST['fmeid']);
-				break;
-			case "unpublish":
-				$this->AddCategories($this->pubunpubCat());
-				break;
-                        case "search":
-                                $this->ListSpottings(false,true);
-			default:
-				//--Do Nothing (ERROR)
-				break;
-		    }
-		    */
  		}
                 
 		// Get an array of tables
@@ -100,7 +86,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					$result = $modx->db->query($sql);
 				    }
 				}
-				$this->output .= '<div class="fm_message"><h2>Update completed</h2><form method="post" action=""><input type="submit" name="submit" value="Continue" /></form></div>';
+				$this->output .= '<div class="fm_message"><h2>'.$this->version.' Update completed</h2><form method="post" action=""><input type="submit" name="submit" value="Continue" /></form></div>';
 				//Install Completed
 				$fh = fopen( $modx->config['base_path'].'assets/modules/mxCalendar/config/config.xml', 'w+') or die("Unable to save configuration file. Please make sure write permission is granted on the folder (".$modx->config['base_path']."assets/modules/mxCalendar/config/)");
 				$stringData = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<mxCalendar>'."\n".'<setup>Yes</setup>'."\n".'<date>'.DATE('l jS \of F Y h:i:s A').'</date><version>'.$this->version.'</version>'."\n".'</mxCalendar>';
@@ -295,7 +281,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                     
                     if(!empty($_REQUEST['fmeid'])){
                         //-- Get record to edit
-                        $result = $modx->db->select('id,title,description,category,link,linkrel,linktarget,location,displayGoogleMap,start,startdate,starttime,end,enddate,endtime,event_occurance,event_occurance_rep,_occurance_properties,lastrepeat', $modx->getFullTableName($this->tables['events']),'id = '.$_REQUEST['fmeid'] );
+                        $result = $modx->db->select('id,title,description,category,restrictedwebusergroup,link,linkrel,linktarget,location,displayGoogleMap,start,startdate,starttime,end,enddate,endtime,event_occurance,event_occurance_rep,_occurance_properties,lastrepeat', $modx->getFullTableName($this->tables['events']),'id = '.$_REQUEST['fmeid'] );
                         if( $modx->db->getRecordCount( $result ) ) {
                             $output .= '<ul>';
                             $editArr = $modx->db->getRow( $result );
@@ -308,17 +294,19 @@ if(!class_exists("mxCal_APP_CLASS")){
                     $this->output .= '<form id="fm_bsApp" name="cal_form" method="post" action="">'."\n";
                     $x=0;
 		    foreach($fm_columns as $key=>$val){
-                        //-- List of excluded table columns
+                        //-- List of excluded table columns [DO NOT EDIT]
                         $excluded = array('id','active','start','end', 'repeat', 'event_occurance', '_occurance_wkly', 'event_occurance_rep', 'lastrepeat', '_occurance_properties','lastrepeat');
                         //-- Make sure it's not an excluded column
                         if(!in_array($val[0], $excluded)){
                             $tooltip = ($this->tooltip[$val[0]]) ? '<img  title="'.$this->tooltip[$val[0]].'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />' : '';
                             SWITCH ($val[1]){
                                 case 'text':
-                                    if($val[0] == 'description')
+                                    if($val[0] == 'description'){
                                     $this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><textarea id="fm'.$val[0].'" name="fm'.$val[0].'">'.$editArr[$val[0]].'</textarea>'.$this->makeRTE($val[0]).$tooltip.'</div></div>'."\n";
-				    else
-                                    $this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
+				    
+				    } else {
+					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
+				    }
                                     break;
                                 case 'date':
                                     if($val[0] == 'startdate'){
@@ -401,7 +389,14 @@ if(!class_exists("mxCal_APP_CLASS")){
                                       $this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><select name="fm'.$val[0].'">'.$thisSDL.'</select>'.$tooltip.'</div></div>'."\n";
 				    } elseif($val[0] == 'displayGoogleMap'){
 					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="checkbox" id="fm'.$val[0].'" name="fm'.$val[0].'" value="1" '.($editArr[$val[0]] ? 'checked="checked"' : "").' />'.$tooltip.'</div></div>'."\n";
-                                    } else {
+				    }  elseif($val[0] == 'restrictedwebusergroup'){
+					$thisWUGDL = '<option value="" '.( empty($editArr[$val[0]]) ? 'selected=selected' : '' ).'>'._mxCalendar_con_PublicView.'</option>';
+					foreach($this->getWebGroups() AS $group){
+						$selected = (in_array($group['id'], explode(',',$editArr[$val[0]])) ) ? 'selected=selected' : '';
+						$thisWUGDL .= '<option value="'.$group['id'].'" '.$selected.'>'.$group['name'].'</option>';
+					}
+					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><select name="fm'.$val[0].'[]" multiple="multiple">'.$thisWUGDL.'</select>'.$tooltip.'</div></div>'."\n";
+				    } else {
                                       $this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
                                     }
                                     break;
@@ -411,7 +406,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			
                     }
                     
-			//-- TEST Reoccurances fmevent_occurance, fm_occurance_wkly[], fmevent_occurance_rep
+			//-- Reoccurances fmevent_occurance, fm_occurance_wkly[], fmevent_occurance_rep
 			$this->output .= "\t\t".'
     <fieldset id="mxcalendar-repeat" style="border:1px solid #ccc;">
         <legend>'.trim($fm_label[(count($fm_label)-5)]).':</legend>
@@ -678,52 +673,20 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    }elseif(is_dir($dir."/".$sub)){
 						//-- read the theme.xml file
 						$themeProperties = array();
-						$xml = new XMLReader();
-						$xml->open($dir."/".$sub."/theme.xml");
-						$xml->setParserProperty(2,true);
-						while ($xml->read()) {
-						    switch ($xml->name) {
-						    case "themename":
-							$xml->read();
-							$themeProperties["name"] = $xml->value;
-							$xml->read();
-							break;
-						    case "themedescription":
-							$xml->read();
-							$themeProperties["description"] = $xml->value;
-							$xml->read();
-							break;
-						    case "themelogo":
-							$xml->read();
-							$themeProperties["themelogo"] = $xml->value;
-							$xml->read();
-							break;
-						    case "themecss":
-							$xml->read();
-							$themeProperties["themecss"] = $xml->value;
-							$xml->read();
-							break;
-						    case "name":
-							$xml->read();
-							$themeProperties["authorname"] = $xml->value;
-							$xml->read();
-							break;
-						    case "siteurl":
-							$xml->read();
-							$themeProperties["authorsite"] = $xml->value;
-							$xml->read();
-							break;
-						    case "pubdate":
-							$xml->read();
-							$themeProperties["pubdate"] = $xml->value;
-							$xml->read();
-							break;
-						    }
-						}
-						$xml->close();
+						//-- Get list of theme files
+						$XML = simplexml_load_file($dir."/".$sub."/theme.xml");
+						$themeProperties["name"] = (string)$XML->themename;
+						$themeProperties["description"] = (string)$XML->themedescription;
+						$themeProperties["themelogo"] = (string)$XML->themelogo;
+						$themeProperties["themecss"] = (string)$XML->themecss;
+						$themeProperties["authorname"] = (string)$XML->author->name;
+						$themeProperties["authorsite"] = (string)$XML->author->siteurl;
+						$themeProperties["pubdate"] = (string)$XML->pubdate;
+						
+
 						$themeOptions .= '<option value="'.$sub.'" '.($myConfig['mxCalendarTheme'][1] == $sub ? 'selected=selected' : '').'>'.$themeProperties['name'].'</option>';
 						if(empty($themeInfo))
-						$themeInfo = ($myConfig['mxCalendarTheme'][1] == $sub ? "<p style='clear:both;padding-top:10px;'>".(!empty($themeProperties["themelogo"]) ? "<img src='../assets/modules/mxCalendar/themes/".$sub."/".$themeProperties["themelogo"]."' style='float:left;padding:0 5px 5px 0;' alt='icon'/>" : '')._mxCalendar_con_LabelThemeCreatedby." ".(!empty($themeProperties["authorsite"]) ? '<a href="'.$themeProperties["authorsite"].'" target="_blank">'.$themeProperties["authorname"].'</a>' : $themeProperties["authorname"])."<br /><strong>"._mxCalendar_con_LabelThemeDescription."</strong><br />".$themeProperties["description"]."</p>" : '');
+							$themeInfo = ($myConfig['mxCalendarTheme'][1] == $sub ? "<p style='clear:both;padding-top:10px;'>".(!empty($themeProperties["themelogo"]) ? "<img src='".$modx->config['site_url']."assets/modules/mxCalendar/themes/".$sub."/".$themeProperties["themelogo"]."' style='float:left;padding:0 5px 5px 0;' alt='icon'/>" : '')._mxCalendar_con_LabelThemeCreatedby." ".(!empty($themeProperties["authorsite"]) ? '<a href="'.$themeProperties["authorsite"].'" target="_blank">'.$themeProperties["authorname"].'</a>' : $themeProperties["authorname"])."<br /><strong>"._mxCalendar_con_LabelThemeDescription."</strong><br />".$themeProperties["description"]."</p>" : '');
 					    }
 					}
 				    }   
@@ -872,8 +835,6 @@ if(!class_exists("mxCal_APP_CLASS")){
                     global $modx;
                     $param = $_POST;
                     //-- Break apart the dates
-		    //$sDate = strftime("%Y-%m-%d %H:%M",strtotime($param['fmstartdate']));
-		    //$eDate = strftime("%Y-%m-%d %H:%M",strtotime($param['fmenddate']));
                     $startValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmstartdate'])));
                     $endValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmenddate'])));
 		    
@@ -881,6 +842,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                     $sT = $modx->db->escape($param['fmtitle']);
                     $sD = $modx->db->escape($param['fmdescription']);
                     $sC = $modx->db->escape($param['fmcategory']);
+		    $sWG = $modx->db->escape(implode(',',$_POST['fmrestrictedwebusergroup']));
                     $sL = $modx->db->escape($param['fmlink']);
                     $sLR = $modx->db->escape($param['fmlinkrel']);
                     $sLT = $modx->db->escape($param['fmlinktarget']);
@@ -916,6 +878,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                     $fields = array('title'	 => $sT,
                                     'description'=> $sD,
                                     'category'	 => $sC,
+				    'restrictedwebusergroup' => $sWG,
                                     'link'       => $sL,
                                     'linkrel'    => $sLR,
                                     'linktarget' => $sLT,
@@ -934,6 +897,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    'event_occurance_rep' => $modx->db->escape((int)$param['fmevent_occurance_rep']),
 				    '_occurance_properties' => implode(',',$repOccOn)
                                     );
+		    if($this->debug) print_r($fields);
                     if($method == _mxCalendar_btn_addEvent){
                         $NID = $modx->db->insert( $fields, $table_name);
                         if($NID) $_POST = array();
@@ -1467,6 +1431,25 @@ if(!class_exists("mxCal_APP_CLASS")){
                 //-- Get Next (N) Events and return the array
                 function _getNEvents($date=null,$n=10,$CatId=Null){
                     global $modx;
+		    
+
+//-- Front end: returns logged in user's webgroup assignments [webgroup = web group id's user belongs to]
+if($modx->getLoginUserID()){    
+	$userInfo = $modx->db->makeArray(
+	    $modx->db->select(
+		'webgroup', 
+		$modx->getFullTableName('web_groups'), 
+		'`webuser`='.$modx->getLoginUserID()
+	    )
+	);
+	//-- Web View Permission Where Builder
+	foreach($userInfo AS $wu){
+		foreach($wu AS $wp)
+			$WHERE_WGP[] = 'FIND_IN_SET('.$wp['0'].',E.restrictedwebusergroup)';
+	}
+}
+
+		    
                     $date = (checkdate(strftime("%m",$date),strftime("%d",$date),strftime("%Y",$date) )) ? $date : strftime("%Y-%m-%d") ;
                     $enddate = strtotime ( "+1 month" , strtotime ( date("Y-m-1") ) ) ;
                     $enddate = date ( "Y-m-d" , $enddate );
@@ -1475,8 +1458,9 @@ if(!class_exists("mxCal_APP_CLASS")){
                             LEFT JOIN '.$modx->getFullTableName($this->tables['categories']).' as C
                              ON E.category = C.id
                             WHERE (startdate >= \''.$date.'\' or enddate >= \''.$date.'\' or  `lastrepeat` >= \''.$date.'\') and E.active=1
-			    and C.active=1 '.(!is_null($CatId) ? ' and C.id IN ('.$CatId.') ' : '').'
-                            ORDER BY startdate
+			    AND C.active=1 '.(!is_null($CatId) ? ' and C.id IN ('.$CatId.') ' : '').'
+                            AND '.($WHERE_WGP && count($WHERE_WGP) ? '('.implode(' OR ',$WHERE_WGP).' OR ( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL ))' : '( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL )' ).'  
+			    ORDER BY startdate
                             LIMIT '.$n;
                     $results = $modx->db->query($eventsSQL);
                     if($this->debug){
@@ -1501,7 +1485,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                             LEFT JOIN '.$modx->getFullTableName($this->tables['categories']).' as C
                              ON E.category = C.id
                             WHERE
-				((startdate >= \''.$date.'\' and
+				((startdate >= \''.$date.'\' and 
 				enddate < ADDDATE(\''.$date.'\', INTERVAL 1 MONTH))
 				or `repeat` REGEXP \'[[:alnum:]]+\' )				
 				and E.active=1
@@ -2030,77 +2014,53 @@ EORTE;
 			return $configVersion;
 		}
 		
-		//-- Get the active theme configuration
+		//-- Get the active theme configuration using SimpleXML reader
 		function _getActiveTheme(){
 			global $modx;
 			//-- Get list of theme files
 			$dir = $modx->config['base_path']."assets/modules/mxCalendar/themes";
 			$listDir = array();
 			$themeOptions = '';
-			if($handler = opendir($dir)) {
-			    while (($sub = readdir($handler)) !== FALSE) {
-				if ($sub != "." && $sub != ".." && $sub != "Thumb.db") {
-				    if(is_file($dir."/".$sub)) {
-					// $listDir[] = $sub;
-				    }elseif(is_dir($dir."/".$sub)){
-					//-- read the theme.xml file
-					$themeProperties = array();
-					$xml = new XMLReader();
-					$xml->open($dir."/".$this->config['mxCalendarTheme']."/theme.xml");
-					$xml->setParserProperty(2,true);
-					while ($xml->read()) {
-					    switch ($xml->name) {
-					    case "themename":
-						$xml->read();
-						$themeProperties["name"] = $xml->value;
-						$xml->read();
-						break;
-					    case "themedescription":
-						$xml->read();
-						$themeProperties["description"] = $xml->value;
-						$xml->read();
-						break;
-					    case "themelogo":
-						$xml->read();
-						$themeProperties["themelogo"] = $xml->value;
-						$xml->read();
-						break;
-					    case "themecss":
-						$xml->read();
-						$themeProperties["themecss"] = $xml->value;
-						$xml->read();
-						break;
-					    case "name":
-						$xml->read();
-						$themeProperties["authorname"] = $xml->value;
-						$xml->read();
-						break;
-					    case "siteurl":
-						$xml->read();
-						$themeProperties["authorsite"] = $xml->value;
-						$xml->read();
-						break;
-					    case "pubdate":
-						$xml->read();
-						$themeProperties["pubdate"] = $xml->value;
-						$xml->read();
-						break;
-					    }
-					}
-					$xml->close();
-				    }
-				}
-
-				}
-			       
-				closedir($handler);
-				return $themeProperties;
-			}
+			
+			$XML = simplexml_load_file($dir."/".$this->config['mxCalendarTheme']."/theme.xml");
+			$themeProperties["name"] = (string)$XML->themename;
+			$themeProperties["description"] = (string)$XML->themedescription;
+			$themeProperties["themelogo"] = (string)$XML->themelogo;
+			$themeProperties["themecss"] = (string)$XML->themecss;
+			$themeProperties["authorname"] = (string)$XML->author->name;
+			$themeProperties["authorsite"] = (string)$XML->author->siteurl;
+			$themeProperties["pubdate"] = (string)$XML->pubdate;
+			
+			return $themeProperties;
 		}
 		
 		function _makeMessageBox($message='', $isError='0'){
 		    return (!empty($message)? '<div class="'.($isError ? 'fm_error_' : 'fm_message').'" style="%19$s">'.$message.'</div>' : '');
 		}
+		
+                //-- Get Webuser GROUPS
+                function getWebGroups(){
+                    global $modx;
+                    $sql = 'SELECT id,name FROM '.$modx->getFullTableName('webgroup_names');
+                    $resultArray = $modx->db->makeArray($modx->db->query($sql));
+                    
+		    $arr_Internal = array();
+                    foreach( $resultArray as $p_val ) {
+			$this->userWebUserGroups[] = $p_val;
+			$arr_Internal[] = $p_val;
+                            /*
+			    foreach( $p_val as $m_key => $m_val ) {	
+                                    $output .= '<strong>' . $m_key . ':</strong> ' . $m_val . '<br />';
+                                    if($m_val != 'Super User')
+                                        $this->userWebUserGroups[] = $m_val;
+				    
+                            }
+			    */
+                    }
+		    if($this->debug)
+			print_r($this->userWebuserGroups);
+		    return $arr_Internal;
+                }
 
         }
 }

@@ -5,7 +5,7 @@
 /* 07/02/2010                           */
 /* Author: Charles Sanders              */
 /* Email: charless.mxcalendar@gmail.com */
-/* Version: 0.0.6-rc2                   */
+/* Version: 0.0.7-rc4                   */
 /*--------------------------------------*/
 
 // -- Global::Columns
@@ -51,7 +51,7 @@ define('_mxCalendar_el_dlAllCategories','-- All Categories --');
 // -- Manager::AddEvent |*rec*| is replaced with Db UID
 define('_mxCalendar_ae_headingAdd','Add New Event');
 define('_mxCalendar_ae_headingEdit','Edit Event:');
-define('_mxCalendar_ae_labels','Event Title, Content, Category, Link, Link REL, Link Target, Location, Display Map, Start Date-Time, DO_NOT_REMVOE_ME, End Date-Time, Repeats, Occurs, Occurs On, Repeat Every, Until');
+define('_mxCalendar_ae_labels','Event Title, Content, Category, Web User Group, Link, Link REL, Link Target, Location, Display Map, Start Date-Time, DO_NOT_REMOVE_ME, End Date-Time, Repeats, Occurs, Occurs On, Repeat Every, Until');
 define('_mxCalendar_ae_success','Event ID |*rec*| saved');
 define('_mxCalendar_ae_fail','Error: Unabled to save your event.');
 
@@ -176,6 +176,8 @@ define('_mxCalendar_con_mxcAdvancedDateEntry','Advanced Date Entry (manual)');
 define('_mxCalendar_con_mxcAdvancedDateEntryTT','Enables or disables the calendar selector and dropdown list for adding events.');
 //r0.0.6-rc2
 define('_mxCalendar_con_LegendCategory','Cateogory List Options');
+//r0.0.7-rc4
+define('_mxCalendar_con_PublicView','Public (all visitor can view)');
 
 // -- UI::EventDetail
 define('_mxCalendar_ed_backToCaltitle','Back to Calendar');

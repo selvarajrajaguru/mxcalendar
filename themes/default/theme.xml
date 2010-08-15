@@ -2,7 +2,7 @@
 <mxCalendar>
     <themename>mxCalendar - Default</themename>
     <themedescription>Default mxCalendar theme as tested and displaying all possible properties. To create your own theme copy the "default" theme folder and rename it. Then update the theme.xml file with your information and start changing the view .html files as needed.</themedescription>
-    <themelogo>theme_icon_mxcalendar.png</themelogo>
+    <themelogo>theme_icon_mxcalendar.PNG</themelogo>
     <themecss>css/mxCalendar.css</themecss>
     <author>
         <name>Charles Sanders @mxCalendar</name>
