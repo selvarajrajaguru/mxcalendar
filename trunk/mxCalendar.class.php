@@ -918,7 +918,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    $thisLocal = setlocale(LC_ALL, $this->config['localization']);
 
                     $defaultParam = array(
-                                   'mxcType'=>'full'
+                                   'mxcType'=>'full',
+				   'mxcDefaultCatIdLock'=>Null
                                   );
                     $param = array_merge($defaultParam, $params);
                     
@@ -1278,8 +1279,10 @@ if(!class_exists("mxCal_APP_CLASS")){
 			}
 			
 			//-- Get Configuration Item for Category UI Filter display
-			$_mxcCalCategoryFilter = (boolean)$this->config['mxcGetCategoryListUIFilterActive'] === true ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '';
-			$_mxcCalCategoryFilter = ((boolean)$param['mxcDefaultCatIdLock'] !== true ? $_mxcCalCategoryFilter : '');
+			$_mxcCalCategoryFilter = (boolean)$this->config['mxcGetCategoryListUIFilterActive'] == true ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '';
+			if(!is_null($param['mxcDefaultCatIdLock']))
+			    $_mxcCalCategoryFilter = ($param['mxcDefaultCatIdLock'] == 'false' ||(boolean)$param['mxcDefaultCatIdLock'] == false ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '' );
+
 			
 			//-- Fix for multiple instances on single page (0.0.6-rc2)
 			$ar_eventList['mxcEventListContainerId']='calendar';
