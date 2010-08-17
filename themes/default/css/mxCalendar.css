@@ -237,11 +237,11 @@ text-transform:uppercase;
 }
 
 
-#fm_bsApp form label { cursor:auto !important; }
-#fm_bsApp form fieldset { border:1px solid #ccc !important; margin-bottom:15px; }
-#fm_bsApp form fieldset legend { font-size:115%; color:#808080; font-weight:bold; background-color:#fff; padding:0 5px;}
-#fm_bsApp form fieldset input.int { width:25px; }
-#fm_bsApp form fieldset .fm_form_rLabel { float:left; position:relative; }
+#fm_bsApp label { cursor:auto !important; }
+#fm_bsApp fieldset { border:1px solid #ccc !important; margin-bottom:15px; }
+#fm_bsApp fieldset legend { font-size:115%; color:#808080; font-weight:bold; background-color:#fff; padding:0 5px;}
+#fm_bsApp fieldset input.int { width:25px; }
+#fm_bsApp fieldset .fm_form_rLabel { float:left; position:relative; }
 #fm_bsApp fieldset .fm_row label {float:left; width:45%;}
 #fm_bsApp  fieldset .fm_row input, #fm_bsApp  fieldset .fm_row img, #fm_bsApp  fieldset .fm_row select {float:left;}
 form #mxcalendar-repeat { width:50%;  }
