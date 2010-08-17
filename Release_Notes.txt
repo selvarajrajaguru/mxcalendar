@@ -18,15 +18,20 @@ Change Log (not all inclusive):
 - Bug fix: Updated default cateogry id filter (mxcDefaultCatId)
 - Bug fix: XMLReader changed out to standard core PHP library
 - Bug fix: CSS property for for fildset from generic to form ID specific
-- Bug fix: Default theme icon non-display on *nix environments
+- Bug fix: Default theme icon display on *nix environments
 - Bug fix: Module Manager tabs not displaying content for Category and Configuration
 - Enhancement: Added web user group based viewing permissions per event
 
 New Parameters
-- None
+Event List Display
+- mxcTypeLocked = (boolean; default fales) When set to true enables multiple mxCalendar display types to run forcing that ones display not to ajust.
+                                           This is good for those wishing to have a sidebar rail Event List view as well as a content page of the full calendar.
+                  EXAMPLE: This is my Template sidebar call for the 'list' display of mxCalendar. Change 49 and 48 to match your document ID's
+                  [!mxcalendar? &mxcType=`list` &mxcAjaxPageId=`49` &mxcTypeLocked=`true` &mxcDefaultCatIdLock=`true` &mxcTplEventListMoreLink=`See all events` &mxcTplEventListWrapTitle=`Events` !]
 
 New Placeholders
-- None
+::Event List 
+- mxcEventListItemYear :: Display the event year [Note: Theme file update for 'default/views/event.list.event.html']
 
 --------------------------
 Release: (0.0.6-rc3)
