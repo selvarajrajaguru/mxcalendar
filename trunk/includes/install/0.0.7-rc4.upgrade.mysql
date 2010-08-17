@@ -1,0 +1,4 @@
+--
+-- Database updates for release 0.0.7-rc4
+--
+ALTER IGNORE TABLE `#__mxcalendar_events` ADD `restrictedwebusergroup` VARCHAR(128) NULL DEFAULT NULL AFTER `category`
