@@ -32,8 +32,7 @@ Possible parameters when using the snippet call with the &type=`list` call
   * _1_ mxcEventListAjaxPaginate - set the mxCalendar pagination for event list `[`true|false`]`
   * mxcStartDate = Set the event list start date using strtotime() format ex: &mxcStartDate=```last month``` &mxcStartDate=```-2 month```
   * mxcEventListTitleLink = Disable event list title links `[`true|false; default false `]`
-  * mxcTypeLocked = (boolean; default fales) When set to true enables multiple mxCalendar display types to run forcing that ones display not to ajust.
- This is good for those wishing to have a sidebar rail Event List view as well as a content page of the full calendar.
+  * mxcTypeLocked = (boolean; default fales) When set to true enables multiple mxCalendar display types to run forcing that ones display not to ajust.This is good for those wishing to have a sidebar rail Event List view as well as a content page of the full calendar.
 
 = Calendar View Parameters =
 
