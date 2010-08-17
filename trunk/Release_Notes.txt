@@ -1,15 +1,16 @@
-Release Notes: 0.0.7-rc4 - July 18, 2010
+Release Notes: 0.0.7-rc4 - Aug 17, 2010
 * Updated FileList:
   |- mxCalendar.class.php
-  |- mxCalendar.tpl.php
   |- includes/calendar.inc.php
-  |- lang/english.lang
-  |-*snippets/mxCalendar.snippet.txt
-  |-*snippets/mxCalendar.module.txt
-  |- themes/default/[+]
   |- Release_Notes.txt
   
   * = Manual update required of Snippet and/or Module code in ModX manager using the new code file
+
+--------------------------
+Patch: (0.0.7-rc4a)
+--------------------------
+Change Log:
+- Bug fix: &mxcDefaultCatIdLock => Category mxcDefaultCatIdLock parameter [http://code.google.com/p/mxcalendar/issues/detail?id=29&can=1]
 
 --------------------------
 Release: (0.0.7-rc4)
