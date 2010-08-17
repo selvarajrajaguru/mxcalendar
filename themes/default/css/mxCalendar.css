@@ -157,7 +157,10 @@ padding: 0;
     -moz-border-radius-bottomleft:3px;
     -moz-border-radius-bottomright:3px;
     border:1px solid #4d4d4d; padding:0; margin:0; font-size:14px;}
-
+#calendar .date .month p span {
+    font-size:70%;
+    display:block;
+}
 #calendar .date .month p { 
     -moz-border-radius-bottomleft:0px;
     -moz-border-radius-bottomright:0px;
