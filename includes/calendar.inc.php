@@ -481,14 +481,15 @@ if(!empty($param['mxcTplMonthInner'])){
 }
 
 //-- Get Configuration Item for Category UI Filter display
-$_mxcCalCategoryFilter = $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']);
+$_mxcCalCategoryFilter = (boolean)$this->config['mxcGetCategoryListUIFilterActive'] === true ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '';
+$_mxcCalCategoryFilter = ((boolean)$param['mxcDefaultCatIdLock'] !== true ? $_mxcCalCategoryFilter : '');
 
 //-- Set the placeholder values for outermost container
 $modx->setPlaceholder('mxcMonthContainerID', (!empty($param['mxcMonthContainerID']) ? $param['mxcMonthContainerID'] : 'bsCalendar'));
 $modx->setPlaceholder('mxcMonthContianerClass', (!empty($param['mxcMonthContianerClass']) ? $param['mxcMonthContianerClass'] : ''));
 $modx->setPlaceholder('mxcMonthCotianerHeading',(!empty($param['mxcMonthCotianerHeading']) ? $param['mxcMonthCotianerHeading'] : ''));
 $modx->setPlaceholder('mxcMonthInsideContianer',$_mxcCalInner);
-$modx->setPlaceholder('mxcCategoryFilters', ((int)$this->config['mxcGetCategoryListUIFilterActive'] || (boolean)$param['mxcDefaultCatIdLock'] ? $_mxcCalCategoryFilter : ''));
+$modx->setPlaceholder('mxcCategoryFilters', $_mxcCalCategoryFilter);
 
 //-- Get Inside Container for Theme
 if(!empty($param['mxcTplMonthOuter'])){
