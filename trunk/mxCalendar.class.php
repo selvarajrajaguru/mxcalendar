@@ -1183,6 +1183,14 @@ if(!class_exists("mxCal_APP_CLASS")){
 				$ar_events[] = $event;
 			    }
 			}
+
+			//-- Add MoodalBox if mxcAjaxPageId is set
+			if(!empty($param['mxcAjaxPageId']) != $modx->documentIdentifier){
+			    $this->_addJS('
+			    <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/moodalbox.v1.2.full.js"></script>
+			    ');
+			    $this->_addCSS('<link rel="stylesheet" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/css/moodalbox.css" type="text/css" media="screen" />');
+			}
 			
 			//-- Loop through the new sorted list of events
 			$evCnt=0;
@@ -1193,12 +1201,12 @@ if(!class_exists("mxCal_APP_CLASS")){
                             $day=$datePieces[2];
 
 			    //-- Set the URL for the event title
-			    $mxcEventDetailURL = (isset($param['mxcAjaxPageId']) && is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid']));
-			    $mxcEventDetailAJAX = (isset($param['mxcAjaxPageId']) && is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) ? 'moodalbox ' : '');
+			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid']));
+			    $mxcEventDetailAJAX = ($param['mxcAjaxPageId'] != $modx->documentIdentifier ? 'moodalbox ' : '');
 			    if(!$param['mxcEventListTitleLink'])
 				$title = $event['title'];
-			    elseif($param['mxcFullCalendarPgId'] && empty($event['link']))
-				$title='<a href="'.$mxcEventDetailURL.'" class="'.$param['mxcEventListItemClass'].'"  target="'.$event['linktarget'].'" rel="'.$mxcEventDetailAJAX.$event['linkrel'].'">'.$event['title'].'</a>';
+			    elseif(($param['mxcFullCalendarPgId'] || $param['mxcAjaxPageId']) && empty($event['link']))
+				$title='<a href="'.$mxcEventDetailURL.'" class=" '.$param['mxcEventListItemClass'].'"  target="'.$event['linktarget'].'" rel="'.$mxcEventDetailAJAX.$event['linkrel'].'">'.$event['title'].'</a>';
 			    else
 				$title = ( !empty($event['link'])?(is_numeric($event['link'])? '<a href="'.$modx->makeUrl((int)$event['link'],'','','full').'" target="'.$event['linktarget'].'" rel="'.$event['linkrel'].' moodalbox">'.$event['title'].'</a>':'<a href="'.$event['link'].'" rel="'.$event['linkrel'].'" target="'.$event['linktarget'].'">'.$event['title'].'</a>'): $event['title'] );
 			    
@@ -1211,6 +1219,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 
 			    $event['month']=utf8_encode(strftime('%b',strtotime($event['start'])));
 			    $event['day']=strftime('%d', strtotime($event['start']));
+			    $event['year']=strftime('%Y', strtotime($event['start']));
 			    
 				$ar_eventDetail = array(
 				'mxcEventListItemId ' => (!empty($param['mxcEventListItemId']) ? $param['mxcEventListItemId'] : $this->config['mxcEventListItemId']),
@@ -1219,6 +1228,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				'mxcEventListItemLabelDateTime' => '', //-- not used in current version
 				'mxcEventListItemMonth' => $event['month'],
 				'mxcEventListItemStartDateTime' => $event['day'],
+				'mxcEventListItemYear'=> $event['year'],
 				'mxcEventListItemDateTimeSeperator' => ($event['DurationDays'] ? _mxCalendar_gl_multipledaydurationsperator : ''),
 				'mxcEventListItemMultiDayStyle' => ($event['DurationDays'] ? $this->config['mxcEventListItemMultiDayStyle'] : ''),
 				'mxcEventListItemEndDateTime' => ($event['DurationDays'] ?  strftime('%d',strtotime('+'.$event['DurationDays'].' day', strtotime($event['start']))) : ''), //--Issue 23 strtotime('+'.$event['DurationDays'].' day',$event['start'])
