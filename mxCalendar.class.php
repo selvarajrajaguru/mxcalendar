@@ -667,7 +667,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				$themeOptions = '';
 				if($handler = opendir($dir)) {
 				    while (($sub = readdir($handler)) !== FALSE) {
-					if ($sub != "." && $sub != ".." && $sub != "Thumb.db") {
+					if ($sub != "." && $sub != ".." && $sub != "Thumb.db" && substr($sub,0,1) != ".") {
 					    if(is_file($dir."/".$sub)) {
 						// $listDir[] = $sub;
 					    }elseif(is_dir($dir."/".$sub)){
