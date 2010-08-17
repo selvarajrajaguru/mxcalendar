@@ -1278,7 +1278,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 			}
 			
 			//-- Get Configuration Item for Category UI Filter display
-			$_mxcCalCategoryFilter = $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']);
+			$_mxcCalCategoryFilter = (boolean)$this->config['mxcGetCategoryListUIFilterActive'] === true ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '';
+			$_mxcCalCategoryFilter = ((boolean)$param['mxcDefaultCatIdLock'] !== true ? $_mxcCalCategoryFilter : '');
 			
 			//-- Fix for multiple instances on single page (0.0.6-rc2)
 			$ar_eventList['mxcEventListContainerId']='calendar';
@@ -1287,7 +1288,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			$ar_eventList['mxcEventList']=$events;
 			$ar_eventList['mxcEventListMoreClass']='readmore';
 			$ar_eventList['mxcEventListMoreLabel']=$param['mxcTplEventListMoreLink'];
-			$ar_eventList['mxcCategoryFilters'] = (!(boolean)$this->config['mxcGetCategoryListUIFilterActive'] || !(boolean)$param['mxcDefaultCatIdLock'] ? $_mxcCalCategoryFilter : '');
+			$ar_eventList['mxcCategoryFilters'] = $_mxcCalCategoryFilter;
 			$keys = array();
 			$values = array();
 			foreach ($ar_eventList as $k=>$vv) {
