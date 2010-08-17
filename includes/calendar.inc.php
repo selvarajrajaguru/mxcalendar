@@ -481,8 +481,10 @@ if(!empty($param['mxcTplMonthInner'])){
 }
 
 //-- Get Configuration Item for Category UI Filter display
-$_mxcCalCategoryFilter = (boolean)$this->config['mxcGetCategoryListUIFilterActive'] === true ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '';
-$_mxcCalCategoryFilter = ((boolean)$param['mxcDefaultCatIdLock'] !== true ? $_mxcCalCategoryFilter : '');
+$_mxcCalCategoryFilter = (boolean)$this->config['mxcGetCategoryListUIFilterActive'] == true ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '';
+if(!is_null($param['mxcDefaultCatIdLock']))
+    $_mxcCalCategoryFilter = ($param['mxcDefaultCatIdLock'] == 'false' ||(boolean)$param['mxcDefaultCatIdLock'] == false ? $this->mxcGetCategoryListUIFilter($this->config['mxcGetCategoryListUIFilterType']) : '' );
+
 
 //-- Set the placeholder values for outermost container
 $modx->setPlaceholder('mxcMonthContainerID', (!empty($param['mxcMonthContainerID']) ? $param['mxcMonthContainerID'] : 'bsCalendar'));
