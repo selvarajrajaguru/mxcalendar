@@ -377,6 +377,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                                 case 'time':
                                     //-- We'll use the date picker field and extract the time
                                     break;
+									
                                 default:
                                     if($val[0] == 'category'){
                                       foreach($this->getCategories() as $cats){
@@ -390,13 +391,33 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    } elseif($val[0] == 'displayGoogleMap'){
 					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="checkbox" id="fm'.$val[0].'" name="fm'.$val[0].'" value="1" '.($editArr[$val[0]] ? 'checked="checked"' : "").' />'.$tooltip.'</div></div>'."\n";
 				    }  elseif($val[0] == 'restrictedwebusergroup'){
-					$thisWUGDL = '<option value="" '.( empty($editArr[$val[0]]) ? 'selected=selected' : '' ).'>'._mxCalendar_con_PublicView.'</option>';
+					
+					//-- Temporary Fix for Display Mode for Web User Group
+					$param['mxcMgrWUGSelectionMode'] = 'checkbox';
+					
+					//-- Selection Mode Default Option Values
+					$thisWUGDL_defaultCombo = '<option value="" '.( empty($editArr[$val[0]]) ? 'selected=selected' : '' ).'>'._mxCalendar_con_PublicView.'</option>';
+					$thisWUGDL_defaultCheckbox = '<input name="fm'.$val[0].'[]" type="checkbox" value="" '.( empty($editArr[$val[0]]) ? 'checked="yes"' : '' ).'>'._mxCalendar_con_PublicView.'<br />';								
+					
+					//-- Loop through the web user groups and build the selection list
 					foreach($this->getWebGroups() AS $group){
-						$selected = (in_array($group['id'], explode(',',$editArr[$val[0]])) ) ? 'selected=selected' : '';
-						$thisWUGDL .= '<option value="'.$group['id'].'" '.$selected.'>'.$group['name'].'</option>';
+						SWITCH($param['mxcMgrWUGSelectionMode']){
+							case 'checkbox':
+								$selected = (in_array($group['id'], explode(',',$editArr[$val[0]])) ) ? 'checked="yes"' : '';
+								$thisWUGDL .= '<input name="fm'.$val[0].'[]" type="checkbox" value="'.$group['id'].'" '.$selected.'>'.$group['name'].'<br />'.PHP_EOL;
+								break;
+							
+							default:
+								$selected = (in_array($group['id'], explode(',',$editArr[$val[0]])) ) ? 'selected=selected' : '';
+								$thisWUGDL .= '<option value="'.$group['id'].'" '.$selected.'>'.$group['name'].'</option>';
+								break;
+						}
 					}
-					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><select name="fm'.$val[0].'[]" multiple="multiple">'.$thisWUGDL.'</select>'.$tooltip.'</div></div>'."\n";
-				    } else {
+					$mgrModeHTML = ($param['mxcMgrWUGSelectionMode'] == 'checkbox' ? $thisWUGDL_defaultCheckbox.$thisWUGDL : '<select name="fm'.$val[0].'[]" multiple="multiple">'.$thisWUGDL_defaultCombo.$thisWUGDL.'</select>' );
+					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry">'.$mgrModeHTML.$tooltip.'</div></div>'."\n";
+
+				    
+					} else {
                                       $this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
                                     }
                                     break;
@@ -1447,21 +1468,21 @@ if(!class_exists("mxCal_APP_CLASS")){
                     global $modx;
 		    
 
-//-- Front end: returns logged in user's webgroup assignments [webgroup = web group id's user belongs to]
-if($modx->getLoginUserID()){    
-	$userInfo = $modx->db->makeArray(
-	    $modx->db->select(
-		'webgroup', 
-		$modx->getFullTableName('web_groups'), 
-		'`webuser`='.$modx->getLoginUserID()
-	    )
-	);
-	//-- Web View Permission Where Builder
-	foreach($userInfo AS $wu){
-		foreach($wu AS $wp)
-			$WHERE_WGP[] = 'FIND_IN_SET('.$wp['0'].',E.restrictedwebusergroup)';
-	}
-}
+					//-- Front end: returns logged in user's webgroup assignments [webgroup = web group id's user belongs to]
+					if($modx->getLoginUserID()){    
+						$userInfo = $modx->db->makeArray(
+							$modx->db->select(
+							'webgroup', 
+							$modx->getFullTableName('web_groups'), 
+							'`webuser`='.$modx->getLoginUserID()
+							)
+						);
+						//-- Web View Permission Where Builder
+						foreach($userInfo AS $wu){
+							foreach($wu AS $wp)
+								$WHERE_WGP[] = 'FIND_IN_SET('.$wp['0'].',E.restrictedwebusergroup)';
+						}
+					}
 
 		    
                     $date = (checkdate(strftime("%m",$date),strftime("%d",$date),strftime("%Y",$date) )) ? $date : strftime("%Y-%m-%d") ;
@@ -1490,7 +1511,23 @@ if($modx->getLoginUserID()){
                     $date = (!is_null($date)) ? $date : strftime("%Y-%m-%d") ;
                     $enddate = strtotime ( "+1 month" , strtotime ( strftime("%Y-$month-1") ) ) ;
                     $enddate = strftime ( "%Y-%m-%d" , $enddate );
-		    
+
+					//-- Front end: returns logged in user's webgroup assignments [webgroup = web group id's user belongs to]
+					if($modx->getLoginUserID()){    
+						$userInfo = $modx->db->makeArray(
+							$modx->db->select(
+							'webgroup', 
+							$modx->getFullTableName('web_groups'), 
+							'`webuser`='.$modx->getLoginUserID()
+							)
+						);
+						//-- Web View Permission Where Builder
+						foreach($userInfo AS $wu){
+							foreach($wu AS $wp)
+								$WHERE_WGP[] = 'FIND_IN_SET('.$wp['0'].',E.restrictedwebusergroup)';
+						}
+					}
+
 		    //-- Collect user defined filters
 		    $usrStrWhere = $_REQUEST['fmusrfilterCat'];
 		    $catID = $_REQUEST['CatId'] ? ' AND C.id IN ('.(int)$_REQUEST['CatId'].')' : '';
@@ -1504,6 +1541,7 @@ if($modx->getLoginUserID()){
 				or `repeat` REGEXP \'[[:alnum:]]+\' )				
 				and E.active=1
 				and C.active = 1 '.($CatId != null && !empty($_REQUEST['CatId']) ? ' and E.category IN ('.$CatId.') ' : '').' 
+				AND '.($WHERE_WGP && count($WHERE_WGP) ? '('.implode(' OR ',$WHERE_WGP).' OR ( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL ))' : '( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL )' ).'  
                             ORDER BY start';
                     $results = $modx->db->query($eventsSQL);
                     if($this->debug) echo "SQL: <br />".$eventsSQL;
