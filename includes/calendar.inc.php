@@ -140,7 +140,7 @@ $themeEvent = $this->_getTheme('month.inner.day.event',$this->config['mxCalendar
 //-- Add ToolTip JS and CSS
 if($this->config['disptooltip']){
     $this->_addJS('
-    <script src="'.$this->m->config['site_url'].'manager/media/script/mootools/moodx.js" type="text/javascript"></script>
+    <script src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/mootools.js" type="text/javascript"></script>
     <script>
     //-- ToolTips (Duration,Time Span)
     window.addEvent(\'domready\', function(){
