@@ -12,9 +12,6 @@
  * Enjoy!
 **/
 
-
-//$modx->regClientStartupScript("assets/snippets/mxcalendar/js/mxcAjax-Month.js");
-
 /*-- added to setup params ---*/                        
     //-- show the duration (true, false)
     $showDuration = (!empty($this->config['dispduration']) ? $this->config['dispduration'] : false);
@@ -123,24 +120,33 @@ $themeEvent = $this->_getTheme('month.inner.day.event',$this->config['mxCalendar
     
     //-- Set the localization format for the calendar month label
     $mxcMonthFormat = (!isset($param['mxcMonthLabelFormat']) ? '%B' : $param['mxcMonthLabelFormat']);
-    $monthname =strftime($mxcMonthFormat,  mktime(0, 0, 0, $newdatePieces[1],$newdatePieces[2], $newdatePieces[0] ) );
-    
-    if($m=$modx->insideManager()){
+
+$monthname =strftime($mxcMonthFormat,  mktime(0, 0, 0, $newdatePieces[1],$newdatePieces[2], $newdatePieces[0] ) );
+
+$arr_MonthLabel_override = explode(',', _mxCalendar_gl_Months);
+$monthname = $arr_MonthLabel_override[$newdatePieces[1]-1];
+
+
+    if($modx->insideManager()){
         //-- Make Manager Friendly URLs
         $preURL = '?a='.$_REQUEST['a'].'&amp;id='.$_REQUEST['id'].'&amp;dt='.$newdate.'&amp;offset='.($monthOffset-1).'&amp;type=pre';
         $preURLRel = substr($preURL,1);
         $nextURL = '?a='.$_REQUEST['a'].'&amp;id='.$_REQUEST['id'].'&amp;dt='.$newdate.'&amp;offset='.($monthOffset+1).'&amp;type=next';
     } else {
         //-- Make SEO Friendly URLs
-        $preURL = $modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
+        $preURL = 'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')';
+		  //$modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
         $preURLRel = '&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '');
-        $nextURL = $modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
+        $nextURL = 'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')'; //$modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
     }
+
+if($param['mxcAddMooJS'])
+  $this->_addJS('<script src="'.$this->config['mxcJSCodeSource'].'" type="text/javascript"></script>');
 
 //-- Add ToolTip JS and CSS
 if($this->config['disptooltip']){
     $this->_addJS('
-    <script src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/mootools.js" type="text/javascript"></script>
+    <script src="'.$this->config['mxcJSCodeSource'].'" type="text/javascript"></script>
     <script>
     //-- ToolTips (Duration,Time Span)
     window.addEvent(\'domready\', function(){
@@ -164,7 +170,45 @@ if($this->param['mxcAjaxPageId'] != $modx->documentIdentifier){
     ');
     $this->_addCSS('<link rel="stylesheet" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/css/moodalbox.css" type="text/css" media="screen" />');
 }
-    
+
+$testAjaxCalNavigation = true;
+if($testAjaxCalNavigation){
+  $paramHash = '';
+  //$param['q']=$modx->makeUrl(50);
+  //foreach(array_filter($param) AS $k=>$v)
+  //  $paramHash .= ', '.$k.': "'.$v.'"';
+  
+  $frontEnd_AjaxCalNavigation = '
+    <script type="text/javascript">
+    // Frontend folder location got snippet
+    //window.addEvent("domready", function(){
+    function loadCalendar(me, params){
+	//cn = $(\'mxcnextMonth\');
+	//cn.addEvent("click", function(e) {
+	    //new Event(e).stop();
+	    var pars = Object.toQueryString({q: "[~50~]" '.$paramHash.'});
+	    new Ajax("?", { postBody: pars + params 
+					, update: $(\'bsCalendar\')
+					, onComplete:showResponse
+					,onRequest: function(e) {
+
+					  }
+					})
+		.request();
+	//});
+      }
+    //});
+	function showResponse(request){
+		alert("Update completed.");
+		//$(\'bsCalendar\').appendText("completed...");
+	}
+
+
+    </script>';
+  //-- Add JavaScript to header to support Ajax Calendar navigation
+  $this->_addJS($frontEnd_AjaxCalNavigation);
+
+}
 
 if(!empty($this->config["mxCalendarTheme"])){
     $activeTheme = $this->_getActiveTheme();
@@ -207,7 +251,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                 //-- Parse Day Container Theme
                 if(!empty($param['mxcTplMonthDayBase'])){
                     //--Get user theme over-ride chunk
-                    $_mxcCalHeadings .= $modx->parseChunk($param['mxcTplMonthDay'], $dayArr, '[+', '+]');
+                    $_mxcCalHeadings .= $modx->parseChunk($param['mxcTplMonthDayBase'], $dayArr, '[+', '+]');
                 } else {
                     //--Get the theme event
                     $_mxcCalHeadings .= $this->parseTheme($themeDayBasic, $dayArr);
@@ -471,6 +515,15 @@ if(!empty($param['mxcTplMonthHeading'])){
 $modx->setPlaceholder('mxcMonthInnerRows', $_mxcCalRow);
 $modx->setPlaceholder('mxcMonthInnerContainerID', (!empty($param['mxcMonthInnerContainerID']) ? $param['mxcMonthInnerContainerID'] : 'calbody'));
 $modx->setPlaceholder('mxcMonthInnerContainerClass',(!empty($param['mxcMonthInnerContainerClass']) ? $param['mxcMonthInnerContainerClass'] : ''));
+$modx->setPlaceholder('mxcAjaxJS','<script type="text/javascript">var ajax_anchors = [];
+		$A($$(\'a\')).each(function(el){
+			// we use a regexp to check for links that 
+			// have a rel attribute starting with "moodalbox"
+			if(el.rel && el.href && el.rel.test(\'^moodalbox\', \'i\')) {
+				el.onclick = MOOdalBox.click(el);
+				ajax_anchors.push(el);
+			}
+		});</script>');
 //-- Get Inside Container for Theme
 if(!empty($param['mxcTplMonthInner'])){
         //--Get user modified theme over-ride
@@ -501,7 +554,9 @@ if(!empty($param['mxcTplMonthOuter'])){
         //--Get the theme heading
         $_mxcCal = $this->_getTheme('month.container',$this->config['mxCalendarTheme']);
 }
+
 echo $_mxcCal;
+  
 
 ?>
     

@@ -24,8 +24,8 @@ var _ERROR_MESSAGE = "Oops.. there was a problem with your request.<br /><br />"
 					"Please try again.<br /><br />" +
 					"<em>Click anywhere to close.</em>"; // the error message displayed when the request has a problem
 var _RESIZE_DURATION 		= 400; 		// Duration of height and width resizing (ms)
-var _INITIAL_WIDTH			= 250;		// Initial width of the box (px)
-var _INITIAL_HEIGHT			= 250;		// Initial height of the box (px)
+var _INITIAL_WIDTH		= 250;		// Initial width of the box (px)
+var _INITIAL_HEIGHT		= 250;		// Initial height of the box (px)
 var _CONTENTS_WIDTH 		= 500;		// Actual width of the box (px)
 var _CONTENTS_HEIGHT		= 400;		// Actual height of the box (px)
 var _DEF_CONTENTS_WIDTH		= 500;		// Default width of the box (px) - used for resetting when a different setting was used
