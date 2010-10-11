@@ -945,11 +945,13 @@ if(!class_exists("mxCal_APP_CLASS")){
                     $param = array_merge($defaultParam, $params);
                     
                     if(($param['mxcType']=='full' & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ) || (!isset($param['mxcType']) & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ))
-                        //-- DISPLAY FULL CALENDAR (roadmap -> change to tpl chunks)
+                        //-- DISPLAY FULL CALENDAR
 			include_once 'includes/calendar.inc.php';
 		    elseif(!empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true )
-                        return $this->MakeEventDetail((int)$_REQUEST['details'],$param);
+                        //-- DISPLAY EVENT DETAIL VIEW
+			return $this->MakeEventDetail((int)$_REQUEST['details'],$param);
                     else
+                        //-- DISPLAY EVENT LIST VIEW
                         return $this->MakeUpcomingEventsList($param);
                 }
                 
@@ -1171,14 +1173,35 @@ if(!class_exists("mxCal_APP_CLASS")){
 					$month=strftime("%b", strtotime($e['start']));
 					$day=$datePieces[2];
 					$mxcStartDateFilter = isset($mxcStartDate) ? strftime('%Y-%m-%d', strtotime($mxcStartDate)) : strftime('%Y-%m-%d');
-					if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter)
-					$ar_events[]=$e;
+					if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter){
+						if($e['DurationDays']) $e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$e['start']).'23:59'));
+						$ar_events[]=$e;
+					}
 					$or = $e;
+					
+					
+					
 					if($e['DurationDays']){
+						$originalStartDay = $e['start'];
+						$originalEndDay = $e['end'];
 						for($x=1;$x<=$e['DurationDays'];$x++){
-							$e['start']=strftime('%Y-%m-%d', mktime(0, 0, 0, strftime('%m', strtotime($e['start'])) , date('d', strtotime($e['start']))+$x, date('y', strtotime($e['start']))) );
-							if(strftime('%Y-%m-%d', strtotime($e['start'])) >= strftime('%Y-%m-%d'))
+							$newOccDate = strtotime("+ $x day", strtotime($originalStartDay));
+							//$e['start']=strftime('%Y-%m-%d', mktime(0, 0, 0, strftime('%m', $newOccDate) , strftime('%d', $newOccDate), strftime('%Y', $newOccDate)) );
+							//-- Adjust the starttime and endtime if part of the sequence
+							if($x<$e['DurationDays']){
+								$e['start']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).'00:00'));
+								$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).'23:59'));
+							}elseif($x==$e['DurationDays']){
+								$e['start']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).'00:00'));
+								$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate). $e['endtime'] ));
+							}else{ //-- Is the first occurance
+								//$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).'23:59'));
+							}
+
+							if(strftime('%Y-%m-%d', $newOccDate) >= strftime('%Y-%m-%d'))
 							$ar_events[]=$e;
+							echo "$x of ".$e['DurationDays'].": ".strftime('%Y-%m-%d %H:%M',$newOccDate)."<br />";
+							//print_r($e);
 						}
 						
 					}
@@ -1223,14 +1246,14 @@ if(!class_exists("mxCal_APP_CLASS")){
                             $day=$datePieces[2];
 
 			    //-- Set the URL for the event title
-			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid']));
+			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid']));
 			    $mxcEventDetailAJAX = ($param['mxcAjaxPageId'] != $modx->documentIdentifier ? 'moodalbox ' : '');
-			    if(!$param['mxcEventListTitleLink'])
+			    if((bool)$param['mxcEventListTitleLink'] == false)
 				$title = $event['title'];
 			    elseif(($param['mxcFullCalendarPgId'] || $param['mxcAjaxPageId']) && empty($event['link']))
-				$title='<a href="'.$mxcEventDetailURL.'" class=" '.$param['mxcEventListItemClass'].'"  target="'.$event['linktarget'].'" rel="'.$mxcEventDetailAJAX.$event['linkrel'].'">'.$event['title'].'</a>';
+				$title='<a href="'.$mxcEventDetailURL.'" class=" '.$param['mxcEventListItemClass'].'"  '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$mxcEventDetailAJAX.$event['linkrel'].'">'.$event['title'].'</a>';
 			    else
-				$title = ( !empty($event['link'])?(is_numeric($event['link'])? '<a href="'.$modx->makeUrl((int)$event['link'],'','','full').'" target="'.$event['linktarget'].'" rel="'.$event['linkrel'].' moodalbox">'.$event['title'].'</a>':'<a href="'.$event['link'].'" rel="'.$event['linkrel'].'" target="'.$event['linktarget'].'">'.$event['title'].'</a>'): $event['title'] );
+				$title = ( !empty($event['link'])?(is_numeric($event['link'])? '<a href="'.$modx->makeUrl((int)$event['link'],'','','full').'" '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$event['linkrel'].' moodalbox">'.$event['title'].'</a>':'<a href="'.$event['link'].'" rel="'.$event['linkrel'].'" target="'.$event['linktarget'].'">'.$event['title'].'</a>'): $event['title'] );
 			    
 			    //-- Add required JS Library items
 			    if(isset($param['mxcAjaxPageId']) && is_numeric((int)$param['mxcAjaxPageId'])){
@@ -1265,7 +1288,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 
                             //-- check for event list template over-ride chunk
                             if(!empty($param['mxcTplEventListItemWrap'])){
-                                $events .= $modx->parseChunk($param['mxcTplEventListItemWrap '], $ar_eventDetail, '[+', '+]');
+                                $events .= $modx->parseChunk($param['mxcTplEventListItemWrap'], $ar_eventDetail, '[+', '+]');
                             } else {
 				//-- load the theme event list view
 				$theme_eventlist_tpl =  $this->_getTheme('event.list.event',$this->config['mxCalendarTheme']);
