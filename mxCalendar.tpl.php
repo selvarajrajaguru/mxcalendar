@@ -56,8 +56,8 @@
 			<script type="text/javascript" src="'.$siteURL.'manager/media/script/tabpane.js"></script>
 			<script type="text/javascript" src="'.$siteURL.'assets/modules/mxCalendar/scripts/jquery-1.3.2.min.js"></script>
 			
-	    <script src="'.$siteURL.'manager/media/script/mootools/mootools.js" type="text/javascript"></script>
-	    <script src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/mootools.js" type="text/javascript"></script>
+	    <script src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools.js" type="text/javascript"></script>
+	    <script src="'.$siteURL.'assets/modules/mxCalendar/scripts/moodalbox121/js/mootools.js" type="text/javascript"></script>
 	<script type="text/javascript" src="'.$siteURL.'assets/modules/mxCalendar/scripts/datepicker2/datepicker.js"></script>
 	<link rel="stylesheet" type="text/css" href="'.$siteURL.'assets/modules/mxCalendar/scripts/datepicker2/datepicker.css">
 	<script type="text/javascript">

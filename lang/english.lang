@@ -195,11 +195,11 @@ define('_mxCalendar_ev_none','<p class="mxcNoEvents">No Events to list</p>');
 define('_mxCalendar_ev_time', '%I:%M%p'); //-- PHP strftime format
 define('_mxCalendar_ev_labelLocation', 'Location:');
 
-
-
 // -- UI::Full Calendar
 define('_mxCalendar_cl_headinWeekDays', 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday');
 define('_mxCalendar_cl_labelPrevious','<< Previous');
 define('_mxCalendar_cl_labelNext','Next >>');
 
+//-- UI::Localization & OverRides
+define('_mxCalendar_gl_Months','jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec');
 ?>
