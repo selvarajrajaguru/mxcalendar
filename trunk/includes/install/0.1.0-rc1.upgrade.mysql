@@ -1,0 +1,13 @@
+--
+-- Database updates for release 0.1.0-rc1
+--
+UPDATE `#__mxcalendar_config` SET param=REPLACE(param, 'Calendear', 'Calendar') WHERE param REGEXP('Calendear');
+
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value)
+VALUES
+(49,'mxcJSCodeSource','http://ajax.googleapis.com/ajax/libs/mootools/1.1/mootools.js'),
+(50,'mxcJSCodeLibrary','MooTools'),
+(51,'mxcMonthInnerHeadingRowID',''),
+(52,'mxcMonthInnerHeadingRowClass',''),
+(53,'mxcMonthListTodayOnly','0'),
+(54,'mxcMonthHasEventClass','hasevents');
