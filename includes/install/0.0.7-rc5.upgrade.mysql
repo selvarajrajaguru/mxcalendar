@@ -1,5 +1,0 @@
---
--- Database updates for release 0.0.7-rc5
---
-UPDATE `#__mxcalendar_config` SET `param`='mxcCalendarActiveDayClass' WHERE `id`='21';
-UPDATE `#__mxcalendar_config` SET `param`='mxcCalendarActiveDayDisplay' WHERE `id`='22';
