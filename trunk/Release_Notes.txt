@@ -1,10 +1,53 @@
-Release Notes: 0.0.7-rc4 - Aug 17, 2010
+Release Notes: 0.1.0-rc1 - Aug 26, 2010
 * Updated FileList:
   |- mxCalendar.class.php
   |- includes/calendar.inc.php
+  |- snippets/mxCalendar.module.txt
+  |- snippets/mxCalendar.snippet.txt
+  |- themes/default/css/i/mxCalendar.css
   |- Release_Notes.txt
   
   * = Manual update required of Snippet and/or Module code in ModX manager using the new code file
+  
+**************************
+Install Instructions
+**************************
+1) Copy the zip file contents to tyour "modx/assets/modules/mxCalendar" folder
+2) Loginto your site Manager (http://yoursite.com/manager/)
+3) Run the mxCalendar
+
+--------------------------
+Release: (0.1.0-rc1)
+--------------------------
+Change Log:
+- Bug fix: Rich text editor for the events manager in ModX versions > 1.0.1
+- Bug fix: Event List display incorrect date of spanning event spanning multiple dates, the date increments incorrectly
+- Bug fix: Event List view title link to home page of site vs defined &mxcFullCalendarPgId parameter value
+- Bug fix: mxcTplEventListItemWrap fixed the parsing so custom chunks are parsed properly
+- mxcJSCodeSource - New parameter for setting the JS code base to use (MooTools is the current support, but plans to expand to JQuery are in the works)
+- mxcJSCodeLibrary - New parameter for wich library type will be used; see previous note
+- mxcMonthInnerHeadingRowID - New parameter for full calendar row (outer) wrapper CSS ID
+- mxcMonthInnerHeadingRowClass - New parameter for full calendar row (outer) wrapper CSS Class
+- mxcMonthListTodayOnly
+- mxcMonthHasEventClass
+
+
+File Log:
+M       lang/english.lang
+M       mxCalendar.tpl.php
+M       snippets/mxCalendar.module.txt
+M       snippets/mxCalendar.snippet.txt
+M       config/config.xml
+M       themes/default/css/mxCalendar.css
+M       themes/default/views/month.heading.html
+M       includes/google_geoloc.class.inc
+M       includes/install/mxCalendar.mysql.install.inc
+M       includes/calendar.inc.php
+M       Release_Notes.txt
+M       scripts/datepicker2
+M       scripts/moodalbox121/js/moodalbox.v1.2.full.js
+M       mxCalendar.class.php
+
 
 --------------------------
 Patch: (0.0.7-rc4a)

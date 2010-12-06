@@ -1,8 +1,8 @@
 <?php
 /**
  * Author: Charles Sanders (charless.mxcalendar@gmail.com)
- * Date: 07/10/2010
- * Version: 0.0.7-rc4
+ * Date: 11/30/2010
+ * Version: 0.1.0-rc1
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
@@ -134,10 +134,11 @@ $monthname = $arr_MonthLabel_override[$newdatePieces[1]-1];
         $nextURL = '?a='.$_REQUEST['a'].'&amp;id='.$_REQUEST['id'].'&amp;dt='.$newdate.'&amp;offset='.($monthOffset+1).'&amp;type=next';
     } else {
         //-- Make SEO Friendly URLs
-        $preURL = 'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')';
+        $preURL =$modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
+                    //'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')';
 		  //$modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
         $preURLRel = '&dt='.$newdate.'&offset='.($monthOffset-1).'&type=pre'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '');
-        $nextURL = 'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')'; //$modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full');
+        $nextURL = $modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full'); //'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')'; 
     }
 
 if($param['mxcAddMooJS'])
@@ -146,7 +147,6 @@ if($param['mxcAddMooJS'])
 //-- Add ToolTip JS and CSS
 if($this->config['disptooltip']){
     $this->_addJS('
-    <script src="'.$this->config['mxcJSCodeSource'].'" type="text/javascript"></script>
     <script>
     //-- ToolTips (Duration,Time Span)
     window.addEvent(\'domready\', function(){
@@ -173,41 +173,38 @@ if($this->param['mxcAjaxPageId'] != $modx->documentIdentifier){
 
 $testAjaxCalNavigation = true;
 if($testAjaxCalNavigation){
-  $paramHash = '';
+  //$paramHash = '';
   //$param['q']=$modx->makeUrl(50);
-  //foreach(array_filter($param) AS $k=>$v)
-  //  $paramHash .= ', '.$k.': "'.$v.'"';
-  
-  $frontEnd_AjaxCalNavigation = '
-    <script type="text/javascript">
-    // Frontend folder location got snippet
-    //window.addEvent("domready", function(){
-    function loadCalendar(me, params){
-	//cn = $(\'mxcnextMonth\');
-	//cn.addEvent("click", function(e) {
-	    //new Event(e).stop();
-	    var pars = Object.toQueryString({q: "[~50~]" '.$paramHash.'});
-	    new Ajax("?", { postBody: pars + params 
-					, update: $(\'bsCalendar\')
-					, onComplete:showResponse
-					,onRequest: function(e) {
+  foreach(array_filter($param) AS $k=>$v)
+    $paramHash .= ', '.$k.': "'.$v.'"';
 
-					  }
-					})
-		.request();
-	//});
-      }
-    //});
+    $frontEnd_AjaxCalNavigation = '
+    <script type="text/javascript">
+        window.addEvent(\'domready\', function(){
+
+        $(\'#mxcprevMonthAJAX\').addEvent(\'click\', function(e) {
+                var element = $(\'bsCalendar\');
+		new Event(e).stop();
+		//asuming that the backend snippet is located in document 49
+		new Ajax("[~49~]",{
+		//get all the variable/value pairs from the form
+			postBody:$(this).getProperty(\'href\'), // $(\'demoForm\').toQueryString(),
+                        onComplete:showResponse,
+			update:element
+		}).request();
+
+        
+        }); //-- End Event tracker
+        
+        }); //-- End DOM Ready
+        
 	function showResponse(request){
 		alert("Update completed.");
 		//$(\'bsCalendar\').appendText("completed...");
 	}
-
-
     </script>';
-  //-- Add JavaScript to header to support Ajax Calendar navigation
-  $this->_addJS($frontEnd_AjaxCalNavigation);
-
+    //-- Add JavaScript to header to support Ajax Calendar navigation
+    $this->_addJS($frontEnd_AjaxCalNavigation);
 }
 
 if(!empty($this->config["mxCalendarTheme"])){
@@ -226,6 +223,7 @@ $modx->setPlaceholder('mxcMonthHeadingNext', $nextURL);
 $modx->setPlaceholder('mxcMonthHeadingNextLabel', (!empty($param['mxcMonthHeadingNextLabel']) ? $param['mxcMonthHeadingNextLabel'] : _mxCalendar_cl_labelNext));
 $modx->setPlaceholder('mxcMonthHeadingLabelMonth', $monthname);
 $modx->setPlaceholder('mxcMonthHeadingLabelYear', date("Y", strtotime($newdate)));
+
 //-- Get Heading Container for Theme
 if(!empty($param['mxcTplMonthHeading'])){
         //--Get user modified theme over-ride
@@ -235,34 +233,33 @@ if(!empty($param['mxcTplMonthHeading'])){
         $_mxcCalRow = $this->_getTheme('month.heading',$this->config['mxCalendarTheme']);
 }
 
-
-        //-- Start heading weekday loop
-        $headingsWeekDay = explode(',',_mxCalendar_cl_headinWeekDays);
-        $ar_heading = ($startDayID==0 ? explode(',',_mxCalendar_cl_headinWeekDays) : array_merge( array_slice($headingsWeekDay, $startDayID, null, true),  array_slice($headingsWeekDay, 0, $startDayID, true) ));
-        if($this->debug) print_r($ar_heading);
-        $_mxcCalHeadings = '';
-        foreach($ar_heading AS $k=>$h) {
-            if(($k != 0 && $k !== 6 && $excludeWeekends) || !$excludeWeekends){
-                $dayArr = array(
-                    'mxcMonthInnerDayID' => '',
-                    'mxcMonthInnerDayClass' => '',
-                    'mxcMonthInnerDayBasic' => trim($h)
-                );
-                //-- Parse Day Container Theme
-                if(!empty($param['mxcTplMonthDayBase'])){
-                    //--Get user theme over-ride chunk
-                    $_mxcCalHeadings .= $modx->parseChunk($param['mxcTplMonthDayBase'], $dayArr, '[+', '+]');
-                } else {
-                    //--Get the theme event
-                    $_mxcCalHeadings .= $this->parseTheme($themeDayBasic, $dayArr);
-                } 
-            }
+    //-- Start heading weekday loop
+    $headingsWeekDay = explode(',',_mxCalendar_cl_headinWeekDays);
+    $ar_heading = ($startDayID==0 ? explode(',',_mxCalendar_cl_headinWeekDays) : array_merge( array_slice($headingsWeekDay, $startDayID, null, true),  array_slice($headingsWeekDay, 0, $startDayID, true) ));
+    if($this->debug) print_r($ar_heading);
+    $_mxcCalHeadings = '';
+    foreach($ar_heading AS $k=>$h) {
+        if(($k != 0 && $k !== 6 && $excludeWeekends) || !$excludeWeekends){
+            $dayArr = array(
+                'mxcMonthInnerDayID' => '',
+                'mxcMonthInnerDayClass' => '',
+                'mxcMonthInnerDayBasic' => trim($h)
+            );
+            //-- Parse Day Container Theme
+            if(!empty($param['mxcTplMonthDayBase'])){
+                //--Get user theme over-ride chunk
+                $_mxcCalHeadings .= $modx->parseChunk($param['mxcTplMonthDayBase'], $dayArr, '[+', '+]');
+            } else {
+                //--Get the theme event
+                $_mxcCalHeadings .= $this->parseTheme($themeDayBasic, $dayArr);
+            } 
         }
+    }
 
     //-- Add calendar heading row
     $rowArr = array(
-        'mxcMonthInnerRowID' => (isset($mxcMonthInnerRowID) ? $mxcMonthInnerRowID : ''),
-        'mxcMonthInnerRowClass' => (isset($mxcMonthInnerRowClass) ? $mxcMonthInnerRowClass : ''),
+        'mxcMonthInnerRowID' => (isset($param['mxcMonthInnerHeadingRowID']) ? $param['mxcMonthInnerHeadingRowID'] : ''),
+        'mxcMonthInnerRowClass' => (isset($param['mxcMonthInnerHeadingRowClass']) ? $param['mxcMonthInnerHeadingRowClass'] : ''),
         'mxcMonthInnerRowDays' => $_mxcCalHeadings
     );
     if(!empty($param['mxcTplMonthRow'])){
@@ -336,7 +333,9 @@ if(!empty($param['mxcTplMonthHeading'])){
     }
     
     $thisDayEvents = $this->_getEventsSingleDay($newdate, null, ($_REQUEST['CatId'] ? $_REQUEST['CatId'] : (!empty($param['mxcDefaultCatId']) ? $param['mxcDefaultCatId'] : null) ) );
-    if($this->debug){ print_r($thisDayEvents); }
+    if($this->debug){ echo '<h2>calendar.inc.php => $thisDayEvents</h2><pre><code></code></pre><br />'; print_r($thisDayEvents); }
+    
+    if($this->debug) echo '<h2>calendar.inc.php => $thisDayEvents</h2><p>Totoal  of '.count($thisDayEvents).' events returned</p>';
     
     //-- Set the default start first day of the month based on weekend view
     switch($startday){
@@ -371,22 +370,36 @@ if(!empty($param['mxcTplMonthHeading'])){
             elseif($counter == (int)date("j") && $this->config['mxcCalendarActiveDayDisplay'])
                 $classToday = $this->config['mxcCalendarActiveDayClass'];
             else
-                $classToday='';
+                $classToday=NULL;
                 
+            //-- Check if config/param for listing 'todays' events only
+            $_todayOnlyCheck = ( isset($param['mxcMonthListTodayOnly']) && $param['mxcMonthListTodayOnly']) ? (($counter == (int)date("j")) ? true : false) : true;
+            
             //-- List events on this date
-            if($thisDayEvents){
-                $events= '';
-                if(array_key_exists($counter, $thisDayEvents)){
+            $events='';
+            if(is_array($thisDayEvents) && $_todayOnlyCheck ){
+                
+                
+                if(is_array($thisDayEvents[$counter])){
+                    
+                    if($this->debug){
+                        echo '<h2>Event key found for day '.$counter.'</h2><p><pre><code>';
+                        print_r($thisDayEvents[$counter]);
+                        echo '</code></pre></p><hr size=1 /><br />';
+                    }
+
                     $multipleEventCnt = 0;
+                    
+                    
                     foreach($thisDayEvents[$counter] as $calEvents){
                         $calEvents['DurationTime'] = str_replace('-','',$calEvents['DurationTime']);
-                        $durDay = ((int)$calEvents['DurationDays'] > 0) ? $calEvents['DurationDays'].'d' : null ;
-                        $durTime = ((int)substr($calEvents['DurationTime'], 1, 2) > 0 || (int)substr($calEvents['DurationTime'], 0, 2) > 0) ? substr($calEvents['DurationTime'], 0, strpos($calEvents['DurationTime'], ":")).'h '.substr($calEvents['DurationTime'], 3, -3).'m' : null ;
+                        $durDay = ((int)$calEvents['DurationDays'] > 0) ? $calEvents['DurationDays'].'d' : false ;
+                        $durTime = ((int)substr($calEvents['DurationTime'], 1, 2) > 0 || (int)substr($calEvents['DurationTime'], 0, 2) > 0) ? substr($calEvents['DurationTime'], 0, strpos($calEvents['DurationTime'], ":")).'h '.(substr($calEvents['DurationTime'], 3, -3) != '00' ? substr($calEvents['DurationTime'], 3, -3).'m' : '') : null ;
                         $durTime = ($durDay) ? ' '.$durTime : $durTime;
-                        $dur = ((boolean)$this->config['dispduration']===false) ? '' : "(<span class='durantion'>".$durDay.$durTime."</span>)";
+                        $dur = ((boolean)$this->config['dispduration']===false ) ? '' : "(<span class='durantion'>".$durDay.$durTime."</span>)";
                         $dur = (!empty($param['showDuration']) ? (((boolean)$param['showDuration']===false) ? '' : "(<span class='durantion'>".$durDay.$durTime."</span>)") : $dur );
-                        $timeSpan = ((boolean)$this->config['dispeventtime']===false) ? '' : date(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['starttime']))." - ".date(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['endtime']));
-                        $timeSpan = (!empty($param['showTimeSpan']) ? ((boolean)$param['showTimeSpan']===false ? '' : date(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['starttime']))." - ".date(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['endtime']))) : $timeSpan);
+                        $timeSpan = ((boolean)$this->config['dispeventtime']===false) ? '' : strftime(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['starttime']))." - ".strftime(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['endtime']));
+                        $timeSpan = (!empty($param['showTimeSpan']) ? ((boolean)$param['showTimeSpan']===false ? '' : strftime(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['starttime']))." - ".strftime(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['endtime']))) : $timeSpan);
                         $toolTip = explode(' ',strip_tags($calEvents['description']));
                         $toolTip = array_slice($toolTip, 0, 75);
                         if(!$param['mxcEventTitleLink']){
@@ -424,12 +437,15 @@ if(!empty($param['mxcTplMonthHeading'])){
                                 
                     $multipleEventCnt++;
                     }
+                } //-- end if event found on give day counter
+                else {
+                    // -- DO NOTHING
                 }
             } 
             
             $dayArr = array(
                 'mxcMonthInnerDayID' => (isset($mxcMonthInnerDayID) ? $mxcMonthInnerDayID : ''),
-                'mxcMonthInnerDayClass' => $classToday,
+                'mxcMonthInnerDayClass' => trim($classToday.' '.(array_key_exists($counter, (array)$thisDayEvents) ? $param['mxcMonthHasEventClass'] : '' )), //(boolean)$param['mxcMonthListTodayOnly'] === true && $_todayOnlyCheck === false && 
                 'mxcMonthInnerDayLabelClass' => (isset($mxcMonthInnerDayLabelClass) ? $mxcMonthInnerDayLabelClass : 'datestamp'),
                 'mxcMonthInnerDayLabel' => $counter,
                 'mxcMonthInnerEvents' => $events,

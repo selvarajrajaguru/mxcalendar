@@ -178,6 +178,15 @@ define('_mxCalendar_con_mxcAdvancedDateEntryTT','Enables or disables the calenda
 define('_mxCalendar_con_LegendCategory','Cateogory List Options');
 //r0.0.7-rc4
 define('_mxCalendar_con_PublicView','Public (all visitor can view)');
+//r0.1.0-rc1
+define('_mxCalendar_con_mxcMonthInnerHeadingRowID','Column Heading Row CSS ID');
+define('_mxCalendar_con_mxcMonthInnerHeadingRowIDTT','Set the CSS ID property value for the column heading row (wrapper)');
+define('_mxCalendar_con_mxcMonthInnerHeadingRowClass','Column Heading Row CSS Class');
+define('_mxCalendar_con_mxcMonthInnerHeadingRowClassTT','Set the CSS Class property value for the column heading row (wrapper)');
+define('_mxCalendar_con_mxcMonthListTodayOnly','Display only todays events');
+define('_mxCalendar_con_mxcMonthListTodayOnlyTT','Enable to only list events in the date of the current date only');
+define('_mxCalendar_con_mxcMonthHasEventClass','Has Events CSS Class');
+define('_mxCalendar_con_mxcMonthHasEventClassTT','Adds a special CSS class for dates with events. Intended use in conjunction with the previous option for only displaying current days events and highlighting other dates with events.');
 
 // -- UI::EventDetail
 define('_mxCalendar_ed_backToCaltitle','Back to Calendar');
