@@ -85,7 +85,13 @@ INSERT INTO `#__mxcalendar_config` (`id`, `param`, `value`) VALUES
 (45,'mxcGetCategoryListUIFilterActive','1'),
 (46,'mxcEventListItemStateDateStamp','%I:%M %p'),
 (47,'mxcEventListItemEndDateStamp','%I:%M %p'),
-(48,'mxcAdvancedDateEntry','0');
+(48,'mxcAdvancedDateEntry','0'),
+(49,'mxcJSCodeSource','http://ajax.googleapis.com/ajax/libs/mootools/1.1/mootools.js'),
+(50,'mxcJSCodeLibrary','MooTools'),
+(51,'mxcMonthInnerHeadingRowID',''),
+(52,'mxcMonthInnerHeadingRowClass',''),
+(53,'mxcMonthListTodayOnly','0'),
+(54,'mxcMonthHasEventClass','hasevents');
 
 
 --

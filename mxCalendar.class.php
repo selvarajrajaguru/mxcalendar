@@ -1,7 +1,7 @@
 <?php
 if(!class_exists("mxCal_APP_CLASS")){
 	class mxCal_APP_CLASS {
-		var $version = '0.0.7-rc4';
+		var $version = '0.1.0-rc1';
 		var $user_id;
 		var $params = array();
 		var $config = array();
@@ -77,17 +77,20 @@ if(!class_exists("mxCal_APP_CLASS")){
 			global $modx;
 			if(file_exists($modx->config['base_path'].'assets/modules/mxCalendar/includes/install/'.$this->version.'.upgrade.mysql')){
 			    $pre = $modx->db->config['table_prefix'];
-			    $sql_installer = str_replace('#__', $pre,file_get_contents($modx->config['base_path'].'assets/modules/mxCalendar/includes/install/'.$this->version.'.upgrade.mysql'));
-			    //echo $sql_installer;
+			    $sql_installer = trim(str_replace('#__', $pre,file_get_contents($modx->config['base_path'].'assets/modules/mxCalendar/includes/install/'.$this->version.'.upgrade.mysql')));
 			    
 			    if($sql_installer){
+				$cnt = 0;
 				foreach(explode(';',$sql_installer) AS $sql){
 				    if(!empty($sql)){
+					$cnt ++;
+					//echo '('.$cnt.')<pre><code>'.$sql.'</pre></code>';
 					$result = $modx->db->query($sql);
 				    }
 				}
 				$this->output .= '<div class="fm_message"><h2>'.$this->version.' Update completed</h2><form method="post" action=""><input type="submit" name="submit" value="Continue" /></form></div>';
 				//Install Completed
+				$modx->logEvent(0, 3, '<p><strong>Upgrade to mxCalendar '.$this->version.' via install file ('.$modx->config['base_path'].'assets/modules/mxCalendar/includes/install/'.$this->version.'.upgrade.mysql)</strong></p>');
 				$fh = fopen( $modx->config['base_path'].'assets/modules/mxCalendar/config/config.xml', 'w+') or die("Unable to save configuration file. Please make sure write permission is granted on the folder (".$modx->config['base_path']."assets/modules/mxCalendar/config/)");
 				$stringData = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<mxCalendar>'."\n".'<setup>Yes</setup>'."\n".'<date>'.DATE('l jS \of F Y h:i:s A').'</date><version>'.$this->version.'</version>'."\n".'</mxCalendar>';
 				fwrite($fh, $stringData);
@@ -302,32 +305,37 @@ if(!class_exists("mxCal_APP_CLASS")){
                             SWITCH ($val[1]){
                                 case 'text':
                                     if($val[0] == 'description'){
-                                    $this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><textarea id="fm'.$val[0].'" name="fm'.$val[0].'">'.$editArr[$val[0]].'</textarea>'.$this->makeRTE($val[0]).$tooltip.'</div></div>'."\n";
-				    
+					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry">'.$this->renderRTE('richtext','fm'.$val[0],$editArr[$val[0]],'').$tooltip.'</div></div>'."\n";
 				    } else {
 					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
 				    }
                                     break;
                                 case 'date':
                                     if($val[0] == 'startdate'){
-                                      $editSD = ($editArr['start'] != '0000-00-00 00:00:00' && !empty($editArr['start']) ? date('Y-m-d', strtotime($editArr['start'])) : date('Y-m-d')); //$editArr['start'];
+                                      $editSD = ($editArr['start'] != '0000-00-00 00:00:00' && !empty($editArr['start']) ? strftime('%Y-%m-%d %H:%M', strtotime($editArr['start'])) : strftime('%Y-%m-%d %H:%M')); //$editArr['start'];
 				      $editSDF = $editArr['start'];
+				      $dateCSSClass = 'mxcStartDate';
                                     }
                                     elseif($val[0]=='enddate'){
-                                      $editSD = ($editArr['end'] != '0000-00-00 00:00:00' && !empty($editArr['end']) ? date('Y-m-d', strtotime($editArr['end'])) : date('Y-m-d')); //$editArr['end'];
+                                      $editSD = ($editArr['end'] != '0000-00-00 00:00:00' && !empty($editArr['end']) ? strftime('%Y-%m-%d %H:%M', strtotime($editArr['end'])) : strftime('%Y-%m-%d %H:%M')); //$editArr['end'];
 				      $editSDF = $editArr['end'];
+				      $dateCSSClass = 'mxcEndDate';
                                     }
                                     else{
                                       $editSD = null;
+				      $dateCSSClass = '';
                                     }
                                     
 				    $advancedDateEntry=$this->config['mxcAdvancedDateEntry'];
 				    if($advancedDateEntry){
 					$this->output .= "\t<div class=\"fm_row\"><label>".$fm_label[$x]."</label><div class='fm_entry'><input type=\"text\" value=\"".$editSD."\" name=\"fm".$val[0]."\">".$tooltip."</div></div>";
 				    } else {
-					$this->output .= "\t".$this->_makeDateSelector($val[0], $fm_label[$x], $tooltip, $editSD)."\n";
+					$this->output .= "\t".$this->_makeDateSelector($val[0], $fm_label[$x], $tooltip, $editSD, $dateCSSClass)."\n";
+					$this->output .= "\t</div>"; //-- Fixed broken HTML tags cuasing tabs after Events to not display
 				    }
 				    
+				   //-- Depreciated as of 0.1.0-rc
+				   /*
 				    //- Add the dropdown list for time selector
 				    $dl_output='';
 				    $dlx = 1;
@@ -358,7 +366,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 						$amPM_sel .= '<option value="'.$cl_label.'" '.($myAPM == $cl_label ? 'selected=selected' : '').'>'.$cl_label.'</option>';
 					$amPM_sel = '<select name="'.$val[0].'_apm">'.$amPM_sel.'</select>'; 
 				    } else { $amPM_sel = ''; }
-				    
+
 				    if(!$advancedDateEntry){
 					$this->output .= "\t<div class=\"fm_row\"><label>&nbsp;</label><div class='fm_entry'>Time: <select name='".$val[0]."_htime'>".$dl_output."</select>";
                                    
@@ -372,6 +380,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					$this->output .= "\t<select name='".$val[0]."_mtime'>".$dl_output."</select>".$amPM_sel."</div></div>";
 					$this->output .= "\n</div>\n\n";
 				    }
+				   */
 				    
 				    break;
                                 case 'time':
@@ -460,9 +469,11 @@ if(!class_exists("mxCal_APP_CLASS")){
                         $x++;
                     }
                 $this->output.="\t".'
-            </select>';
+            </select>
+	</div>';
 	$this->output .= "\t".$this->_makeDateSelector('event_occur_until', $fm_label[(count($fm_label)-1)], $tooltip, ($editArr['lastrepeat'] != '0000-00-00 00:00:00' && !empty($editArr['lastrepeat']) ? date('Y-m-d', strtotime($editArr['lastrepeat'])) : '')).'<img  title="'.$this->tooltip['event_occurance_rep'].'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />'."\n";
-	$this->output.='</fieldset>'."\n";
+	//$this->output.='</fieldset>'."\n";
+	$this->output.='</div>'."\n";
 		    
 		    $fmeid = ($_REQUEST['fmeid']) ? '<input type="hidden" id="fmeid" name="fmeid" value="'.$_REQUEST['fmeid'].'">' : '';
                     $this->output .= "\t".'<div class="fm_row"><div class="fm_actions">
@@ -472,7 +483,6 @@ if(!class_exists("mxCal_APP_CLASS")){
                                         '.$fmeid.'
                                       </div></div>'."\n";
                     $this->output .= '</form>'."\n";
-                    $this->output .= $this->makeRTE('fmdescription');
                    
                     return $this->output;
                 }
@@ -716,7 +726,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 			$langDOW = explode(',', _mxCalendar_cl_headinWeekDays);
 			$this->output .= '
 			<table width="750">
-			<tr><td width="50%" valign="top">
+			<tr>
+			<td width="50%" valign="top">
 			<!-- left column -->
 			<fieldset>
 				<legend>'._mxCalendar_con_LegendGlobal.'</legend>
@@ -770,8 +781,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 				<div class="fm_row"><label>'._mxCalendar_con_mxcGoogleMapDisplayLngLat.'</label><select name="'.$myConfig['mxcGoogleMapDisplayLngLat'][0].'"><option value="1" '.($myConfig['mxcGoogleMapDisplayLngLat'][1] == 1 ? 'selected=selected' : '').'>True</option><option value="0" '.($myConfig['mxcGoogleMapDisplayLngLat'][1] == 0 ? 'selected=selected' : '').'>False</option></select><img  title="'._mxCalendar_con_mxcGoogleMapDisplayLngLatTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
 			</fieldset>
 			</td>
-			<td width="50%"  valign="top">
 			
+			<td width="50%"  valign="top">			
 			<!-- right column -->
 			<fieldset>
 				<legend>'._mxCalendar_con_LegendCategory.'</legend>
@@ -787,6 +798,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 				<div class="fm_row"><label>'._mxCalendar_con_LabelTimespan.'</label><select name="'.$myConfig['dispeventtime'][0].'"><option value="0" '.($myConfig['dispeventtime'][1] == 0 ? 'selected=selected' : '').'>False</option><option value="1" '.($myConfig['dispduration'][1] == 1 ? 'selected=selected' : '').'>True</option></select><img  title="'._mxCalendar_con_LabelTimespanTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
 				<div class="fm_row"><label>'._mxCalendar_con_LabelCalendarActiveDayClass.'</label><input type="input" name="'.$myConfig['mxcCalendarActiveDayClass'][0].'" value="'.$myConfig['mxcCalendarActiveDayClass'][1].'" /><img  title="'._mxCalendar_con_LabelCalendarActiveDayClassTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
 				<div class="fm_row"><label>'._mxCalendar_con_LabelCalendarActiveDayDisplay.'</label><select name="'.$myConfig['mxcCalendarActiveDayDisplay'][0].'"><option value="1" '.($myConfig['mxcCalendarActiveDayDisplay'][1] == 1 ? 'selected=selected' : '').'>True</option><option value="0" '.($myConfig['mxcCalendarActiveDayDisplay'][1] == 0 ? 'selected=selected' : '').'>False</option></select><img  title="'._mxCalendar_con_LabelCalendarActiveDayDisplayTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
+
+				<div class="fm_row"><label>'._mxCalendar_con_mxcMonthInnerHeadingRowID.'</label><input name="'.$myConfig['mxcMonthInnerHeadingRowID'][0].'" value="'.$myConfig['mxcMonthInnerHeadingRowID'][1].'"><img  title="'._mxCalendar_con_mxcMonthInnerHeadingRowIDTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
+				<div class="fm_row"><label>'._mxCalendar_con_mxcMonthInnerHeadingRowClass.'</label><input name="'.$myConfig['mxcMonthInnerHeadingRowClass'][0].'" value="'.$myConfig['mxcMonthInnerHeadingRowClass'][1].'"><img  title="'._mxCalendar_con_mxcMonthInnerHeadingRowClassTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
+				<div class="fm_row"><label>'._mxCalendar_con_mxcMonthListTodayOnly.'</label><select name="'.$myConfig['mxcMonthListTodayOnly'][0].'"><option value="1" '.($myConfig['mxcMonthListTodayOnly'][1] == 1 ? 'selected=selected' : '').'>True</option><option value="0" '.($myConfig['mxcMonthListTodayOnly'][1] == 0 ? 'selected=selected' : '').'>False</option></select><img  title="'._mxCalendar_con_mxcMonthListTodayOnlyTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
+				<div class="fm_row"><label>'._mxCalendar_con_mxcMonthHasEventClass.'</label><input type="input" name="'.$myConfig['mxcMonthHasEventClass'][0].'" value="'.$myConfig['mxcMonthHasEventClass'][1].'" /><img  title="'._mxCalendar_con_mxcMonthHasEventClassTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
 			</fieldset>
 			<fieldset>
 				<legend>'._mxCalendar_con_LegendEventList.'</legend>
@@ -856,8 +872,10 @@ if(!class_exists("mxCal_APP_CLASS")){
                     global $modx;
                     $param = $_POST;
                     //-- Break apart the dates
-                    $startValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmstartdate'])));
-                    $endValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmenddate'])));
+                    /** Depreciated 0.1.0-rc
+		      $startValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmstartdate'])));
+                      $endValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmenddate'])));
+		    **/
 		    
 		    //-- Create @param for entry
                     $sT = $modx->db->escape($param['fmtitle']);
@@ -868,10 +886,12 @@ if(!class_exists("mxCal_APP_CLASS")){
                     $sLR = $modx->db->escape($param['fmlinkrel']);
                     $sLT = $modx->db->escape($param['fmlinktarget']);
 		    $sLoc = $modx->db->escape($param['fmlocation']);
-                    $sSD = $startValuesSplit[0]; //--Start Date stamp
-                    $sST = $startValuesSplit[1]; //--Start Time stamp
-                    $sED = $endValuesSplit[0];	 //--End Date stamp
-                    $sET = $endValuesSplit[1];   //--End Time stamp
+                    /** Depreciated 0.1.0-rc
+		     * $sSD = $startValuesSplit[0]; //--Start Date stamp
+                     * $sST = $startValuesSplit[1]; //--Start Time stamp
+                     * $sED = $endValuesSplit[0];	 //--End Date stamp
+                     * $sET = $endValuesSplit[1];   //--End Time stamp
+		     **/
                     
                     $table_name = $modx->getFullTableName( $this->tables['events'] );
 
@@ -887,12 +907,20 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    $last_reOcc = $last_reOcc[count($last_reOcc)-1];
 		    if($this->debug) print("Reoccur Date<br />".$ar_Events);
 		    
-		    $str_fmStartDate = $param['fmstartdate'].' '.$param['startdate_htime'].':'.$param['startdate_mtime'].$param['startdate_apm'];
-		    $str_fmEndDate = $param['fmenddate'].' '.$param['enddate_htime'].':'.$param['enddate_mtime'].$param['enddate_apm'];
+		    $str_fmStartDate = $param['fmstartdate'];
+		    $str_fmEndDate = $param['fmenddate'];
+		    
+		    //-- Depreciated as of 0.1.0-rc1
+		    //-- $str_fmStartDate = $param['fmstartdate'].' '.$param['startdate_htime'].':'.$param['startdate_mtime'].$param['startdate_apm'];
+		    //-- Depreciated as of 0.1.0-rc1
+		    //-- $str_fmEndDate = $param['fmenddate'].' '.$param['enddate_htime'].':'.$param['enddate_mtime'].$param['enddate_apm'];
 		
 		//-- Check for advanced date entry format
-		$str_fmStartDate = ( $this->config['mxcAdvancedDateEntry'] ? $param['fmstartdate'] : $str_fmStartDate);
-		$str_fmEndDate = ( $this->config['mxcAdvancedDateEntry'] ? $param['fmenddate'] : $str_fmEndDate);		    
+		//-- Depreciated as of 0.1.0-rc1
+		//-- $str_fmStartDate = ( $this->config['mxcAdvancedDateEntry'] ? $param['fmstartdate'] : $str_fmStartDate);
+		//-- Depreciated as of 0.1.0-rc1
+		//-- $str_fmEndDate = ( $this->config['mxcAdvancedDateEntry'] ? $param['fmenddate'] : $str_fmEndDate);		    
+		
 		if($this->config['mxcAdvancedDateEntry'])
 			$str_fmEndDate = ( checkdate(strftime("%m",strtotime($str_fmEndDate)), strftime("%d",strtotime($str_fmEndDate)), strftime("%Y",strtotime($str_fmEndDate))) ? $str_fmEndDate : $str_fmEndDate.', '.$str_fmStartDate);
 		
@@ -905,10 +933,10 @@ if(!class_exists("mxCal_APP_CLASS")){
                                     'linktarget' => $sLT,
 				    'location'   => $sLoc,
 				    'displayGoogleMap' => (int)$param['fmdisplayGoogleMap'],
-                                    'start'	 => strftime("%Y-%m-%d %H:%M:%S" , strtotime($str_fmStartDate)), 
+                                    'start'	 => strftime("%Y-%m-%d %H:%M" , strtotime($str_fmStartDate)), 
                                     'startdate'	 => strftime('%Y-%m-%d' , strtotime($str_fmStartDate)),
                                     'starttime'  => strftime('%H:%M:%S',strtotime($str_fmStartDate)),
-                                    'end'	 => strftime('%Y-%m-%d %H:%M:%S' , strtotime($str_fmEndDate)),
+                                    'end'	 => strftime('%Y-%m-%d %H:%M' , strtotime($str_fmEndDate)),
                                     'enddate'    => strftime('%Y-%m-%d' , strtotime($str_fmEndDate)),
                                     'endtime'    => strftime('%H:%M:%S' , strtotime($str_fmEndDate)),
 				    '`repeat`'	 => $reOcc,
@@ -942,7 +970,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                                    'mxcType'=>'full',
 				   'mxcDefaultCatIdLock'=>Null
                                   );
-                    $param = array_merge($defaultParam, $params);
+                    $param = array_merge($defaultParam, $this->config, $params);
                     
                     if(($param['mxcType']=='full' & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ) || (!isset($param['mxcType']) & empty($_REQUEST['details'])  & $param['mxcTypeLocked'] != true ))
                         //-- DISPLAY FULL CALENDAR
@@ -996,14 +1024,23 @@ if(!class_exists("mxCal_APP_CLASS")){
 					$subDateX=0;
 					foreach($dates AS $o){
 						$dateList[] = strftime(_mxCalendar_ed_dateformat,
-						mktime(date('H', strtotime($p_val['start'])), date('i', strtotime($p_val['start'])), 0, date('m', strtotime($o)) , date('d', strtotime($o)), date('y', strtotime($o)) )).
-						$param['mxcDateTimeSeperator'].(($p_val['DurationDays'] ) ?
-						 strftime(_mxCalendar_ed_dateformat, mktime(date('H', strtotime($p_val['end'])), date('i', strtotime($p_val['end'])), 0, date('m', strtotime($o)) , date('d', strtotime($o))+(int)$p_val['DurationDays'], date('y', strtotime($o)) ) ) :
-						 strftime(_mxCalendar_ed_dateformat, mktime(date('H', strtotime($p_val['end'])), date('i', strtotime($p_val['end'])), 0, date('m', strtotime($o)) , date('d', strtotime($o)), date('y', strtotime($o)) ) )
-						 );
+						  mktime(date('H', strtotime($p_val['start'])), date('i', strtotime($p_val['start'])), 0, date('m', strtotime($o)) , date('d', strtotime($o)), date('y', strtotime($o)) )).
+						  $param['mxcDateTimeSeperator'].(($p_val['DurationDays'] ) ?
+						    strftime(_mxCalendar_ed_dateformat, mktime(date('H', strtotime($p_val['end'])), date('i', strtotime($p_val['end'])), 0, date('m', strtotime($o)) , date('d', strtotime($o))+(int)$p_val['DurationDays'], date('y', strtotime($o)) ) ) :
+						    strftime(_mxCalendar_ed_dateformat, mktime(date('H', strtotime($p_val['end'])), date('i', strtotime($p_val['end'])), 0, date('m', strtotime($o)) , date('d', strtotime($o)), date('y', strtotime($o)) ) )
+						  );
 						$subDateX++;
 					}
-					$str_repeatDates = ((count($dateList) && $this->config['eventlist_multiday']) ? "<span ='mxcRepeatEventItem'>".implode('<br />',$dateList)."</span>" : '');
+					//-- Strikeout past date times
+					$datetime_now = date(_mxCalendar_ed_dateformat);
+					$str_dates = '';
+					foreach($dateList AS $d){
+						$str_dates .= ($d > $datetime_now) ? '<li style="text-decoration:line-through;color:red;">'.$d.'</li>' : $d;
+					}
+					$str_repeatDates = ((count($dateList) && $this->config['eventlist_multiday']) ? "<span ='mxcRepeatEventItem'>".$str_dates.implode('<br />',$dateList)."</span>" : '');
+					
+					//-- Display only the selected event occurance date/time value
+					$str_repeatDates =  $dates[$param['r']];
 				}
 				
 				
@@ -1024,11 +1061,15 @@ if(!class_exists("mxCal_APP_CLASS")){
 					include_once($modx->config['base_path'].'assets/modules/mxCalendar/includes/google_geoloc.class.inc');
 					//-- Output the Address results
 					if(class_exists("geoLocator") && $p_val['location']){
+					    //-- Split addresses for multiple points on the map
+					    $addressList = explode('|', $p_val['location']);
+					    
 					    $mygeoloc = new geoLocator;
 					    $mygeoloc->host = $this->config['GOOGLE_MAP_HOST'];
 					    $mygeoloc->apikey = $this->config['GOOGLE_MAP_KEY'];
+					    $mygeoloc->canvas = $this->config['mxcGoogleMapDisplayCanvasID'];
+					    $mygeoloc->autofitmap = (count($addressList) > 1 ? true : false);
 					    
-					    $addressList = explode('|', $p_val['location']);
 					    foreach($addressList as $loc){
 						$mygeoloc->getGEO($loc);
 					    }
@@ -1036,16 +1077,16 @@ if(!class_exists("mxCal_APP_CLASS")){
 						$googleMap='';
 						//-- Build Google MAP JS Section
 						if($param['ajaxPageId'] != $modx->documentIdentifier && (int)$param['ajaxPageId']!==0){
-						$googleMap = '<div id="map_canvas" style="width: '.$this->config['mxcGoogleMapDisplayWidth'].'; height: '.$this->config['mxcGoogleMapDisplayHeigh'].'"><img src="/blank.gif" alt="" onload="initialize();" /></div>';
+							$googleMap = '<div id="'.$this->config['mxcGoogleMapDisplayCanvasID'].'" style="width: '.$this->config['mxcGoogleMapDisplayWidth'].'; height: '.$this->config['mxcGoogleMapDisplayHeigh'].'"><img src="/blank.gif" alt="" onload="initialize();" /></div>';
 						if($this->config['mxcGoogleMapDisplayLngLat'])
 							$googleMap .= $mygeoloc->output;
-						$this->_addGoogleMapJS($mygeoloc->mapJSv3, true);
+							$this->_addGoogleMapJS($mygeoloc->mapJSv3, true);
 						}
 						else {
-						$googleMap = '<div id="map_canvas" style="width: '.$this->config['mxcGoogleMapDisplayWidth'].'; height: '.$this->config['mxcGoogleMapDisplayHeigh'].';"><img src="/blank.gif" alt="" onload="initialize();" /></div>';
+							$googleMap = '<div id="'.$this->config['mxcGoogleMapDisplayCanvasID'].'" style="width: '.$this->config['mxcGoogleMapDisplayWidth'].'; height: '.$this->config['mxcGoogleMapDisplayHeigh'].';"><img src="/blank.gif" alt="" onload="initialize();" /></div>';
 						if($this->config['mxcGoogleMapDisplayLngLat'])
 							$googleMap .= $mygeoloc->output;
-						$googleMap .= $this->_addGoogleMapJS($mygeoloc->mapJSv3, null, true);
+							$googleMap .= $this->_addGoogleMapJS($mygeoloc->mapJSv3, null, true);
 						}
 						
 						
@@ -1115,20 +1156,24 @@ if(!class_exists("mxCal_APP_CLASS")){
 					// -- mxCalendar >=0.0.6-rc2
 					function initialize() {
 					  '.$jsCode.'
-					}
-					window.addEvent(\'domready\', function(){
-					    initialize();
-					}); 
+					};
+					
+					window.onload = initialize;
+ 
 				</script>';
 			else   $modx->regClientStartupScript('
-				<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 				<script type="text/javascript">
 					function initialize() {
 					  '.$jsCode.'
 					}
-					window.addEvent(\'domready\', function(){
-					    initialize();
-					}); 
+					function loadScript() {
+					  var script = document.createElement("script");
+					  script.type = "text/javascript";
+					  script.src = "http://maps.google.com/maps/api/js?sensor=false&callback=initialize";
+					  document.body.appendChild(script);
+					}
+					
+					window.onload = loadScript;
 				</script>');
 			
 		}
@@ -1170,7 +1215,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				foreach( $records as $e ) {
 					//-- Event template @param chunk array
 					$datePieces = explode("-", $e['startdate']);
-					$month=strftime("%b", strtotime($e['start']));
+					$month=strftime("%m", strtotime($e['start']));
 					$day=$datePieces[2];
 					$mxcStartDateFilter = isset($mxcStartDate) ? strftime('%Y-%m-%d', strtotime($mxcStartDate)) : strftime('%Y-%m-%d');
 					if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter){
@@ -1178,8 +1223,6 @@ if(!class_exists("mxCal_APP_CLASS")){
 						$ar_events[]=$e;
 					}
 					$or = $e;
-					
-					
 					
 					if($e['DurationDays']){
 						$originalStartDay = $e['start'];
@@ -1195,18 +1238,23 @@ if(!class_exists("mxCal_APP_CLASS")){
 								$e['start']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).'00:00'));
 								$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate). $e['endtime'] ));
 							}else{ //-- Is the first occurance
-								//$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).'23:59'));
+								$e['start']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d %H:%M',$newOccDate)));
+								$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).strftime(' %H:%M', $e['end'])));
 							}
 
 							if(strftime('%Y-%m-%d', $newOccDate) >= strftime('%Y-%m-%d'))
 							$ar_events[]=$e;
-							echo "$x of ".$e['DurationDays'].": ".strftime('%Y-%m-%d %H:%M',$newOccDate)."<br />";
-							//print_r($e);
+							if($this->debug){
+								echo "Start: ".$originalStartDay." => <br />&nbsp;&nbsp;".$x ." of ".$e['DurationDays'].": ".strftime('%Y-%m-%d %H:%M',$newOccDate)."<br />";
+								echo 'Original:<br /><pre><code>'.print_r($or).'</code></pre>';
+								
+							}
 						}
 						
 					}
 					if(!empty($e['repeat'])){
 					    $sub_dates = explode(',',$or['repeat']);
+					    $rcnt='1';
 					    foreach($sub_dates as $child_event){
 						    $e['start']=$child_event;
 						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= strftime('%Y-%m-%d'))
@@ -1218,6 +1266,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 							    }
 							    
 						    }
+						    $e['repeatID'] = $rcnt;
+						    $rcnt++;
 					    }
 					}
 				}
@@ -1489,23 +1539,21 @@ if(!class_exists("mxCal_APP_CLASS")){
                 //-- Get Next (N) Events and return the array
                 function _getNEvents($date=null,$n=10,$CatId=Null){
                     global $modx;
-		    
-
-					//-- Front end: returns logged in user's webgroup assignments [webgroup = web group id's user belongs to]
-					if($modx->getLoginUserID()){    
-						$userInfo = $modx->db->makeArray(
-							$modx->db->select(
-							'webgroup', 
-							$modx->getFullTableName('web_groups'), 
-							'`webuser`='.$modx->getLoginUserID()
-							)
-						);
-						//-- Web View Permission Where Builder
-						foreach($userInfo AS $wu){
-							foreach($wu AS $wp)
-								$WHERE_WGP[] = 'FIND_IN_SET('.$wp['0'].',E.restrictedwebusergroup)';
-						}
-					}
+			//-- Front end: returns logged in user's webgroup assignments [webgroup = web group id's user belongs to]
+			if($modx->getLoginUserID()){    
+				$userInfo = $modx->db->makeArray(
+					$modx->db->select(
+					'webgroup', 
+					$modx->getFullTableName('web_groups'), 
+					'`webuser`='.$modx->getLoginUserID()
+					)
+				);
+				//-- Web View Permission Where Builder
+				foreach($userInfo AS $wu){
+					foreach($wu AS $wp)
+						$WHERE_WGP[] = 'FIND_IN_SET('.$wp['0'].',E.restrictedwebusergroup)';
+				}
+			}
 
 		    
                     $date = (checkdate(strftime("%m",$date),strftime("%d",$date),strftime("%Y",$date) )) ? $date : strftime("%Y-%m-%d") ;
@@ -1518,7 +1566,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                             WHERE (startdate >= \''.$date.'\' or enddate >= \''.$date.'\' or  `lastrepeat` >= \''.$date.'\') and E.active=1
 			    AND C.active=1 '.(!is_null($CatId) ? ' and C.id IN ('.$CatId.') ' : '').'
                             AND '.($WHERE_WGP && count($WHERE_WGP) ? '('.implode(' OR ',$WHERE_WGP).' OR ( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL ))' : '( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL )' ).'  
-			    ORDER BY startdate
+			    ORDER BY startdate, starttime, enddate, endtime
                             LIMIT '.$n;
                     $results = $modx->db->query($eventsSQL);
                     if($this->debug){
@@ -1532,6 +1580,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                 function _getEventsSingleDay($date=null,$month="m",$CatId=null){
                     global $modx;
                     $date = (!is_null($date)) ? $date : strftime("%Y-%m-%d") ;
+		    $calDateMonth = strftime('%m',strtotime($date));
                     $enddate = strtotime ( "+1 month" , strtotime ( strftime("%Y-$month-1") ) ) ;
                     $enddate = strftime ( "%Y-%m-%d" , $enddate );
 
@@ -1559,75 +1608,95 @@ if(!class_exists("mxCal_APP_CLASS")){
                             LEFT JOIN '.$modx->getFullTableName($this->tables['categories']).' as C
                              ON E.category = C.id
                             WHERE
-				((startdate >= \''.$date.'\' and 
-				enddate < ADDDATE(\''.$date.'\', INTERVAL 1 MONTH))
+				((startdate >= \''.$date.'\'
+				OR 
+				enddate >= \''.$date.'\')
 				or `repeat` REGEXP \'[[:alnum:]]+\' )				
 				and E.active=1
 				and C.active = 1 '.($CatId != null && !empty($_REQUEST['CatId']) ? ' and E.category IN ('.$CatId.') ' : '').' 
 				AND '.($WHERE_WGP && count($WHERE_WGP) ? '('.implode(' OR ',$WHERE_WGP).' OR ( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL ))' : '( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL )' ).'  
-                            ORDER BY start';
+                            ORDER BY startdate, starttime, enddate, endtime';
                     $results = $modx->db->query($eventsSQL);
                     if($this->debug) echo "SQL: <br />".$eventsSQL;
                     
                     if($modx->db->getRecordCount($results) > 0){
                         while($data = $modx->db->getRow($results)){
-                            $dayOfMonth = explode('-', $data['startdate']);
-                            $dayOfMonth = (int)$dayOfMonth[2];
+                            //$dayOfMonth = explode('-', $data['startdate']);
+                            $dayOfMonth = trim(strftime('%e', strtotime($data['startdate']))); //(int)$dayOfMonth[2];
                             
-                            $endDayOfMonth = explode('-', $data['enddate']);
-                            $endDayOfMonth = (int)$endDayOfMonth[2];
+                            //$endDayOfMonth = explode('-', $data['enddate']);
+                            $endDayOfMonth = trim(strftime('%e', strtotime($data['enddate']))); //(int)$endDayOfMonth[2];
 			    
 			    $match = explode('-', $data['startdate']);
 			    $dataPieces = explode('-', $date);
                             
-			    if($match[1]=== $dataPieces[1]){ //-- Remove the duplicate of the reoccurance date on the month
-                            $eventsByDay[$dayOfMonth][] = array(
-                                    //'endDay' => $endDayOfMonth,
-                                    'id'=>$data['eid'],
-                                    'title'=>$data['title'],
-				    'category'=>$data['category'],
-				    'cateogryCSS' => array($data['catID'],$data['foregroundcss'],$data['backgroundcss'],$data['inlinecss']),
-                                    'description'=>$data['description'],
-                                    'DurationDays'=>$data['DurationDays'],
-                                    'DurationTime'=>$data['DurationTime'],
-                                    'link' => $data['link'],
-                                    'linkrel' => $data['linkrel'],
-                                    'linktarget' => $data['linktarget'],
-                                    'start' => $data['start'],
-                                    'startdate' => $data['startdate'],
-                                    'starttime' => $data['starttime'],
-                                    'end' => $data['end'],
-                                    'enddate' => $data['enddate'],
-                                    'endtime' => $data['endtime']
-                            );
+			    
+			    //-- Remove the duplicate of the reoccurance date on the month
+			    if($match[1]=== $dataPieces[1]){ 
+				$eventsByDay[$dayOfMonth][] = array(
+					//'endDay' => $endDayOfMonth,
+					'id'=>$data['eid'],
+					'title'=>$data['title'],
+					'category'=>$data['category'],
+					'cateogryCSS' => array($data['catID'],$data['foregroundcss'],$data['backgroundcss'],$data['inlinecss']),
+					'description'=>$data['description'],
+					'DurationDays'=>$data['DurationDays'],
+					'DurationTime'=>$data['DurationTime'],
+					'link' => $data['link'],
+					'linkrel' => $data['linkrel'],
+					'linktarget' => $data['linktarget'],
+					'start' => $data['start'],
+					'startdate' => $data['startdate'],
+					'starttime' => $data['starttime'],
+					'end' => $data['end'],
+					'enddate' => $data['enddate'],
+					'endtime' => $data['endtime']
+				);
+				if($this->debug) echo '<h3>Fir st Date for '.$data['title'].':</h3><pre><code>'.$data['startdate'].'</code></pre>';
 			    }
 			    
                             #***** add multiple day records *****#
-                            if($dayOfMonth < $endDayOfMonth  && $match[2] !== $dataPieces[2] && $match[1] === $dataPieces[1]){
-                                //$dif = $dayOfMonth + 1;
-                                for($x=($dayOfMonth+1);$x<=$endDayOfMonth;$x++){
+                            //if($dayOfMonth < $endDayOfMonth  && $match[2] !== $dataPieces[2] && $match[1] === $dataPieces[1]){
+			    if($this->debug) echo 'DurationDays: '.$data['DurationDays'].' for '.$data['title'].'<br />';
+			    if($data['DurationDays']){
+                                $dif = $dayOfMonth + 1;
+                                //for($x=($dayOfMonth+1);$x<=$endDayOfMonth;$x++){
+				for($x=1;$x<=$data['DurationDays'];$x++){
                                     if($this->debug) echo "<br />MD:  ".$x."  ".$match[1].$dayOfMonth."==".$dataPieces[1].$endDayOfMonth;
-				    $eventsByDay[$x][] = array(
-                                            //'endDay' => $endDayOfMonth,
-                                            'id'=>$data['eid'],
-                                            'title'=>$data['title'],
-					    'category'=>$data['category'],
-                                            'cateogryCSS' => array($data['catID'],$data['foregroundcss'],$data['backgroundcss'],$data['inlinecss']),
-					    'description'=>$data['description'],
-                                            'DurationDays'=>$data['DurationDays'],
-                                            'DurationTime'=>$data['DurationTime'],
-                                            'link' => $data['link'],
-                                            'linkrel' => $data['linkrel'],
-                                            'linktarget' => $data['linktarget'],
-                                            'start' => $data['start'],
-                                            'startdate' => $data['startdate'],
-                                            'starttime' => $data['starttime'],
-                                            'end' => $data['end'],
-                                            'enddate' => $data['enddate'],
-                                            'endtime' => $data['endtime']
-                                    );
+				    //-- Only add the spanning date if within the given month
+					$doM = trim(strftime('%e', strtotime("+ $x day", strtotime($data['start']))));
+					$dM = strftime('%m', strtotime("+ $x day", strtotime($data['start'])));
+				    
+				    if($this->debug) echo 'Day of Month: => '.$doM.' match to passed <strong>'.$match[1].' origMonth: '.$calDateMonth.' <=> Month: '.$dM.'</strong><br />';
+				    
+				    if( $dM == $calDateMonth){
+					$eventsByDay[$doM][] = array(
+						//'endDay' => $endDayOfMonth,
+						'id'=>$data['eid'],
+						'title'=>$data['title'],
+						'category'=>$data['category'],
+						'cateogryCSS' => array($data['catID'],$data['foregroundcss'],$data['backgroundcss'],$data['inlinecss']),
+						'description'=>$data['description'],
+						'DurationDays'=>$data['DurationDays'],
+						'DurationTime'=>$data['DurationTime'],
+						'link' => $data['link'],
+						'linkrel' => $data['linkrel'],
+						'linktarget' => $data['linktarget'],
+						'start' => strftime('%Y-%m-%d', strtotime("+ $x day", strtotime($data['start']))), //$data['start'],
+						'startdate' => strftime('%Y-%m-%d', strtotime("+ $x day", strtotime($data['startdate']))), //$data['startdate'],
+						'starttime' => $data['starttime'],
+						'end' => $data['end'],
+						'enddate' => strftime('%Y-%m-%d', strtotime("+ $x day", strtotime($data['start']))), //$data['enddate'],
+						'endtime' => $data['endtime']
+					);
+					if($this->debug) echo '<h3>Repeat if Duration:</h3><pre><code>'.print_r($eventsByDay[$doM]).'</code></pre>';
+				    }
                                 }
-                            }
+				//echo "&nbsp;&nbsp;&nbsp;Does span multiple days.<br />";
+                            } else {
+				//-- Does not span multiple days
+				//echo "&nbsp;&nbsp;&nbsp;Does not span multiple days.<br />";
+			    }
 			    
 			    // -- Add repeat dates as well now
 			    
@@ -1693,8 +1762,12 @@ if(!class_exists("mxCal_APP_CLASS")){
                             } 
                         }
                     }
-                    return $eventsByDay;
+		    return $eventsByDay;
                 }
+		
+		function so($a,$b){
+			return strcmp($a,$b);
+		}
                 
                 //-- Get Categories Array
                 function getCategories(){
@@ -1801,24 +1874,43 @@ if(!class_exists("mxCal_APP_CLASS")){
                 }
 
                 //-- BUILD DATE SELECTOR
-                function _makeDateSelector($field, $label, $tooltip, $val){
+                function _makeDateSelector($field, $label, $tooltip, $val, $class){
                     global $modx;
 		    $formEntries = '<div class="fm_row"><label>'.$label.'</label><div class="fm_entry">';
                     $fmDATE = ($_POST['fm'.$field]) ? $_POST['fm'.$field] : $val;
 		    $theme = $modx->config['manager_theme'];
 		    //cal_form
 		    $autoEndDateUpdate = ($field == 'startdate' ? 'document.forms[\'cal_form\'].elements[\'fmenddate\'].value=this.value;" ' : '');
-                    $formEntries .= '<input id="fm'.$field.'" name="fm'.$field.'" class="DatePicker" value="'.$fmDATE.'" onblur="documentDirty=true;{$autoEndDateUpdate}" /><a title="Remove Date" onclick="this.previousSibling.value=\'\'; return true;" onmouseover="window.status=\'Remove date\'; return true;" onmouseout="window.status=\'\'; return true;" style="position:relative;left:0;cursor:pointer; cursor:hand"><img src="media/style/'.$theme.'/images/icons/cal_nodate.gif" width="16" height="16" border="0" alt="Remove date" /></a><br /><em>YYYY-MM-DD</em>';
+                    $formEntries .= '<input id="fm'.$field.'" name="fm'.$field.'" class="DatePicker '.$class.'" value="'.$val.'" onblur="" /><a title="Remove Date" onclick="this.previousSibling.value=\'\'; return true;" onmouseover="window.status=\'Remove date\'; return true;" onmouseout="window.status=\'\'; return true;" style="position:relative;left:0;cursor:pointer; cursor:hand"><img src="media/style/'.$theme.'/images/icons/cal_nodate.gif" width="16" height="16" border="0" alt="Remove date" /></a><br /><em>YYYY-MM-DD</em>';
                     $formEntries .= $tooltip.'</div><div style="display:block;height:7px;clear:both;"></div>';
                     return $formEntries;
                 }
                 
-                //-- Make RTE
+		//-- Render RTE
+		function renderRTE($type='richtext',$field,$defaultValue='',$style=''){
+			//-- Uses the ModX manager/includes/tmplvars.inc.php file
+			// renderFormElement($field_type, $field_id, $default_text, $field_elements, $field_value, $field_style='')
+			global $modx;
+			
+			include_once(MODX_BASE_PATH.'manager/includes/tmplvars.inc.php');
+			
+			
+			$event_output = $modx->invokeEvent("OnRichTextEditorInit"
+							   , array('editor'=>$modx->config['which_editor'], 'elements'=>array('tv'.$field)));
+			if(is_array($event_output)) {
+				$editor_html = implode("",$event_output);
+			}
+			$rte_html = renderFormElement($type, $field, $defaultValue, '', '',$style);
+			return str_replace('tv'.$field, $field, $rte_html.$editor_html);
+		}
+		
+                //-- Depreciated 0.1.0-rc
+		//-- Make RTE
                 function makeRTE($field){
 			global $modx;
                     $rte = <<<EORTE
-<script language="javascript" type="text/javascript" src="%base%assets/plugins/tinymce3241/jscripts/tiny_mce/tiny_mce.js"></script>
-<script language="javascript" type="text/javascript" src="%base%assets/plugins/tinymce3241/xconfig.js"></script>
+<script language="javascript" type="text/javascript" src="%base%assets/plugins/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript" src="%base%assets/plugins/tinymce/js/xconfig.js"></script>
 <script language="javascript" type="text/javascript">
 	tinyMCE.init({
 		  theme : "advanced",
@@ -1839,7 +1931,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		  remove_linebreaks : false,
 		  convert_fonts_to_spans : "true",
 		  file_browser_callback : "myFileBrowser",
-		  external_link_list_url : "%base%assets/plugins/tinymce3241/tinymce.linklist.php",
+		  external_link_list_url : "%base%assets/plugins/tinymce/tinymce.linklist.php",
 		  theme_advanced_blockformats : "p,h1,h2,h3,h4,h5,h6,div,blockquote,code,pre,address",
 		  plugins : "table,style,advimage,advlink,searchreplace,print,contextmenu,paste,fullscreen,nonbreaking,xhtmlxtras,visualchars,media",
 		  theme_advanced_buttons0 : "",
@@ -1860,7 +1952,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 
 	});
 	function myFileBrowser (field_name, url, type, win) {		
-		var cmsURL = '%base%manager/media/browser/mcpuk/browser.php?Connector=%base%manager/media/browser/mcpuk/connectors/php/connector.php&ServerPath=%base%&editor=tinymce&editorpath=%base%assets/plugins/tinymce3241';    // script URL - use an absolute path!
+		var cmsURL = '%base%manager/media/browser/mcpuk/browser.php?Connector=%base%manager/media/browser/mcpuk/connectors/php/connector.php&ServerPath=%base%&editor=tinymce&editorpath=%base%assets/plugins/tinymce';    // script URL - use an absolute path!
 		switch (type) {
 			case "image":
 				type = 'images';
@@ -1952,7 +2044,7 @@ EORTE;
 				echo $key.'=>'.$val.'<br />';
 		    }
 		    
-		    //-- Check the Date and built the ocurrenc dates
+		    //-- Check the Date and build the repeat dates
 		    //-- prior to PHP 5.1.0 you would compare with -1, instead of false
 		    if (($timestamp = strtotime($startDate)) === false) {
 			return false;
@@ -2085,7 +2177,8 @@ EORTE;
 			$listDir = array();
 			$themeOptions = '';
 			
-			$XML = simplexml_load_file($dir."/".$this->config['mxCalendarTheme']."/theme.xml");
+			//$XML = simplexml_load_file($dir."/".$this->config['mxCalendarTheme']."/theme.xml");
+			$XML = simplexml_load_string(file_get_contents($dir."/".$this->config['mxCalendarTheme']."/theme.xml"));
 			$themeProperties["name"] = (string)$XML->themename;
 			$themeProperties["description"] = (string)$XML->themedescription;
 			$themeProperties["themelogo"] = (string)$XML->themelogo;

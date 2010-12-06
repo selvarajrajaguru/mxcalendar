@@ -3,7 +3,7 @@ if(!class_exists("geoLocator")){
     class geoLocator
     {
      protected $request;
-     public $apikey,$glat,$glong,$address,$db;
+     public $apikey,$glat,$glong,$address,$db,$canvas,$autofitmap;
      // Debug Varible to output/trouble shooting
      var $debug = true;
         public function __construct()
@@ -15,7 +15,7 @@ if(!class_exists("geoLocator")){
             // Google Maps HOST (USER MAP API)
             $this->host = 'maps.google.com';
             // Google Maps Zoom Level
-            $this->mapZoon = 13;
+            $this->mapZoom = 15;
             // Google Maps Address to get geo-location for
             $this->address = '';
             if($this->apikey)
@@ -29,6 +29,10 @@ if(!class_exists("geoLocator")){
             $this->mapJSv3 = '';
             // Map Location Var ID Counter
             $this->locID = 1;
+            // Map Default CSS ID
+            $this->canvas = 'map_canvas';
+            // Dynamic resize of the map zoom to fit all map points
+            $this->autofitmap = false;
         }
         
         public function getGEO($address = '')
@@ -72,17 +76,16 @@ if(!class_exists("geoLocator")){
                     $this->mapJSv3 .= '
                    var myLatLng =  new google.maps.LatLng('.$lat.', '.$lng.');
                     var myOptions = {'."\n";
-                    $this->mapJSv3 .= 'zoom: 15,'."\n";
+                    $this->mapJSv3 .= 'zoom: '.$this->mapZoom.','."\n";
                     $this->mapJSv3 .= 'center: myLatLng,'."\n";
                     $this->mapJSv3 .= 'mapTypeId: google.maps.MapTypeId.ROADMAP'."\n";
                     $this->mapJSv3 .= '}'."\n";
-                    $this->mapJSv3 .= 'map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);'."\n";
+                    $this->mapJSv3 .= 'map = new google.maps.Map(document.getElementById("'.$this->canvas.'"), myOptions);'."\n";
                     $this->mapJSv3 .= 'var marker = new google.maps.Marker({
                         position: myLatLng,
                         map: map,
                         title:"'.$address.'"});
-                        bounds.extend(myLatLng);
-                        map.fitBounds(bounds);
+                        '.($this->autofitmap ? 'bounds.extend(myLatLng);map.fitBounds(bounds);' : '').'
                         ';
     
                   }else{

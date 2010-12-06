@@ -118,7 +118,12 @@ var MOOdalBox = {
 	},
 
 	position: function() {
+		try{
 		this.overlay.setStyles({top: Window.getScrollTop()+'px', height: Window.getHeight()+'px'});
+		}
+		catch(e){
+			// do nothing
+		}
 	},
 
 	setup: function(open) {
@@ -150,12 +155,12 @@ var MOOdalBox = {
 		var nextEffect = this.nextEffect.bind(this);
 		var ajaxFailure = this.ajaxFailure.bind(this);
 		var ajaxOptions = {
-			method: 		'get',
-			update: 		this.contents, 
+			method: 	'get',
+			update: 	this.contents, 
 			evalScripts: 	this.options.evalScripts,
 			evalResponse: 	this.options.evalResponse,
 			onComplete: 	nextEffect, 
-			onFailure: 		ajaxFailure
+			onFailure: 	ajaxFailure
 			};
 		this.ajaxRequest = new Ajax(this.href, ajaxOptions).request();
 				
@@ -212,6 +217,7 @@ var MOOdalBox = {
 		case 5:
 			this.step = 0;
 		}
+		
 	},
 	
 	
