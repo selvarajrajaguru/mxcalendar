@@ -171,7 +171,7 @@ if($this->param['mxcAjaxPageId'] != $modx->documentIdentifier){
     $this->_addCSS('<link rel="stylesheet" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/css/moodalbox.css" type="text/css" media="screen" />');
 }
 
-$testAjaxCalNavigation = true;
+$testAjaxCalNavigation = false;
 if($testAjaxCalNavigation){
   //$paramHash = '';
   //$param['q']=$modx->makeUrl(50);
