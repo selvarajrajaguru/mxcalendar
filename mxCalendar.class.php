@@ -197,7 +197,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					$filter[] = ' E.active=1';
 					break;
 			}
-			$fmCat = $_REQUEST['CategoryId'];
+			$fmCat = $_REQUEST['CategoryId']; 
 			switch($fmCat){
 				default:
 					//-- Add any category filtering
@@ -471,7 +471,12 @@ if(!class_exists("mxCal_APP_CLASS")){
                 $this->output.="\t".'
             </select>
 	</div>';
-	$this->output .= "\t".$this->_makeDateSelector('event_occur_until', $fm_label[(count($fm_label)-1)], $tooltip, ($editArr['lastrepeat'] != '0000-00-00 00:00:00' && !empty($editArr['lastrepeat']) ? date('Y-m-d', strtotime($editArr['lastrepeat'])) : '')).'<img  title="'.$this->tooltip['event_occurance_rep'].'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />'."\n";
+	$this->output .= "\t".$this->_makeDateSelector('event_occur_until',
+						       $fm_label[(count($fm_label)-1)],
+						       $tooltip,
+						       ($editArr['lastrepeat'] != '0000-00-00 00:00:00' && !empty($editArr['lastrepeat']) ? date('Y-m-d', strtotime($editArr['lastrepeat']) ) : ''),
+						       ''
+						      ).'<img  title="'.$this->tooltip['event_occurance_rep'].'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />'."\n";
 	//$this->output.='</fieldset>'."\n";
 	$this->output.='</div>'."\n";
 		    
@@ -1528,9 +1533,10 @@ if(!class_exists("mxCal_APP_CLASS")){
 			    $url = preg_replace('/(.*)(' . $key . '=[0-9])+(.*)/i', '$1$3', $_SERVER['QUERY_STRING']  );
 			    $qs = (substr($url,-1,1) == '&' ? substr($url, 0, -1) : $url);
     
+			    $formFilters = '&fmfiltertime='.$_REQUEST['fmfiltertime'].'&CategoryId='.$_REQUEST['CategoryId'].'&fmeventlistpagelimit='.$_REQUEST['fmeventlistpagelimit'];
 			
 			for($x=0;$x<$resltLastPage;$x++)
-			    $paginationLinks .= "&nbsp;&nbsp;<a href='".(($x == $page) ? '#' : "?{$qs}&pg={$x}")."' class='mxcPage".($x==$page ? 'active' : '')."'>".($x + 1)."</a> ";
+			    $paginationLinks .= "&nbsp;&nbsp;<a href='".(($x == $page) ? '#' : "?{$qs}&pg={$x}").$formFilters."' class='mxcPage".($x==$page ? 'active' : '')."'>".($x + 1)."</a> ";
 			    
 			return array($results,$paginationLinks);
 		    }
@@ -1874,7 +1880,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                 }
 
                 //-- BUILD DATE SELECTOR
-                function _makeDateSelector($field, $label, $tooltip, $val, $class){
+                function _makeDateSelector($field=NULL, $label=NULL, $tooltip=NULL, $val=NULL, $class=NULL){
                     global $modx;
 		    $formEntries = '<div class="fm_row"><label>'.$label.'</label><div class="fm_entry">';
                     $fmDATE = ($_POST['fm'.$field]) ? $_POST['fm'.$field] : $val;
