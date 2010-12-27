@@ -392,6 +392,8 @@ if(!empty($param['mxcTplMonthHeading'])){
                     
                     
                     foreach($thisDayEvents[$counter] as $calEvents){
+                        //-- Fix future dates not in current month view
+                        if(strftime('%Y', strtotime($calEvents['start'])) == strftime('%Y', strtotime($newdate)) ){
                         $calEvents['DurationTime'] = str_replace('-','',$calEvents['DurationTime']);
                         $durDay = ((int)$calEvents['DurationDays'] > 0) ? $calEvents['DurationDays'].'d' : false ;
                         $durTime = ((int)substr($calEvents['DurationTime'], 1, 2) > 0 || (int)substr($calEvents['DurationTime'], 0, 2) > 0) ? substr($calEvents['DurationTime'], 0, strpos($calEvents['DurationTime'], ":")).'h '.(substr($calEvents['DurationTime'], 3, -3) != '00' ? substr($calEvents['DurationTime'], 3, -3).'m' : '') : null ;
@@ -403,7 +405,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                         $toolTip = explode(' ',strip_tags($calEvents['description']));
                         $toolTip = array_slice($toolTip, 0, 75);
                         if(!$param['mxcEventTitleLink']){
-                            $title = '<a id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" href="'.(!empty($calEvents['link']) ? (is_numeric((int)$calEvents['link']) ? $modx->makeUrl((int)$calEvents['link'], '', ($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full') : $calEvents['link']) : $modx->makeUrl((int)$ajaxPageId,'', '&details='.$calEvents['id'].($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full')).'" rel="'.(!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : '')).'" target="'.(!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']).'" style="color:inherit;display:block;position:relative;padding:3px;">'.$calEvents['title'].'</a>';
+                            $title = '<a id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" href="'.(!empty($calEvents['link']) ? (is_numeric((int)$calEvents['link']) ? $modx->makeUrl((int)$calEvents['link'], '', (is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full') : $calEvents['link']) : $modx->makeUrl((int)$ajaxPageId,'', '&details='.$calEvents['id'].(is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full')).'" rel="'.(!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : '')).'" target="'.(!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']).'" style="color:inherit;display:block;position:relative;padding:3px;">'.$calEvents['title'].'</a>';
                         } else {
                             $mxcNodeWrap = (!isset($param['mxcEventTitleNode']) ? 'span' : $param['mxcEventTitleNode']);
                             $title = '<'.$mxcNodeWrap.' id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" >'.$calEvents['title'].'</'.$mxcNodeWrap.'>';
@@ -437,6 +439,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                                 
                     $multipleEventCnt++;
                     }
+                    }//--End If check for current month of event
                 } //-- end if event found on give day counter
                 else {
                     // -- DO NOTHING

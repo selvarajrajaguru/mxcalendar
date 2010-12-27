@@ -1,7 +1,7 @@
 <?php
 if(!class_exists("mxCal_APP_CLASS")){
 	class mxCal_APP_CLASS {
-		var $version = '0.1.0-rc1';
+		var $version = '0.1.1-rc1';
 		var $user_id;
 		var $params = array();
 		var $config = array();
@@ -1104,14 +1104,15 @@ if(!class_exists("mxCal_APP_CLASS")){
 				if(isset($_REQUEST['r']) && !empty($_REQUEST['r'])){
 					
 				}
+				
 				//-- Replace placeholders w/UI values
 				$modx->setPlaceholder('mxcEventDetailId',$this->config['mxcEventDetailId']);
 				$modx->setPlaceholder('mxcEventDetailClass',$this->config['mxcEventDetailClass']);
 				$modx->setPlaceholder('mxcEventDetailTitle',$title);
 				$modx->setPlaceholder('mxcEventDetailLabelDateTime',($this->config['mxcEventDetailLabelDateTime'] ? $this->config['mxcEventDetailLabelDateTime'] : _mxCalendar_ed_dt));
 				$modx->setPlaceholder('mxcEventDetailDateTimeSeperator',$param['mxcDateTimeSeperator']);
-				$modx->setPlaceholder('mxcEventDetailStartDateTime',strftime((isset($param['mxcStartDateFormat']) ? $param['mxcStartDateFormat'] : _mxCalendar_ed_start_dateformat),strtotime( (!empty($_REQUEST['r']) ? $dates[$_REQUEST['r']].' '.$p_val['starttime'] : $p_val['start']) )));
-				$modx->setPlaceholder('mxcEventDetailEndDateTime',strftime((isset($param['mxcEndDateFormat']) ? $param['mxcEndDateFormat'] : _mxCalendar_ed_end_dateformat),strtotime( (!empty($_REQUEST['r']) ? $dates[$_REQUEST['r']].' '.$p_val['endtime'] : $p_val['end']) )));
+				$modx->setPlaceholder('mxcEventDetailStartDateTime',strftime((isset($param['mxcStartDateFormat']) ? $param['mxcStartDateFormat'] : _mxCalendar_ed_start_dateformat),strtotime( (isset($_REQUEST['r']) ? $dates[$_REQUEST['r']].' '.$p_val['starttime'] : $p_val['start']) )));
+				$modx->setPlaceholder('mxcEventDetailEndDateTime',strftime((isset($param['mxcEndDateFormat']) ? $param['mxcEndDateFormat'] : _mxCalendar_ed_end_dateformat),strtotime( (isset($_REQUEST['r']) ? $dates[$_REQUEST['r']].' '.$p_val['endtime'] : $p_val['end']) )));
 				$modx->setPlaceholder('mxcEventDetailDateTimeReoccurrences',$str_repeatDates);
 				$modx->setPlaceholder('mxcEventDetailLabelLocation',($p_val['location']?($this->config['mxcEventDetailLabelLocation']? $this->config['mxcEventDetailLabelLocation'] :_mxCalendar_ed_location):''));
 				$modx->setPlaceholder('mxcEventDetailLocation',str_replace('|','<br />',$p_val['location']));
@@ -1259,10 +1260,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 					}
 					if(!empty($e['repeat'])){
 					    $sub_dates = explode(',',$or['repeat']);
-					    $rcnt='1';
+					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
 						    $e['start']=$child_event;
 						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= strftime('%Y-%m-%d'))
+						    $e['repeatID'] = $rcnt;
 						    $ar_events[]=$e;
 						    if($e['DurationDays']){
 							    for($x=1;$x<=$e['DurationDays'];$x++){
@@ -1271,13 +1273,13 @@ if(!class_exists("mxCal_APP_CLASS")){
 							    }
 							    
 						    }
-						    $e['repeatID'] = $rcnt;
+						    
 						    $rcnt++;
 					    }
 					}
 				}
 				//-- Sort the results by start date
-				$ar_events = $this->multisort($ar_events,'start','description','title','end','location','eid','link','linkrel','linktarget');
+				$ar_events = $this->multisort($ar_events,'start','description','title','end','location','eid','link','linkrel','linktarget','repeatID');
 			} else {
 			    foreach( $records as $event ) {
 				$ar_events[] = $event;
@@ -1301,7 +1303,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                             $day=$datePieces[2];
 
 			    //-- Set the URL for the event title
-			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].($calEvents['repeat'] ? '&r='.$calEvents['repeat'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid']));
+			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].(is_numeric($event['repeatID']) ? '&r='.$event['repeatID'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid'].(is_numeric($event['repeatID']) ? '&r='.$event['repeatID'] : '') ));
 			    $mxcEventDetailAJAX = ($param['mxcAjaxPageId'] != $modx->documentIdentifier ? 'moodalbox ' : '');
 			    if((bool)$param['mxcEventListTitleLink'] == false)
 				$title = $event['title'];
@@ -1412,7 +1414,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		
 		
 		//--Add mutli-dimensional sorting
-		function multisort($array, $sort_by, $key1, $key2=NULL, $key3=NULL, $key4=NULL, $key5=NULL, $key6=NULL, $key7=NULL, $key8=NULL, $key9=NULL){
+		function multisort($array, $sort_by, $key1, $key2=NULL, $key3=NULL, $key4=NULL, $key5=NULL, $key6=NULL, $key7=NULL, $key8=NULL, $key9=NULL, $key10=NULL){
 		    // set order
 		    foreach ($array as $pos =>  $val)
 			$tmp_array[$pos] = $val[$sort_by];
@@ -1445,6 +1447,9 @@ if(!class_exists("mxCal_APP_CLASS")){
 			    }
 			if (isset($key9)){
 			    $return_array[$pos][$key9] = $array[$pos][$key9];
+			    }
+			if (isset($key10)){
+			    $return_array[$pos][$key10] = $array[$pos][$key10];
 			    }
 			}
 		    return $return_array;
@@ -1583,8 +1588,9 @@ if(!class_exists("mxCal_APP_CLASS")){
                 }
 
                 //-- Get Events Single Day and return the array
-                function _getEventsSingleDay($date=null,$month="m",$CatId=null){
+                function _getEventsSingleDay($date=null,$calendarDate=NULL,$CatId=null){
                     global $modx;
+		    $month = (!is_null($calendarDate) ? strftime('%m', strtotime($calendarDate)) : strftime('%Y-%m-$d') );
                     $date = (!is_null($date)) ? $date : strftime("%Y-%m-%d") ;
 		    $calDateMonth = strftime('%m',strtotime($date));
                     $enddate = strtotime ( "+1 month" , strtotime ( strftime("%Y-$month-1") ) ) ;
@@ -1893,7 +1899,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                 }
                 
 		//-- Render RTE
-		function renderRTE($type='richtext',$field,$defaultValue='',$style=''){
+		function renderRTE($type='image',$field,$defaultValue='',$style=''){
 			//-- Uses the ModX manager/includes/tmplvars.inc.php file
 			// renderFormElement($field_type, $field_id, $default_text, $field_elements, $field_value, $field_style='')
 			global $modx;
