@@ -15,7 +15,7 @@ div.sectionHeader #mxcVersion { position:absolute; right:25px; font-size:70%; }
 #fm_bsApp .fm_row .fm_actions { display:block; float:left; width:60%; margin:0 0 0 30%; padding:0; }
 
 #mxcLabelMonth,
-#mxcLabelYear  { padding:0 2px; }
+#mxcLabelYear  { padding:0 2px; text-transform: capitalize; }
 
 p.repeat { font-size:75%; }
 p.repeat span { clear:both; }
