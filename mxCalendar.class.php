@@ -1,7 +1,7 @@
 <?php
 if(!class_exists("mxCal_APP_CLASS")){
 	class mxCal_APP_CLASS {
-		var $version = '0.1.1-rc1';
+		var $version = '0.1.2-rc2';
 		var $user_id;
 		var $params = array();
 		var $config = array();
@@ -2046,7 +2046,7 @@ EORTE;
 		    //$endDate = '2010-06-11 19:30:00';
 		    //-- Holder of all events
 		    $ar_Recur = array();
-		    //-- Enable the debugger
+		    //-- Enable the debugger (Manager)
 		    $debug = false;
 		    
 		    $theParameter = array('MODE'=>$frequencymode, 'interval'=>$interval, 'frequency'=>$frequency, 'StartDate'=>$startDate, 'EndDate'=>$endDate, 'OnWeedkDay'=>$onwd);
@@ -2091,16 +2091,47 @@ EORTE;
 			case "w":
                             $valid = true;
                             
+			    //-- Get the first repeat Day of Week if the same as start date's Day of Week
+			    $curWeek = $startWeek = strftime('%W',strtotime($startDate));
+			    $occurance = strftime('%Y-%m-%d',strtotime($startDate));
+			    $nextWeek = strftime('%Y-%m-%d', strtotime('next monday', strtotime($startDate)));
+			    //-- Loop through days until the end of current week
+			    while($curWeek == $startWeek){
+				    $occurance = strftime('%Y-%m-%d',strtotime('next day', strtotime($occurance)));
+				    $curWeek= strftime('%W',strtotime($occurance));
+				    
+				    //-- Get occurance day of week int
+                                    $thisDOW = strftime('%w',strtotime("next day",strtotime($occurance)));
+				    
+                                    //-- Get the valid date formated of occurance
+                                    $occDate = strftime('%Y-%m-%d', strtotime("next day",strtotime($occurance)));
+				    
+                                    //-- Check if the date is one of the assigned and less than the end date
+                                    if(in_array($thisDOW, $onwd) && $curWeek == $startWeek && strtotime($occDate) < strtotime($nextWeek)){
+                                        if($debug) echo $occDate." MATCH on $thisDOW (start week) :: CurWk=$curWeek :: StartWk=$startWeek :: NextWk=$nextWeek<br />";
+                                        $ar_Recur[] = $occDate;
+                                    } else {
+                                        if($debug  && $curWeek == $startWeek && strtotime($occDate) < strtotime($nextWeek)) echo $occDate." (start week)<br />";
+                                    }
+			    }
+			    //-- Issue 35: Bug fix
+			    $startDate = strftime('%Y-%m-%d', strtotime('+'.($interval+1).' week mon '.strftime('%b',strtotime($startDate)).' '.strftime('%Y',strtotime($startDate))));
+			    if($debug) echo '<strong>Next Valid Repeat Week Start Date: </strong>: '.$startDate.'<br />';
+			    
+			    if($debug)
+				echo 'Modified start: '.$startDate.' with adjusted interval: '.($interval +1).'<br />'.
+				      'Frequency: '.$frequency.' with the max repeat of: '.($frequency*7).'<br />';
+				
                             for($x=0;$x < $frequency*7;$x++){
 				
                                 if($debug) echo "x={$x}<br />";
 				$occurance = date('Y-m-d  H:i:s', mktime(date('H', strtotime($startDate)), date('i', strtotime($startDate)), 0, date('m', strtotime($startDate)) , date('d', strtotime($startDate))+(($x*7)*$interval), date('y', strtotime($startDate)) ) );
                                 
                                 /*** r0.0.6b fix ***/
-                                $lastweek=sprintf("%02d", (strftime('%W',strtotime($occurance))-0));
-                                if($debug) echo 'Last Week: '.$lastweek."<br />";
+                                $lastweek=sprintf("%02d", (strftime('%W',strtotime($occurance)) ));
+                                if($debug) echo 'Week of: '.$lastweek."<br />";
                                 $year = strftime('%Y',strtotime($occurance));
-                                for ($i=1;$i<=7;$i++){
+                                for ($i=0;$i<=6;$i++){
                                     
 				    //-- Get occurance day of week int
                                     $thisDOW = strftime('%w',strtotime("+{$i} day",strtotime($occurance)));
