@@ -1,8 +1,8 @@
 	<?php
 	/**
 	 * Author: Charles Sanders (charless.mxcalendar@gmail.com)
-	 * Date: 011/30/2010
-	 * Version: 0.1.0-rc1
+	 * Date: 01/01/2011
+	 * Version: 0.1.2-rc2
 	 * 
 	 * Purpose: Creates a easy module for administrators to manage events.
 	 * For: MODx CMS 0.9.6 - 1.0.X(www.modxcms.com)
@@ -23,7 +23,7 @@
 	/** END CONFIGURATION SETTINGS **/
 	
 	define('CAL_URL', 'http://code.google.com/p/mxcalendar');
-	define('CAL_VERSION', '0.1.1-rc1');
+	define('CAL_VERSION', '0.1.2-rc2');
 	
 	// define base path
 	define('CAL_MOD_PATH', $basePath.'assets/modules/mxCalendar/');

@@ -1,10 +1,7 @@
 Release Notes: 0.1.0-rc1 - Aug 26, 2010
 * Updated FileList:
   |- mxCalendar.class.php
-  |- includes/calendar.inc.php
-  |- snippets/mxCalendar.module.txt
-  |- snippets/mxCalendar.snippet.txt
-  |- themes/default/css/i/mxCalendar.css
+  |- mxCalendar.tpl.php
   |- Release_Notes.txt
   
   * = Manual update required of Snippet and/or Module code in ModX manager using the new code file
@@ -15,6 +12,20 @@ Install Instructions
 1) Copy the zip file contents to tyour "modx/assets/modules/mxCalendar" folder
 2) Loginto your site Manager (http://yoursite.com/manager/)
 3) Run the mxCalendar
+
+--------------------------
+Release: (0.1.2-rc2)
+--------------------------
+Change Log:
+- Bug fix (Issue 35): Event weekly repeat dates not parsing properly
+- Enhancement: When adding repeat event with more than on day of the week ("Occurs On") will add any days to the current week of the given start date
+
+File Log: 
+M       mxCalendar.tpl.php
+C       includes/install/0.1.2-rc2.upgrade.mysql
+M       Release_Notes.txt
+M       mxCalendar.class.php
+
 
 --------------------------
 Release: (0.1.0-rc1)
