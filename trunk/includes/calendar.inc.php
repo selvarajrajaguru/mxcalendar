@@ -2,7 +2,7 @@
 /**
  * Author: Charles Sanders (charless.mxcalendar@gmail.com)
  * Date: 11/30/2010
- * Version: 0.1.0-rc1
+ * Version: 0.1.2-rc2
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
@@ -47,7 +47,6 @@ $themeEvent = $this->_getTheme('month.inner.day.event',$this->config['mxCalendar
         $istoday = date( "j");
     }
     
-    
     //-- create a calendar object based on the first day of the month
     $jd = cal_to_jd( CAL_GREGORIAN, date( "m" ),date(1), date( "Y" ) );
     
@@ -72,7 +71,7 @@ $themeEvent = $this->_getTheme('month.inner.day.event',$this->config['mxCalendar
     if($newMonth == 12 & $type == '+'){
         $evMonth = 1;
         $evYear = $newYear + 1;
-    }elseif($newMonth == 1 & $type == ''){
+    }elseif($newMonth == 1 & $type == '' &  isset($_REQUEST['dt'])){
         $evMonth = 12;
         $evYear = $newYear - 1;
     }else{
