@@ -1,8 +1,8 @@
 <?php
 /**
  * Author: Charles Sanders (charless.mxcalendar@gmail.com)
- * Date: 11/30/2010
- * Version: 0.1.0-rc1
+ * Date: 1/05/2010
+ * Version: 0.1.2-rc2
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
@@ -149,6 +149,8 @@ if(isset($mxcJSCodeSource))
   $bsCalParams['mxcJSCodeSource'] = $mxcJSCodeSource;
 if(isset($mxcJSCodeLibrary))
   $bsCalParams['mxcJSCodeLibrary'] = $mxcJSCodeLibrary;
+if(isset($mxcGlobalMonthsOverride))
+  $bsCalParams['mxcGlobalMonthsOverride'] = $mxcGlobalMonthsOverride;
 
 
 //**** Build the core class ****//
