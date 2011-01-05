@@ -2048,7 +2048,7 @@ EORTE;
 		    //-- Holder of all events
 		    $ar_Recur = array();
 		    //-- Enable the debugger (Manager)
-		    $debug = true;
+		    $debug = false;
 		    
 		    $theParameter = array('MODE'=>$frequencymode, 'interval'=>$interval, 'frequency'=>$frequency, 'StartDate'=>$startDate, 'EndDate'=>$endDate, 'OnWeedkDay'=>$onwd);
 		    if($debug){
