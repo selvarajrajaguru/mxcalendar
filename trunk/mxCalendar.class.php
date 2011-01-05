@@ -913,7 +913,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    if($this->debug) print("Reoccur Date<br />".$ar_Events);
 		    
 		    $str_fmStartDate = $param['fmstartdate'];
-		    $str_fmEndDate = $param['fmenddate'];
+		    $str_fmEndDate = ($param['fmenddate'] ? $param['fmenddate'] : $param['fmstartdate']);
 		    
 		    //-- Depreciated as of 0.1.0-rc1
 		    //-- $str_fmStartDate = $param['fmstartdate'].' '.$param['startdate_htime'].':'.$param['startdate_mtime'].$param['startdate_apm'];
@@ -951,16 +951,17 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    'event_occurance_rep' => $modx->db->escape((int)$param['fmevent_occurance_rep']),
 				    '_occurance_properties' => implode(',',$repOccOn)
                                     );
+		    var_dump($_POST);
 		    if($this->debug) print_r($fields);
                     if($method == _mxCalendar_btn_addEvent){
                         $NID = $modx->db->insert( $fields, $table_name);
                         if($NID) $_POST = array();
                     } else {
-                        $modx->db->update( $fields, $table_name, 'id='.$_POST['fmeid']);
+                        $result = $modx->db->update( $fields, $table_name, 'id='.$_POST['fmeid']);
                         $NID = $param['fmeid'];
                         $_POST = array();
                     }
-                    return "($NID) $sT";
+                    return "($NID) $sT :: $result";
                 }
                 
                 //*************************//
@@ -1893,7 +1894,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    $theme = $modx->config['manager_theme'];
 		    //cal_form
 		    $autoEndDateUpdate = ($field == 'startdate' ? 'document.forms[\'cal_form\'].elements[\'fmenddate\'].value=this.value;" ' : '');
-                    $formEntries .= '<input id="fm'.$field.'" name="fm'.$field.'" class="DatePicker '.$class.'" value="'.$val.'" onblur="" /><a title="Remove Date" onclick="this.previousSibling.value=\'\'; return true;" onmouseover="window.status=\'Remove date\'; return true;" onmouseout="window.status=\'\'; return true;" style="position:relative;left:0;cursor:pointer; cursor:hand"><img src="media/style/'.$theme.'/images/icons/cal_nodate.gif" width="16" height="16" border="0" alt="Remove date" /></a><br /><em>YYYY-MM-DD</em>';
+                    $formEntries .= '<input id="fm'.$field.'" name="fm'.$field.'" class="DatePicker '.$class.'" value="'.$val.'" onblur="" /><a title="Remove Date" onclick="this.previousSibling.value=\'\';this.previousSibling.previousSibling.value=\'\'; return true;" onmouseover="window.status=\'Remove date\'; return true;" onmouseout="window.status=\'\'; return true;" style="position:relative;left:0;cursor:pointer; cursor:hand"><img src="media/style/'.$theme.'/images/icons/cal_nodate.gif" width="16" height="16" border="0" alt="Remove date" /></a><br /><em>YYYY-MM-DD</em>';
                     $formEntries .= $tooltip.'</div><div style="display:block;height:7px;clear:both;"></div>';
                     return $formEntries;
                 }
