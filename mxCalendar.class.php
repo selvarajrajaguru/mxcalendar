@@ -883,7 +883,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    **/
 		    
 		    //-- Create @param for entry
-                    $sT = $modx->db->escape($param['fmtitle']);
+                    $sT = $modx->db->escape(htmlentities($param['fmtitle']));
                     $sD = $modx->db->escape($param['fmdescription']);
                     $sC = $modx->db->escape($param['fmcategory']);
 		    $sWG = $modx->db->escape(implode(',',$_POST['fmrestrictedwebusergroup']));
@@ -2047,7 +2047,7 @@ EORTE;
 		    //-- Holder of all events
 		    $ar_Recur = array();
 		    //-- Enable the debugger (Manager)
-		    $debug = false;
+		    $debug = true;
 		    
 		    $theParameter = array('MODE'=>$frequencymode, 'interval'=>$interval, 'frequency'=>$frequency, 'StartDate'=>$startDate, 'EndDate'=>$endDate, 'OnWeedkDay'=>$onwd);
 		    if($debug){
@@ -2115,7 +2115,7 @@ EORTE;
                                     }
 			    }
 			    //-- Issue 35: Bug fix
-			    $startDate = strftime('%Y-%m-%d', strtotime('+'.($interval+1).' week mon '.strftime('%b',strtotime($startDate)).' '.strftime('%Y',strtotime($startDate))));
+			    $startDate = strftime('%Y-%m-%d', strtotime('+'.($interval-1).' week mon '.strftime('%b',strtotime($startDate)).' '.strftime('%Y',strtotime($startDate))));
 			    if($debug) echo '<strong>Next Valid Repeat Week Start Date: </strong>: '.$startDate.'<br />';
 			    
 			    if($debug)
