@@ -121,10 +121,11 @@ $themeEvent = $this->_getTheme('month.inner.day.event',$this->config['mxCalendar
     $mxcMonthFormat = (!isset($param['mxcMonthLabelFormat']) ? '%B' : $param['mxcMonthLabelFormat']);
 
 $monthname =strftime($mxcMonthFormat,  mktime(0, 0, 0, $newdatePieces[1],$newdatePieces[2], $newdatePieces[0] ) );
-
-$arr_MonthLabel_override = explode(',', _mxCalendar_gl_Months);
-$monthname = $arr_MonthLabel_override[$newdatePieces[1]-1];
-
+//-- Create a language file override for the Month labels when localization becomes an issues
+if(defined('_mxCalendar_gl_Months') && $param['mxcGlobalMonthsOverride']==true){
+    $arr_MonthLabel_override = explode(',', _mxCalendar_gl_Months);
+    $monthname = $arr_MonthLabel_override[$newdatePieces[1]-1];
+} 
 
     if($modx->insideManager()){
         //-- Make Manager Friendly URLs
