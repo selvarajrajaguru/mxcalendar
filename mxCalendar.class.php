@@ -951,7 +951,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    'event_occurance_rep' => $modx->db->escape((int)$param['fmevent_occurance_rep']),
 				    '_occurance_properties' => implode(',',$repOccOn)
                                     );
-		    var_dump($_POST);
+		    
 		    if($this->debug) print_r($fields);
                     if($method == _mxCalendar_btn_addEvent){
                         $NID = $modx->db->insert( $fields, $table_name);
