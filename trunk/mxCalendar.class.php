@@ -2115,10 +2115,7 @@ EORTE;
                                         if($debug  && $curWeek == $startWeek && strtotime($occDate) < strtotime($nextWeek)) echo $occDate." (start week)<br />";
                                     }
 			    }
-			    //-- Issue 35: Bug fix
 
-			    //$startDate = strftime('%Y-%m-%d', strtotime('+'.($interval).' week mon '.strftime('%b',strtotime($startDate)).' '.strftime('%Y',strtotime($startDate))));
-			    //-----------
 			    $startDate  = strftime('%Y-%m-%d', strtotime($startDate.' last mon '));
 			    if($debug) echo '<strong>Start date MONDAY of that week: </strong>: '.$startDate.'<br />';
 			    $startDate = strftime('%Y-%m-%d', strtotime($startDate.' + '.$interval.' weeks'));
