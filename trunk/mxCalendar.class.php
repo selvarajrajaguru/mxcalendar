@@ -2108,7 +2108,7 @@ EORTE;
                                     $occDate = strftime('%Y-%m-%d', strtotime("next day",strtotime($occurance)));
 				    
                                     //-- Check if the date is one of the assigned and less than the end date
-                                    if(in_array($thisDOW, $onwd) && $curWeek == $startWeek && strtotime($occDate) < strtotime($nextWeek)){
+                                    if(in_array($thisDOW, $onwd) && $curWeek == $startWeek && strtotime($occDate) < strtotime($nextWeek) && strtotime($occDate) > strtotime($startDate)){
                                         if($debug) echo $occDate." MATCH on $thisDOW (start week) :: CurWk=$curWeek :: StartWk=$startWeek :: NextWk=$nextWeek<br />";
                                         $ar_Recur[] = $occDate;
                                     } else {
@@ -2116,18 +2116,24 @@ EORTE;
                                     }
 			    }
 			    //-- Issue 35: Bug fix
-			    $startDate = strftime('%Y-%m-%d', strtotime('+'.($interval-1).' week mon '.strftime('%b',strtotime($startDate)).' '.strftime('%Y',strtotime($startDate))));
-			    if($debug) echo '<strong>Next Valid Repeat Week Start Date: </strong>: '.$startDate.'<br />';
-			    
+
+			    //$startDate = strftime('%Y-%m-%d', strtotime('+'.($interval).' week mon '.strftime('%b',strtotime($startDate)).' '.strftime('%Y',strtotime($startDate))));
+			    //-----------
+			    $startDate  = strftime('%Y-%m-%d', strtotime($startDate.' last mon '));
+			    if($debug) echo '<strong>Start date MONDAY of that week: </strong>: '.$startDate.'<br />';
+			    $startDate = strftime('%Y-%m-%d', strtotime($startDate.' + '.$interval.' weeks'));
 			    if($debug)
-				echo 'Modified start: '.$startDate.' with adjusted interval: '.($interval +1).'<br />'.
-				      'Frequency: '.$frequency.' with the max repeat of: '.($frequency*7).'<br />';
-				
-                            for($x=0;$x < $frequency*7;$x++){
-				
+				echo '<strong>Next Valid Repeat Week Start Date: </strong>: '.$startDate.'<br />'.
+				     'Modified start: '.$startDate.' with adjusted interval: '.($interval).'<br />'.
+				     'Frequency: '.$frequency.' with the max repeat of: '.($frequency*7).'<br />';
+			    
+			    //-- Created a new loop to limit the possibility of almost endless loop
+			    $newDate = $startDate;
+
+			    while(strtotime($newDate) <= strtotime($endDate)){
                                 if($debug) echo "x={$x}<br />";
-				$occurance = date('Y-m-d  H:i:s', mktime(date('H', strtotime($startDate)), date('i', strtotime($startDate)), 0, date('m', strtotime($startDate)) , date('d', strtotime($startDate))+(($x*7)*$interval), date('y', strtotime($startDate)) ) );
-                                
+                                $occurance = strftime('%Y-%m-%d', strtotime($newDate));
+				
                                 /*** r0.0.6b fix ***/
                                 $lastweek=sprintf("%02d", (strftime('%W',strtotime($occurance)) ));
                                 if($debug) echo 'Week of: '.$lastweek."<br />";
@@ -2154,9 +2160,12 @@ EORTE;
                                         $valid = false; //-- End the loop
                                         break;
                                     }
+				    //-- Reset the date for while loop validation
+				    $newDate = strftime('%Y-%m-%d', strtotime($occurance.' + '.$interval.' weeks'));
                                 }
                                 if(!$valid) break;
 			    }
+			    if($debug) echo '<strong><em>'.count($ar_Recur).'<em> total matches dates added.</strong>';
 			    break;    
 			case "y":
 			    while (++$x){
