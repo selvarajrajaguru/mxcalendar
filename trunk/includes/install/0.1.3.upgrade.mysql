@@ -1,0 +1,6 @@
+--
+-- Database updates for release 0.1.3
+--
+INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value)
+VALUES (55,'mxcCustomFieldTypes','');
+ALTER TABLE `#__mxcalendar_events` ADD `customFields` TEXT NOT NULL; 
