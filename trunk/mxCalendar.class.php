@@ -1,7 +1,7 @@
 <?php
 if(!class_exists("mxCal_APP_CLASS")){
 	class mxCal_APP_CLASS {
-		var $version = '0.1.2-rc2';
+		var $version = '0.1.3';
 		var $user_id;
 		var $params = array();
 		var $config = array();
@@ -275,8 +275,8 @@ if(!class_exists("mxCal_APP_CLASS")){
                 function AddEvent($params=false){
                     global $modx;
                     
-		    $this->output = $this->message;
-		    $this->message='';
+					$this->output = $this->message;
+					$this->message='';
 
                     //-- Form action and label properties
                     $fmAction = (!isset($_REQUEST['fmeid'])) ? 'save' : 'update';
@@ -284,19 +284,153 @@ if(!class_exists("mxCal_APP_CLASS")){
                     
                     if(!empty($_REQUEST['fmeid'])){
                         //-- Get record to edit
-                        $result = $modx->db->select('id,title,description,category,restrictedwebusergroup,link,linkrel,linktarget,location,displayGoogleMap,start,startdate,starttime,end,enddate,endtime,event_occurance,event_occurance_rep,_occurance_properties,lastrepeat', $modx->getFullTableName($this->tables['events']),'id = '.$_REQUEST['fmeid'] );
+                        $result = $modx->db->select('id,title,description,category,restrictedwebusergroup,link,linkrel,linktarget,location,displayGoogleMap,start,startdate,starttime,end,enddate,endtime,event_occurance,event_occurance_rep,_occurance_properties,lastrepeat,customFields', $modx->getFullTableName($this->tables['events']),'id = '.$_REQUEST['fmeid'] );
                         if( $modx->db->getRecordCount( $result ) ) {
                             $output .= '<ul>';
                             $editArr = $modx->db->getRow( $result );
                         }
                     } else { $editArr = array(); }
+					
+		    
 		    $this->output .= '<h1>'.(isset($_REQUEST['fmeid']) ? _mxCalendar_ae_headingEdit.' '.$editArr['title'] : _mxCalendar_ae_headingAdd).'</h1>';
+                    
+                    //-- Get the custom field type
+		    $arr_customFieldTypes = json_decode($this->config['mxcCustomFieldTypes'],true);
+			    
+                    //-- Create custom field types
+                    $dyn_form_output = '';
+		    $dyn_form_vals = json_decode($editArr['customFields'], TRUE);
+		    $dyn_form_vals = count($dyn_form_vals) ? $dyn_form_vals : $arr_customFieldTypes;
+                    foreach($dyn_form_vals AS $cft){
+				if($cft['name'] && $cft['label']){
+						$dyn_form_tpl = '<div class="fm_row"><label>%1$s</label><div><small style="color:blue;">[+mxc%3$s+]</small><br />%2$s</div></div>';
+						if($this->debug) $dyn_form_output .= '<pre><code>'.var_dump($cft).'</code></pre>';
+						SWITCH($cft['type']){
+							case 'text':
+								$dyn_form_output .= sprintf(
+									$dyn_form_tpl,
+									htmlentities($cft['label']),
+									sprintf( '<input type="text" name="mxcft_%1$s" value="%2$s">',htmlentities($cft['name']),($cft['val'] ? $cft['val'] : htmlentities($cft['default'])) ),
+									$cft['name']
+									);
+								break;
+							case 'datetime':
+							case 'date':
+							case 'time':
+								$dyn_form_output .= sprintf(
+											$dyn_form_tpl,
+											htmlentities($cft['label']),
+											str_replace('tvmxcft_'.$cft['name'],'mxcft_'.$cft['name'],$this->renderRTE($cft['type'],'mxcft_'.$cft['name'],($cft['val'] ? $cft['val'] : $cft['default']),'')),
+											$cft['name']
+											);
+								break;
+							case 'image':
+								/*
+								$dyn_form_output .= sprintf(
+											$dyn_form_tpl,
+											htmlentities($cft['label']),
+											str_replace('tvfm'.$cft['name'],'fm'.$cft['name'],$this->renderRTE('image','fm'.$cft['name'],$cft['default'],''))
+											//sprintf( 'IMAGE: %1$s=>%2$s',htmlentities($cft['name']),htmlentities($cft['default']) )
+											);
+								*/
+								$dyn_form_output .=sprintf(
+											$dyn_form_tpl,
+											htmlentities($cft['label']),
+								'<script type="text/javascript">
+									var lastImageCtrl;
+									var lastFileCtrl;
+									function OpenServerBrowser(url, width, height ) {
+										var iLeft = (screen.width  - width) / 2 ;
+										var iTop  = (screen.height - height) / 2 ;
+		
+										var sOptions = \'toolbar=no,status=no,resizable=yes,dependent=yes\' ;
+										sOptions += \',width=\' + width ;
+										sOptions += \',height=\' + height ;
+										sOptions += \',left=\' + iLeft ;
+										sOptions += \',top=\' + iTop ;
+		
+										var oWindow = window.open( url, \'FCKBrowseWindow\', sOptions ) ;
+									}			
+									function BrowseServer(ctrl) {
+										lastImageCtrl = ctrl;
+										var w = screen.width * 0.7;
+										var h = screen.height * 0.7;
+										OpenServerBrowser(\'/modxevo/manager/media/browser/mcpuk/browser.html?Type=images&Connector=/modxevo/manager/media/browser/mcpuk/connectors/php/connector.php&ServerPath=/modxevo/\', w, h);
+									}
+									
+									function BrowseFileServer(ctrl) {
+										lastFileCtrl = ctrl;
+										var w = screen.width * 0.7;
+										var h = screen.height * 0.7;
+										OpenServerBrowser(\'/modxevo/manager/media/browser/mcpuk/browser.html?Type=files&Connector=/modxevo/manager/media/browser/mcpuk/connectors/php/connector.php&ServerPath=/modxevo/\', w, h);
+									}
+									
+									function SetUrl(url, width, height, alt){
+										if(lastFileCtrl) {
+											var c = document.cal_form[lastFileCtrl];
+											if(c) c.value = url;
+											lastFileCtrl = \'\';
+										} else if(lastImageCtrl) {
+											//alert(\'New Image: \'+lastImageCtrl+\' == URL: \'+url);
+											var c = document.cal_form[lastImageCtrl];
+											var p = document.getElementById(\'_pv'.$cft['name'].'\').src = \'/modxevo/\'+url;
+											if(c) c.value = url;
+											lastImageCtrl = \'\';
+										} else {
+											return;
+										}
+									}
+									</script><input type="text" id="'.$cft['name'].'" name="mxcft_'.$cft['name'].'"  value="'.($cft['val'] ? $cft['val'] : $cft['default']).'"  style="" onchange="documentDirty=true;" />&nbsp;<input type="button" value="Insert" onclick="BrowseServer(\''.$cft['name'].'\')" />
+									'.'<label>&nbsp;</label><img name="_pv'.$cft['name'].'" id="_pv'.$cft['name'].'" src="../'.($cft['val'] ? $cft['val'] : $cft['default']).'" alt="" />', $cft['name']);
+								break;
+							
+							case 'select':
+								$opt_arr = explode(',', $cft['options']);
+								if(is_array($opt_arr) && count($opt_arr)){
+									$opts='';
+									foreach($opt_arr AS $o){
+										$opts .= '<option value="'.$o.'" '.($cft['val'] == $o ? "selected=selected" : '').'>'.$o.'</option>';
+									}
+									$dyn_form_output .= sprintf(
+													$dyn_form_tpl,
+													htmlentities($cft['label']),
+													'<select name="mxcft_'.$cft['name'].'">'.$opts.'</select>',
+													$cft['name']
+												   );
+								}
+								break;
+							case 'resource':
+								
+								$resc_list = $modx->getAllChildren(0, 'menuindex', 'ASC', 'id, alias, menutitle');
+								$opts = '<option value=""></option>';
+								foreach($resc_list AS $v){
+									$opts .= '<option value="'.$v['id'].'" '.($cft['val'] == $v['id'] ? 'selected="selected"' : '').'>['.$v['id'].'] '.(!empty($v['menutitle']) ? $v['menutitle'] : $v['alias']).'</option>';
+								}
+								$dyn_form_output .= sprintf(
+													$dyn_form_tpl,htmlentities($cft['label']),
+													'<select name="mxcft_'.$cft['name'].'" onChange="">'.$opts.'</select>',
+													$cft['name']
+											   );
+								//** Set the UI render to use the resource fields as placeholders for the mxCalendar ?? title override - how to make that happen...
+								
+								break;
+							default:
+								//-- Do nothing
+								//var_dump($cft);
+								break;
+						}
+						
+					}
+		    }
+                    
                     //-- Get language file labels
 		    $fm_label = explode(',', _mxCalendar_ae_labels);
                     $fm_columns = $this->get_columns($this->tables['events']);
                     $this->output .= '<form id="fm_bsApp" name="cal_form" method="post" action="">'."\n";
+                    $this->output .= '<fieldset><legend>'._mxCalendar_con_mscCustomFieldLegend.'</legend>'.$dyn_form_output.'</fieldset>';
                     $x=0;
 		    foreach($fm_columns as $key=>$val){
+				
                         //-- List of excluded table columns [DO NOT EDIT]
                         $excluded = array('id','active','start','end', 'repeat', 'event_occurance', '_occurance_wkly', 'event_occurance_rep', 'lastrepeat', '_occurance_properties','lastrepeat');
                         //-- Make sure it's not an excluded column
@@ -305,82 +439,34 @@ if(!class_exists("mxCal_APP_CLASS")){
                             SWITCH ($val[1]){
                                 case 'text':
                                     if($val[0] == 'description'){
-					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry">'.$this->renderRTE('richtext','fm'.$val[0],$editArr[$val[0]],'').$tooltip.'</div></div>'."\n";
-				    } else {
-					$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
-				    }
+										$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry">'.$this->renderRTE('richtext','fm'.$val[0],$editArr[$val[0]],'').$tooltip.'</div></div>'."\n";
+									} else {
+										$this->output .= "\t".'<div class="fm_row"><label>'.$fm_label[$x].'</label><div class="fm_entry"><input type="text" name="fm'.$val[0].'" value="'.$editArr[$val[0]].'" />'.$tooltip.'</div></div>'."\n";
+									}
                                     break;
                                 case 'date':
                                     if($val[0] == 'startdate'){
                                       $editSD = ($editArr['start'] != '0000-00-00 00:00:00' && !empty($editArr['start']) ? strftime('%Y-%m-%d %H:%M', strtotime($editArr['start'])) : strftime('%Y-%m-%d %H:%M')); //$editArr['start'];
-				      $editSDF = $editArr['start'];
-				      $dateCSSClass = 'mxcStartDate';
+									  $editSDF = $editArr['start'];
+									  $dateCSSClass = 'mxcStartDate';
                                     }
                                     elseif($val[0]=='enddate'){
-                                      $editSD = ($editArr['end'] != '0000-00-00 00:00:00' && !empty($editArr['end']) ? strftime('%Y-%m-%d %H:%M', strtotime($editArr['end'])) : strftime('%Y-%m-%d %H:%M')); //$editArr['end'];
-				      $editSDF = $editArr['end'];
-				      $dateCSSClass = 'mxcEndDate';
+										$editSD = ($editArr['end'] != '0000-00-00 00:00:00' && !empty($editArr['end']) ? strftime('%Y-%m-%d %H:%M', strtotime($editArr['end'])) : strftime('%Y-%m-%d %H:%M')); //$editArr['end'];
+										$editSDF = $editArr['end'];
+										$dateCSSClass = 'mxcEndDate';
                                     }
                                     else{
-                                      $editSD = null;
-				      $dateCSSClass = '';
+										$editSD = null;
+										$dateCSSClass = '';
                                     }
                                     
 				    $advancedDateEntry=$this->config['mxcAdvancedDateEntry'];
 				    if($advancedDateEntry){
-					$this->output .= "\t<div class=\"fm_row\"><label>".$fm_label[$x]."</label><div class='fm_entry'><input type=\"text\" value=\"".$editSD."\" name=\"fm".$val[0]."\">".$tooltip."</div></div>";
+						$this->output .= "\t<div class=\"fm_row\"><label>".$fm_label[$x]."</label><div class='fm_entry'><input type=\"text\" value=\"".$editSD."\" name=\"fm".$val[0]."\">".$tooltip."</div></div>";
 				    } else {
-					$this->output .= "\t".$this->_makeDateSelector($val[0], $fm_label[$x], $tooltip, $editSD, $dateCSSClass)."\n";
-					$this->output .= "\t</div>"; //-- Fixed broken HTML tags cuasing tabs after Events to not display
+						$this->output .= "\t".$this->_makeDateSelector($val[0], $fm_label[$x], $tooltip, $editSD, $dateCSSClass)."\n";
+						$this->output .= "\t</div>"; //-- Fixed broken HTML tags cuasing tabs after Events to not display
 				    }
-				    
-				   //-- Depreciated as of 0.1.0-rc
-				   /*
-				    //- Add the dropdown list for time selector
-				    $dl_output='';
-				    $dlx = 1;
-				    
-				    
-				    $counter_clock = ((boolean)$this->config['mgrAddClockTwentryFourHour'] == true) ? '' : array('am','pm') ;
-				    $counter_limit = ((boolean)$this->config['mgrAddClockTwentryFourHour'] == true) ? 24 : 12 ;
-				    if((boolean)$this->config['mgrAddClockTwentryFourHour'] == true){
-					$myHour = date('G', strtotime($editSDF));
-					$myMinutes = date('i', strtotime($editSDF));
-					
-				    } else {
-					$myHour = date('g', strtotime($editSDF));
-					$myMinutes = date('i', strtotime($editSDF));
-					$myAPM = date('a', strtotime($editSDF));
-				    }
-				    
-				    
-				    while($dlx<=$counter_limit){
-					$dl_output .= "<option value='".sprintf('%2d',$dlx)."' ".$isselected." ".($myHour == $dlx ? 'selected=selected' : '').">".sprintf("%2d",$dlx)."</option>";
-					$dlx++;
-				    }
-				    
-				    //-- Add the AM/PM selector if not 24 hour clock
-				    $amPM_sel = '';
-				    if((boolean)$this->config['mgrAddClockTwentryFourHour'] !== true){
-					foreach($counter_clock AS $cl_label)
-						$amPM_sel .= '<option value="'.$cl_label.'" '.($myAPM == $cl_label ? 'selected=selected' : '').'>'.$cl_label.'</option>';
-					$amPM_sel = '<select name="'.$val[0].'_apm">'.$amPM_sel.'</select>'; 
-				    } else { $amPM_sel = ''; }
-
-				    if(!$advancedDateEntry){
-					$this->output .= "\t<div class=\"fm_row\"><label>&nbsp;</label><div class='fm_entry'>Time: <select name='".$val[0]."_htime'>".$dl_output."</select>";
-                                   
-					//-- Make the minutes dropdown list increment every 5 min
-					$dl_output='';
-					$dlxm = 0;
-					while(($dlxm*5)<60){
-					    $dl_output .= "<option value='".sprintf('%02d',($dlxm * 5))."' ".($myMinutes == sprintf('%02d',($dlxm * 5)) ? 'selected="selected"' : '').">".sprintf('%02d',($dlxm * 5))."</option>";
-					    $dlxm++;
-					}
-					$this->output .= "\t<select name='".$val[0]."_mtime'>".$dl_output."</select>".$amPM_sel."</div></div>";
-					$this->output .= "\n</div>\n\n";
-				    }
-				   */
 				    
 				    break;
                                 case 'time':
@@ -481,7 +567,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 	$this->output.='</div>'."\n";
 		    
 		    $fmeid = ($_REQUEST['fmeid']) ? '<input type="hidden" id="fmeid" name="fmeid" value="'.$_REQUEST['fmeid'].'">' : '';
-                    $this->output .= "\t".'<div class="fm_row"><div class="fm_actions">
+                    $this->output .= "\t".'</fieldset><div class="fm_row"><div class="fm_actions">
                                         <input type=\'submit\' name=\'fmaction\' value=\'Cancel\' onclick="document.cookie=\'webfxtab_tabPanel=0;path=/;\'">
 					
                                         <input type="submit" name="fmaction" value="'.(!empty($_REQUEST['fmeid']) ? _mxCalendar_btn_updateEvent : _mxCalendar_btn_addEvent).'" />
@@ -673,12 +759,50 @@ if(!class_exists("mxCal_APP_CLASS")){
 		//-- Manager::Configuration Update
 		function update_Configuration(){
 			global $modx;
+			
+			//-- Create the array to hold all custom form element values
+			$dyn_kv = array();
+			//-- Create a default array to ensure all property values are held
+			$dyn_kv_default = array('label'=>'', 'name'=>'','type'=>'','options'=>'','default'=>'','required'=>'false');
+			
 			//-- Save new configuration settings on update
 			if($this->params['action'] == 'updateConfig'){
 				foreach($_POST as $k=>$v){
 					$fields=array('value'=>$v);
-				 if(is_int($k)) $modx->db->update( $fields, $modx->db->config['table_prefix'].$this->tables['config'], "id=".$k);
+					//-- Only update if it's a number as it's a direct relationship to the record ID
+					if(is_int($k)) $modx->db->update( $fields, $modx->db->config['table_prefix'].$this->tables['config'], "id=".$k);
+					
+					//-- Check if the field is a custom form element
+					if(substr($k,0,6) == 'mxcft_'){
+						$exp = explode('_',$k);
+							//-- Sample form name "mxcft_default_2"
+							if(count($dyn_kv[$exp[2]]) < 6 )
+								$dyn_kv[$exp[2]] = $dyn_kv_default;
+							$dyn_kv[$exp[2]][$exp[1]]=$v;
+
+						
+					}
 				}
+				$dyn_kv=array_filter($dyn_kv);
+				//-- Update custom field entry
+				if(count($dyn_kv)) {
+					$dyn_nf = json_encode($dyn_kv);
+					//$fields = array('value'=>'[{"label":"Performer","name":"performer","type":"select","options":"Atrist One, Next Artist, So on","default":"Enter text","required":"false"},{"label":"Ticket","name":"ticket","type":"text","options":"","default":"00.00","required":"false"},{"label":"Event Image","name":"eventimage","type":"image","options":"","default":"","required":"false"},{"label":"Event Landing Page","name":"landingpage","type":"resource","options":"","default":"","required":"false"}]');
+					$fields = array('value'=>$dyn_nf);
+					$modx->db->update( $fields, $modx->db->config['table_prefix'].$this->tables['config'], "param='mxcCustomFieldTypes'");
+				}
+			
+			if($this->debug){
+				echo '<strong>Submitted values:</strong><br />';
+				print_r($_REQUEST);
+				echo '<br /><br />';
+				
+				echo '<strong>New Save JSON:</strong><br />';
+				echo $dyn_nf;
+			}
+			
+
+				
 				$this->config_message = $this->_makeMessageBox(_mxcalendar_con_update);
 			}
 		}
@@ -728,6 +852,91 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    }   
 				    closedir($handler);
 				}
+				
+			//-- Create dynamic field types
+			$arr_mxcustomFieldTypes = array_merge(json_decode($myConfig['mxcCustomFieldTypes'][1],true)	, array(array("label"=>"","name"=>"","type"=>"text","options"=>"","default"=>"","required"=>"false")));
+			$dyn_form_output = '';
+			$dyn_form_output_tpl = '
+				<table>
+					<tr>
+						%1$s
+					</tr>
+					
+					%2$s
+					
+					<tr colspan="'.count(array_keys($arr_mxcustomFieldTypes)).'">
+						<td>%3$s</td>
+					</tr>
+				</table>
+			';
+			//-- Create a dynamic list of the column headings for the custom field type
+			$dyn_form_output_h = '';
+			foreach(array_keys($arr_mxcustomFieldTypes) AS $k=>$v){
+				//$dyn_form_output_h .= '<th>'.$v.'</th>'.PHP_EOL;
+			}
+			$uid_cft = 0;
+			$empty_set_cnt=0;
+			//-- Create the row with values for each custom field type
+			foreach($arr_mxcustomFieldTypes AS $cft){
+				$arr_cnt=array_values(array_filter($cft));
+				$is_valid_set = ((count($arr_cnt)==2 && $empty_set_cnt==0) || count($arr_cnt)>2) ? true : false;
+				if((count($arr_cnt)==2 && $empty_set_cnt==0)){
+					$empty_set_cnt++;
+				}
+				//-- DEBUG FOR EMPTY RECORDS FOR ADDIGN/REMOVING Custom Fields
+				if($this->debug) echo "Arr cnt: ".count($arr_cnt).' Empty Set Cnt: '.$empty_set_cnt.'<br />';
+				
+				if($is_valid_set){
+					$dyn_form_output .= '<tr valign=top>';
+					$cft_type=$cft['type'];
+					foreach($cft AS $k=>$v){
+						if($uid_cft == (int)0) $dyn_form_output_h .= '<th>'.strtoupper($k).'</th>'.PHP_EOL;
+						$dyn_form_output .= '<td>';
+						SWITCH($k){
+							default:
+								$dyn_form_output .= sprintf( '<input type="text" name="mxcft_%1$s_'.$uid_cft.'" value="%2$s">',$k,$v );
+								break;
+							case 'options':
+								if($cft['type'] == 'select' || $cft['type'] == 'resource')
+								$dyn_form_output .= sprintf( '<input type="text" id="mxcft_'.$uid_cft.'" name="mxcft_%1$s_'.$uid_cft.'" value="%2$s">',$k,$v );
+								else
+								$dyn_form_output .= sprintf( '<input style="visibility:hidden;" type="text" id="mxcft_'.$uid_cft.'" name="mxcft_%1$s_'.$uid_cft.'" value="%2$s">',$k,$v );;
+								break;
+							case 'type':
+								$arr_valid_form_types = array('text', 'image', 'datetime', 'date', 'time', 'radio', 'select', 'resource');
+								$select_types='';
+								foreach($arr_valid_form_types AS $t){
+									$onChange_to_select = ' onChange="if(this.value == \'select\'||this.value == \'resource\'){ document.getElementById(\'mxcft_'.$uid_cft.'\').style.visibility=\'visible\';}else{document.getElementById(\'mxcft_'.$uid_cft.'\').style.visibility=\'hidden\';}"';
+									$select_types .= '<option value="'.$t.'" '.($t == $v ? 'selected="selected"' : '').'>'.$t.'</option>';
+								}
+								$dyn_form_output .= sprintf( '<select name="mxcft_%1$s" '.$onChange_to_select.'>%2$s</select>', $k.'_'.$uid_cft, $select_types);
+								
+								//-- Sub set for the select to add the options:
+								if($v == 'select'){
+									
+									//$dyn_form_output .= '<br /><label>Options: <small>Comma list</small></label><input type="text" name="mxcft_'.$k.'_'.$uid_cft.'_list" value="'.$v.'">';
+								}
+								break;
+							case 'required':
+								$dyn_form_output .= '<input type="checkbox" name="mxcft_'.$k.'_'.$uid_cft.'" '.($v == 'on' ? 'checked' : '').'>';
+								break;
+						}
+						//-- Show the placeholder value for insertion in chunks/templates
+						if($k == 'name'){
+							$dyn_form_output .= '<small>Placeholder: <font color="blue">[+mxc'.$v.'+]</font></small>';
+						}
+						$dyn_form_output .= '</td>';
+					}
+					$dyn_form_output .= '</tr>';
+					$uid_cft++;
+				} else {
+					$empty_set_cnt++;
+				}
+
+			}
+			$dyn_form_list = sprintf($dyn_form_output_tpl, $dyn_form_output_h, $dyn_form_output,'<!-- <button name="action" value="save">-- save --</button>-->');
+				
+				
 			$langDOW = explode(',', _mxCalendar_cl_headinWeekDays);
 			$this->output .= '
 			<table width="750">
@@ -762,12 +971,43 @@ if(!class_exists("mxCal_APP_CLASS")){
 				
 				<div class="fm_row">
 					<label>'._mxCalendar_con_mxcAdvancedDateEntry.'</label>
-					<select name="'.$myConfig['mxcAdvancedDateEntry'][0].'">
+					<select name="'.$myConfig['mxcAdvancedDateEntry'][0].'" id="mt_'.$myConfig['mxcAdvancedDateEntry'][0].'">
 						<option value="0" '.($myConfig['mxcAdvancedDateEntry'][1] == 0 ? 'selected=selected':'').'>False</option>
 						<option value="1" '.($myConfig['mxcAdvancedDateEntry'][1] == 1 ? 'selected=selected':'').'>True</option>
 					</select>
 					<img  title="'._mxCalendar_con_mxcAdvancedDateEntryTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />
-				</div>				
+				</div>
+				
+				<div class="fm_row"><label>'._mxCalendar_con_mxcJSCodeLibrary.'</label>
+					<select id="mt_'.$myConfig['mxcJSCodeLibrary'][0].'" name="'.$myConfig['mxcJSCodeLibrary'][0].'">
+						<option value="0" '.(!$myConfig['mxcJSCodeLibrary'][1] ? 'selected=selected' : '').' >'._mxCalendar_gl_btnDisable.'</option>
+						<option value="1" '.($myConfig['mxcJSCodeLibrary'][1] == 1 ? 'selected=selected' : '').'>MooTools<option>
+						<option value="2" disabled>JQuery</option>
+					</select>
+					<img  title="'._mxCalendar_con_mxcJSCodeLibraryTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />
+				</div>
+				<div class="fm_row" id="mt_'.$myConfig['mxcJSCodeSource'][0].'"><label>'._mxCalendar_con_mxcJSCodeSource.'</label>
+					<input type="text" id="mv_'.$myConfig['mxcJSCodeSource'][0].'" name="'.$myConfig['mxcJSCodeSource'][0].'" value="'.$myConfig['mxcJSCodeSource'][1].'">
+					<img  title="'._mxCalendar_con_mxcJSCodeSourceTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" />
+					<div class="clear "><small>
+						<a href="#" onClick="document.getElementById(\'mv_'.$myConfig['mxcJSCodeSource'][0].'\').value=\'manager/media/script/mootools/mootools.js\';return false;">'._mxCalendar_con_mxcJSCodeSourceDefaultLocal.'</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<a href="#" onClick="document.getElementById(\'mv_'.$myConfig['mxcJSCodeSource'][0].'\').value=\'http://ajax.googleapis.com/ajax/libs/mootools/1.1/mootools.js\';return false;">'._mxCalendar_con_mxcJSCodeSourceDefaultGoogle.'</a></small></div>
+				</div>
+				    <script type="text/javascript" src="../assets/modules/mxCalendar/scripts/Fx.Slide.js"></script>
+				<script>
+				window.addEvent(\'domready\', function(){
+					document.getElementById("mt_'.$myConfig['mxcJSCodeSource'][0].'").style.display="'.(!$myConfig['mxcJSCodeLibrary'][1] ? 'none' : 'block').'";
+					document.getElementById("mt_'.$myConfig['mxcJSCodeLibrary'][0].'").onchange = function () {
+						if(this.value == "1"){
+							document.getElementById("mt_'.$myConfig['mxcJSCodeSource'][0].'").style.display="block";
+						} else {
+							document.getElementById("mt_'.$myConfig['mxcJSCodeSource'][0].'").style.display="none";
+						}
+						
+					};
+
+				});
+				</script>
 			</fieldset>
 			<fieldset>
 				<legend>'._mxCalendar_con_LegendTheme.'</legend>
@@ -864,8 +1104,16 @@ if(!class_exists("mxCal_APP_CLASS")){
 				<div class="fm_row"><label>'._mxCalendar_con_LabelEventDetailBackToCalClass.'</label><input type="text" name="'.$myConfig['mxcEventDetailBackBtnClass'][0].'" value="'.$myConfig['mxcEventDetailBackBtnClass'][1].'"><img  title="'._mxCalendar_con_LabelEventDetailBackToCalClassTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
 				<div class="fm_row"><label>'._mxCalendar_con_LabelEventDetailBackToCalTitle.'</label><input type="text" name="'.$myConfig['mxcEventDetailBackBtnTitle'][0].'" value="'.$myConfig['mxcEventDetailBackBtnTitle'][1].'"><img  title="'._mxCalendar_con_LabelEventDetailBackToCalTitleTT.'" src="'.$modx->config['base_url'].'manager/media/style/'.$modx->config['manager_theme'].'/images/icons/information.png" class="Tips1" /></div>
 			</fieldset>
+			
 			</td>
 			</tr>
+			
+			<tr>
+				<td colspan=2>
+				<fieldset><legend>Custom Field(s)</legend>'.$dyn_form_list.'</fieldset>
+				</td>
+			</tr>
+			
 			</table>
 			';
 			$this->output .= '<input type="hidden" name="action" value="updateConfig"/><input type="submit" name="update" value="'._mxCalendar_btn_update.'" />';
@@ -881,6 +1129,27 @@ if(!class_exists("mxCal_APP_CLASS")){
 		      $startValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmstartdate'])));
                       $endValuesSplit = explode(' ', strftime("%Y-%m-%d %H:%M",strtotime($param['fmenddate'])));
 		    **/
+		    
+		    if($this->debug){
+		    print_r($param);
+		    echo "<br /><br />";
+		    }
+		    
+		    $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
+		    $dyn_config = array();
+		    foreach($dyn_config_opts AS $cft){
+			$dyn_config[$cft['name']] = array('name'=>$cft['name'], 'label'=>$cft['label'],'options'=>$cft['options'],'default'=>$cft['default'],'type'=>$cft['type']);
+		    }
+		    
+		    $dyn_form_vals = array();
+		    foreach($param AS $k=>$v){
+			if(substr($k, 0, 6) == 'mxcft_' ){
+				$label = str_replace('mxcft_', '', $k);
+				//$dyn_form_vals[$label]=$v;
+				$dyn_form_vals[$label]=array('val'=>$v, 'name'=>$dyn_config[$label]['name'], 'type'=>$dyn_config[$label]['type'],'label'=>$dyn_config[$label]['label'],'options'=>$dyn_config[$label]['options'], 'default'=>$dyn_config[$label]['default']);
+			}
+		    }
+		    $dyn_form_vals = json_encode($dyn_form_vals);
 		    
 		    //-- Create @param for entry
                     $sT = $modx->db->escape(htmlentities($param['fmtitle']));
@@ -949,10 +1218,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    'event_occurance' => $modx->db->escape($param['fmevent_occurance']),
 				    '_occurance_wkly' => $modx->db->escape($param['fm_occurance_on']),
 				    'event_occurance_rep' => $modx->db->escape((int)$param['fmevent_occurance_rep']),
-				    '_occurance_properties' => implode(',',$repOccOn)
+				    '_occurance_properties' => implode(',',$repOccOn),
+				    'customFields' => $dyn_form_vals
                                     );
 		    
-		    if($this->debug) print_r($fields);
+		    if(!$this->debug) print_r($fields);
                     if($method == _mxCalendar_btn_addEvent){
                         $NID = $modx->db->insert( $fields, $table_name);
                         if($NID) $_POST = array();
@@ -1001,6 +1271,10 @@ if(!class_exists("mxCal_APP_CLASS")){
 				FROM '.$table.' as E WHERE E.id='.$id.' LIMIT 1';
 		    $result = $modx->db->query($eventSQL);
 		    $content = $modx->db->makeArray( $result );
+		    
+		    //-- OS Type check to switch varible for strftime()
+		    //$OS = $_SERVER['SERVER_SOFTWARE'];
+		    //echo '(#1038) OS TYPE => '.$OS.'<br />';
 		    
 		    
                     $defaultParam = array(
@@ -1112,13 +1386,59 @@ if(!class_exists("mxCal_APP_CLASS")){
 				$modx->setPlaceholder('mxcEventDetailTitle',$title);
 				$modx->setPlaceholder('mxcEventDetailLabelDateTime',($this->config['mxcEventDetailLabelDateTime'] ? $this->config['mxcEventDetailLabelDateTime'] : _mxCalendar_ed_dt));
 				$modx->setPlaceholder('mxcEventDetailDateTimeSeperator',$param['mxcDateTimeSeperator']);
-				$modx->setPlaceholder('mxcEventDetailStartDateTime',strftime((isset($param['mxcStartDateFormat']) ? $param['mxcStartDateFormat'] : _mxCalendar_ed_start_dateformat),strtotime( (isset($_REQUEST['r']) ? $dates[$_REQUEST['r']].' '.$p_val['starttime'] : $p_val['start']) )));
-				$modx->setPlaceholder('mxcEventDetailEndDateTime',strftime((isset($param['mxcEndDateFormat']) ? $param['mxcEndDateFormat'] : _mxCalendar_ed_end_dateformat),strtotime( (isset($_REQUEST['r']) ? $dates[$_REQUEST['r']].' '.$p_val['endtime'] : $p_val['end']) )));
+				$modx->setPlaceholder('mxcEventDetailStartDateTime',strftime((isset($param['mxcStartDateFormat']) ? $param['mxcStartDateFormat'] : _mxCalendar_ed_start_dateformat),strtotime( (isset($_REQUEST['r']) && $_REQUEST['r']!="" ? $dates[$_REQUEST['r']].' '.$p_val['starttime'] : $p_val['start']) )));
+				$modx->setPlaceholder('mxcEventDetailEndDateTime',strftime((isset($param['mxcEndDateFormat']) ? $param['mxcEndDateFormat'] : _mxCalendar_ed_end_dateformat),strtotime( (isset($_REQUEST['r']) && $_REQUEST['r']!="" ? $dates[$_REQUEST['r']].' '.$p_val['endtime'] : $p_val['end']) )));
 				$modx->setPlaceholder('mxcEventDetailDateTimeReoccurrences',$str_repeatDates);
 				$modx->setPlaceholder('mxcEventDetailLabelLocation',($p_val['location']?($this->config['mxcEventDetailLabelLocation']? $this->config['mxcEventDetailLabelLocation'] :_mxCalendar_ed_location):''));
 				$modx->setPlaceholder('mxcEventDetailLocation',str_replace('|','<br />',$p_val['location']));
 				$modx->setPlaceholder('mxcEventDetailDescription',$p_val['description']);
-				$modx->setPlaceholder('mxcEventDetailGoogleMap',$googleMap);
+				$modx->setPlaceholder('mxcEventDetailGoogleMap',$googleMap.' <a href="javascript:loadScript();">Map</a>' );
+				
+				
+				/** START THE CUSTOM FIELDs **/
+				$EventArr_cft = array();
+				$cft_event = json_decode($p_val['customFields'],true);
+				$dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
+				$dyn_resource_opts = array();
+				//-- Grab the "resource" field type to get the TV's that should be used
+				foreach($dyn_config_opts AS $cft){
+					$cft_type=$cft['type'];
+					if($cft_type == 'resource'){
+					    $dyn_resource_opts[$cft['name']]=$cft['options'];
+					}
+				} //-- end loop of custom field types
+	
+				//-- Loop through the custom fields
+				if(count($cft_event)){
+				    foreach($cft_event AS $l=>$v){
+					switch($v['type']){
+					    default:
+						$modx->setPlaceholder('mxc'.$l, $v['val']);
+						break;
+					    case 'image':
+						$modx->setPlaceholder('mxc'.$l, '<img src="'.$v['val'].'" alt="" />');
+						break;
+					    case 'resource':
+						//-- Get the TV's as set in the options for the resource in the configuration tab of mxCalendar
+						if(!empty($dyn_resource_opts[$l])){
+						    $tvVals = $modx->getTemplateVarOutput(explode(',',$dyn_resource_opts[$l]),(int)$v['val'],1);
+						    foreach ($tvVals AS $k=>$tvVal){
+							$modx->setPlaceholder('mxcTV'.$k,  $tvVal);
+						    }
+						}
+						//-- Get predefined document values to use in mxCalendar
+						$array_doc = $modx->getPageInfo((int)$v['val'],1,'pagetitle, description, alias, content');
+						$modx->setPlaceholder('mxcpagetitle', $array_doc['pagetitle']);
+						$modx->setPlaceholder('mxcdescription', $array_doc['description']);
+						$modx->setPlaceholder('mxcalias', $array_doc['alias']);
+						$modx->setPlaceholder('mxccontent', $array_doc['content']);
+						break;
+					}
+					
+				    }
+				}
+				/** END THE CUSTOM FIELDs **/
+				
 				
 				}//end loop
 			    }
@@ -1126,6 +1446,9 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    $activeTheme = $this->_getActiveTheme();
 				    $this->_addCSS('<link rel="stylesheet" type="text/css" href="assets/modules/mxCalendar/themes/'.$this->config['mxCalendarTheme'].'/'.$activeTheme["themecss"].'" /> ');
 				}
+			    
+			    if($param['mxcAddMooJS'] || $param['mxcJSCodeLibrary']) $this->_addMooJS();
+			    
 			    return $this->output;
                 }
 		
@@ -1309,7 +1632,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			    if((bool)$param['mxcEventListTitleLink'] == false)
 				$title = $event['title'];
 			    elseif(($param['mxcFullCalendarPgId'] || $param['mxcAjaxPageId']) && empty($event['link']))
-				$title='<a href="'.$mxcEventDetailURL.'" class=" '.$param['mxcEventListItemClass'].'"  '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$mxcEventDetailAJAX.$event['linkrel'].'">'.$event['title'].'</a>';
+				$title='<a href="'.$mxcEventDetailURL.'" class=" '.$param['mxcEventListItemClass'].'"  '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$mxcEventDetailAJAX.$event['linkrel'].'" onclick="">'.$event['title'].'</a>';
 			    else
 				$title = ( !empty($event['link'])?(is_numeric($event['link'])? '<a href="'.$modx->makeUrl((int)$event['link'],'','','full').'" '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$event['linkrel'].' moodalbox">'.$event['title'].'</a>':'<a href="'.$event['link'].'" rel="'.$event['linkrel'].'" target="'.$event['linktarget'].'">'.$event['title'].'</a>'): $event['title'] );
 			    
@@ -1408,6 +1731,9 @@ if(!class_exists("mxCal_APP_CLASS")){
 			$activeTheme = $this->_getActiveTheme();
 			$this->_addCSS('<link rel="stylesheet" type="text/css" href="assets/modules/mxCalendar/themes/'.$this->config['mxCalendarTheme'].'/'.$activeTheme["themecss"].'" /> ');
 		    }
+		    
+		    if($param['mxcAddMooJS'] || $param['mxcJSCodeLibrary']) $this->_addMooJS();
+		    
 		    return $this->output;
                 }
 		
@@ -1636,9 +1962,18 @@ if(!class_exists("mxCal_APP_CLASS")){
                         while($data = $modx->db->getRow($results)){
                             //$dayOfMonth = explode('-', $data['startdate']);
                             $dayOfMonth = trim(strftime('%e', strtotime($data['startdate']))); //(int)$dayOfMonth[2];
-                            
+                            //** Bug fix for Windows non-parse of the %e; update to global fix and cleaner integration
+			    if(!$dayOfMonth){
+				$dayOfMonth = trim(strftime('%#d', strtotime($data['startdate'])));
+			    }
+			    
                             //$endDayOfMonth = explode('-', $data['enddate']);
                             $endDayOfMonth = trim(strftime('%e', strtotime($data['enddate']))); //(int)$endDayOfMonth[2];
+                            //** Bug fix for Windows non-parse of the %e; update to global fix and cleaner integration
+			    if(!$endDayOfMonth){
+				$endDayOfMonth = trim(strftime('%#d', strtotime($data['enddate'])));
+			    }			    
+
 			    
 			    $match = explode('-', $data['startdate']);
 			    $dataPieces = explode('-', $date);
@@ -1663,7 +1998,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 					'starttime' => $data['starttime'],
 					'end' => $data['end'],
 					'enddate' => $data['enddate'],
-					'endtime' => $data['endtime']
+					'endtime' => $data['endtime'],
+					'customFields' => $data['customFields']
 				);
 				if($this->debug) echo '<h3>Fir st Date for '.$data['title'].':</h3><pre><code>'.$data['startdate'].'</code></pre>';
 			    }
@@ -1700,7 +2036,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 						'starttime' => $data['starttime'],
 						'end' => $data['end'],
 						'enddate' => strftime('%Y-%m-%d', strtotime("+ $x day", strtotime($data['start']))), //$data['enddate'],
-						'endtime' => $data['endtime']
+						'endtime' => $data['endtime'],
+						'customFields' => $data['customFields']
 					);
 					if($this->debug) echo '<h3>Repeat if Duration:</h3><pre><code>'.print_r($eventsByDay[$doM]).'</code></pre>';
 				    }
@@ -1743,7 +2080,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 							'end' => $rep.' '.$data['endtime'],
 							'enddate' => $data['enddate'],
 							'endtime' => $data['endtime'],
-							'repeat' => $int_repeatItem
+							'repeat' => $int_repeatItem,
+							'customFields' => $data['customFields']
 						);
 						if($data['DurationDays']){
 							for($r=($endRepDayOfMonth+1);$r<=($endRepDayOfMonth+$data['DurationDays']);$r++){
@@ -1765,7 +2103,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 									'end' => $rep.' '.$data['endtime'],
 									'enddate' => $data['enddate'],
 									'endtime' => $data['endtime'],
-									'repeat' => $int_repeatItem
+									'repeat' => $int_repeatItem,
+									'customFields' => $data['customFields']
 								);
 							}
 						}
@@ -1906,6 +2245,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			global $modx;
 			
 			include_once(MODX_BASE_PATH.'manager/includes/tmplvars.inc.php');
+			require_once(MODX_BASE_PATH.'manager/includes/tmplvars.commands.inc.php');
 			
 			
 			$event_output = $modx->invokeEvent("OnRichTextEditorInit"
@@ -2204,7 +2544,7 @@ EORTE;
 		}
 		function _addMooJS(){
 			global $modx;
-			$js_code = '<script src="[(site_url)]manager/media/script/mootools/mootools.js" type="text/javascript"></script>';
+			$js_code = '<script src="'.$this->config['mxcJSCodeSource'].'" type="text/javascript"></script>';
 			$modx->regClientStartupScript($js_code);
 		}
 		function _addJS($js_code){

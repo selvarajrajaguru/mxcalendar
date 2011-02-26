@@ -14,6 +14,16 @@ Install Instructions
 3) Run the mxCalendar
 
 --------------------------
+Release: (0.1.3)
+--------------------------
+Change Log:
+- Typo corrections to parameters & placeholders: mxcMonthCotianerHeading -> mxcMonthContainerHeading, mxcMonthContianerClass -> mxcMonthContainerClass
+- Bug fix: Issue 38 Advanced Date Entry not activating when set to true in configuration
+- 
+
+
+
+--------------------------
 Release: (0.1.2-rc2)
 --------------------------
 Change Log:
