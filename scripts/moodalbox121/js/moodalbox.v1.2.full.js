@@ -215,6 +215,12 @@ var MOOdalBox = {
 			this.bottom.setStyles({opacity: '1', height: this.bottom.scrollHeight+'px'});
 
 		case 5:
+			//Google Map API Force load ?..?
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = "http://maps.google.com/maps/api/js?sensor=false&callback=initialize";
+			document.body.appendChild(script);
+			//loadscript();
 			this.step = 0;
 		}
 		

@@ -1,8 +1,8 @@
 <?php
 /**
  * Author: Charles Sanders (charless.mxcalendar@gmail.com)
- * Date: 11/30/2010
- * Version: 0.1.2-rc2
+ * Date: 02/26/2011
+ * Version: 0.1.3
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
@@ -141,8 +141,8 @@ if(defined('_mxCalendar_gl_Months') && $param['mxcGlobalMonthsOverride']==true){
         $nextURL = $modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full'); //'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')'; 
     }
 
-if($param['mxcAddMooJS'])
-  $this->_addJS('<script src="'.$this->config['mxcJSCodeSource'].'" type="text/javascript"></script>');
+if($param['mxcAddMooJS'] || $param['mxcJSCodeLibrary'])
+    $this->_addMooJS();
 
 //-- Add ToolTip JS and CSS
 if($this->config['disptooltip']){
@@ -405,11 +405,60 @@ if(!empty($param['mxcTplMonthHeading'])){
                         $toolTip = explode(' ',strip_tags($calEvents['description']));
                         $toolTip = array_slice($toolTip, 0, 75);
                         if(!$param['mxcEventTitleLink']){
-                            $title = '<a id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" href="'.(!empty($calEvents['link']) ? (is_numeric((int)$calEvents['link']) ? $modx->makeUrl((int)$calEvents['link'], '', (is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full') : $calEvents['link']) : $modx->makeUrl((int)$ajaxPageId,'', '&details='.$calEvents['id'].(is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full')).'" rel="'.(!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : '')).'" target="'.(!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']).'" style="color:inherit;display:block;position:relative;padding:3px;">'.$calEvents['title'].'</a>';
+                            $title = '['.$calEvents['link'].']<a id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal"
+                                    href="'.(!empty($calEvents['link']) ?
+                                            (is_numeric((int)$calEvents['link']) ? $modx->makeUrl((int)$calEvents['link'], '',
+                                                    (is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : '&r2='.$calEvents['repeat']), 'full')     
+                                             : '('.$calEvents['link'].')'.$calEvents['link'])
+                                    : $modx->makeUrl((int)$ajaxPageId,'', '&details='.$calEvents['id'].(is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full')).'" rel="'.(!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : '')).'" target="'.(!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']).'" style="color:inherit;display:block;position:relative;padding:3px;">'.$calEvents['title'].'</a>';
                         } else {
                             $mxcNodeWrap = (!isset($param['mxcEventTitleNode']) ? 'span' : $param['mxcEventTitleNode']);
                             $title = '<'.$mxcNodeWrap.' id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" >'.$calEvents['title'].'</'.$mxcNodeWrap.'>';
                         }
+                        
+                        /** START THE CUSTOM FIELDs **/
+                        $EventArr_cft = array();
+                        $cft_event = json_decode($calEvents['customFields'],true);
+                        $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
+                        $dyn_resource_opts = array();
+			//-- Create the row with values for each custom field type
+			foreach($dyn_config_opts AS $cft){
+				$cft_type=$cft['type'];
+                                if($cft_type == 'resource'){
+                                    $dyn_resource_opts[$cft['name']]=$cft['options'];
+                                }
+                        } //-- end loop of custom field types
+
+                        //-- Loop through the custom fields
+                        if(count($cft_event)){
+                            foreach($cft_event AS $l=>$v){
+                                switch($v['type']){
+                                    default:
+                                        $EventArr_cft['mxc'.$l] = $v['val'];
+                                        break;
+                                    case 'image':
+                                        $EventArr_cft['mxc'.$l] = '<img src="'.$v['val'].'" alt="" />';
+                                        break;
+                                    case 'resource':
+                                        //-- Get the TV's as set in the options for the resource in the configuration tab of mxCalendar
+                                        if(!empty($dyn_resource_opts[$l])){
+                                            $tvVals = $modx->getTemplateVarOutput(explode(',',$dyn_resource_opts[$l]),(int)$v['val'],1);
+                                            foreach ($tvVals AS $k=>$tvVal){
+                                                $EventArr_cft['mxcTV'.$k] = $tvVal;//'[*'.$k.'*]';
+                                            }
+                                        }
+                                        //-- Get predefined document values to use in mxCalendar
+                                        $array_doc = $modx->getPageInfo((int)$v['val'],1,'pagetitle, description, alias, content');
+                                        $EventArr_cft['mxcpagetitle'] = $array_doc['pagetitle'];
+                                        $EventArr_cft['mxcdescription'] = $array_doc['description'];
+                                        $EventArr_cft['mxcalias'] = $array_doc['alias'];
+                                        $EventArr_cft['mxccontent'] = $array_doc['content'];
+                                        break;
+                                }
+                                
+                            }
+                        }
+                        /** END THE CUSTOM FIELDs **/
                         
                         //-- Set properties for theme
                         $EventArr = array(
@@ -427,6 +476,13 @@ if(!empty($param['mxcTplMonthHeading'])){
                                 'mxcMonthInnerEventCategoryBackgroundCss' => ($calEvents['cateogryCSS'][2] ? 'background-color:'.$calEvents['cateogryCSS'][2].';display:block;' : ''),
                                 'mxcMonthInnerEventCategoryInlineCss' => $calEvents['cateogryCSS'][3]
                             );
+                        
+                        $EventArr = array_merge($EventArr, $EventArr_cft);
+                        
+                        if($this->debug){
+                            echo '<br /><strong>'.$counter.'</strong><br />';
+                            print_r($EventArr);
+                        }
                         
                         //-- Parse Event Detail Template
                         if(!empty($param['mxcTplMonthEvent'])){
@@ -560,8 +616,8 @@ if(!is_null($param['mxcDefaultCatIdLock']))
 
 //-- Set the placeholder values for outermost container
 $modx->setPlaceholder('mxcMonthContainerID', (!empty($param['mxcMonthContainerID']) ? $param['mxcMonthContainerID'] : 'bsCalendar'));
-$modx->setPlaceholder('mxcMonthContianerClass', (!empty($param['mxcMonthContianerClass']) ? $param['mxcMonthContianerClass'] : ''));
-$modx->setPlaceholder('mxcMonthCotianerHeading',(!empty($param['mxcMonthCotianerHeading']) ? $param['mxcMonthCotianerHeading'] : ''));
+$modx->setPlaceholder('mxcMonthContainerClass', (!empty($param['mxcMonthContainerClass']) ? $param['mxcMonthContainerClass'] : ''));
+$modx->setPlaceholder('mxcMonthContainerHeading',(!empty($param['mxcMonthContainerHeading']) ? $param['mxcMonthContainerHeading'] : ''));
 $modx->setPlaceholder('mxcMonthInsideContianer',$_mxcCalInner);
 $modx->setPlaceholder('mxcCategoryFilters', $_mxcCalCategoryFilter);
 
