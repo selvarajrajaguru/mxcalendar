@@ -11,14 +11,14 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_categories` (
   `disable` INT NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 //
 
 --
 -- Dumping data for table `#__mxcalendar_categories`
 --
 
 INSERT INTO `#__mxcalendar_categories` (`id`, `isdefault`, `name`, `foregroundcss`, `backgroundcss`, `inlinecss`, `disable`, `active`) VALUES
-(1, 1, 'General', '', '', '', 0, 1);
+(1, 1, 'General', '', '', '', 0, 1)//
 
 
 --
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_config` (
   `param` varchar(256) NOT NULL,
   `value` tinytext,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 //
 
 
 --
@@ -73,8 +73,8 @@ INSERT INTO `#__mxcalendar_config` (`id`, `param`, `value`) VALUES
 (33, 'mxcEventListEventClass', 'event'),
 (34, 'mxcEventListLabelLocation', ''),
 (35, 'mxcGoogleMapDisplayCanvasID', 'map_canvas'),
-(36, 'mxcGoogleMapDisplayWidth', 'auto'),
-(37, 'mxcGoogleMapDisplayHeigh', 'auto'),
+(36, 'mxcGoogleMapDisplayWidth', '250px'),
+(37, 'mxcGoogleMapDisplayHeigh', '250px'),
 (38, 'mxcGoogleMapDisplayLngLat', '0'),
 (39, 'mxcLocalization', ''),
 (40, 'mxcGetCategoryListUIFilterLabel', 'Categories'),
@@ -87,11 +87,19 @@ INSERT INTO `#__mxcalendar_config` (`id`, `param`, `value`) VALUES
 (47,'mxcEventListItemEndDateStamp','%I:%M %p'),
 (48,'mxcAdvancedDateEntry','0'),
 (49,'mxcJSCodeSource','http://ajax.googleapis.com/ajax/libs/mootools/1.1/mootools.js'),
-(50,'mxcJSCodeLibrary','MooTools'),
+(50,'mxcJSCodeLibrary',''),
 (51,'mxcMonthInnerHeadingRowID',''),
 (52,'mxcMonthInnerHeadingRowClass',''),
 (53,'mxcMonthListTodayOnly','0'),
-(54,'mxcMonthHasEventClass','hasevents');
+(54,'mxcMonthHasEventClass','hasevents'),
+(55,'mxcCustomFieldTypes',''),
+(56,'mxcEventDetailStateDateStamp','%b %e'),
+(57,'mxcEventDetailStateTimeStamp','%I:%M %p'),
+(58,'mxcEventDetailEndDateStamp','%b %e'),
+(59,'mxcEventDetailEndTimeStamp','%I:%M %p'),
+(60,'mxcEventMonthUrlClass','tt mxModal'),
+(61,'mxcEventMonthUrlStyle','color:inherit;display:block;position:relative;padding:3px;'),
+(62,'mxcMonthNoEventClass','mxcDayNoEvents')//
 
 
 --
@@ -122,8 +130,9 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_events` (
   `_occurance_wkly` varchar(10) DEFAULT NULL,
   `event_occurance_rep` tinyint(2) DEFAULT NULL,
   `_occurance_properties` varchar(68) DEFAULT NULL,
+  `customFields` TEXT NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=99 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=99//
 
 --
 -- Table structure for table `#__mxcalendar_pastevents`
@@ -154,4 +163,4 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_pastevents` (
   `event_occurance_rep` tinyint(2) DEFAULT NULL,
   `_occurance_properties` varchar(68) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1//

@@ -1,6 +1,12 @@
 --
--- Database updates for release 0.1.3
+-- Database updates for release 0.1.3b
 --
 INSERT IGNORE INTO `#__mxcalendar_config`(id,param,value)
-VALUES (55,'mxcCustomFieldTypes','');
-ALTER TABLE `#__mxcalendar_events` ADD `customFields` TEXT NOT NULL; 
+VALUES 
+(55,'mxcCustomFieldTypes',''),
+(56,'mxcEventDetailStateDateStamp',''),
+(57,'mxcEventDetailStateTimeStamp',''),
+(58,'mxcEventDetailEndDateStamp',''),
+(59,'mxcEventDetailEndTimeStamp','');
+-- ALTER TABLE `#__mxcalendar_config` CHANGE `value` `value` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ;
+-- ALTER TABLE `#__mxcalendar_events` ADD `customFields` TEXT NOT NULL; 

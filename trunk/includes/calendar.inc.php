@@ -394,6 +394,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                     foreach($thisDayEvents[$counter] as $calEvents){
                         //-- Fix future dates not in current month view
                         if(strftime('%Y', strtotime($calEvents['start'])) == strftime('%Y', strtotime($newdate)) ){
+                        $mxcPH_arr=array();
                         $calEvents['DurationTime'] = str_replace('-','',$calEvents['DurationTime']);
                         $durDay = ((int)$calEvents['DurationDays'] > 0) ? $calEvents['DurationDays'].'d' : false ;
                         $durTime = ((int)substr($calEvents['DurationTime'], 1, 2) > 0 || (int)substr($calEvents['DurationTime'], 0, 2) > 0) ? substr($calEvents['DurationTime'], 0, strpos($calEvents['DurationTime'], ":")).'h '.(substr($calEvents['DurationTime'], 3, -3) != '00' ? substr($calEvents['DurationTime'], 3, -3).'m' : '') : null ;
@@ -404,26 +405,50 @@ if(!empty($param['mxcTplMonthHeading'])){
                         $timeSpan = (!empty($param['showTimeSpan']) ? ((boolean)$param['showTimeSpan']===false ? '' : strftime(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['starttime']))." - ".strftime(_mxCalendar_ev_time, strtotime('1969-01-01 '.$calEvents['endtime']))) : $timeSpan);
                         $toolTip = explode(' ',strip_tags($calEvents['description']));
                         $toolTip = array_slice($toolTip, 0, 75);
+                        $eventUID = 'mxc'.$counter.$calEvents['id'].$multipleEventCnt;
                         if(!$param['mxcEventTitleLink']){
-                            $title = '['.$calEvents['link'].']<a id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal"
-                                    href="'.(!empty($calEvents['link']) ?
-                                            (is_numeric((int)$calEvents['link']) ? $modx->makeUrl((int)$calEvents['link'], '',
-                                                    (is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : '&r2='.$calEvents['repeat']), 'full')     
-                                             : '('.$calEvents['link'].')'.$calEvents['link'])
-                                    : $modx->makeUrl((int)$ajaxPageId,'', '&details='.$calEvents['id'].(is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full')).'" rel="'.(!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : '')).'" target="'.(!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']).'" style="color:inherit;display:block;position:relative;padding:3px;">'.$calEvents['title'].'</a>';
+							$eventLink = (!empty($calEvents['link']) ?
+                                            (is_numeric($calEvents['link']) ? 
+												$modx->makeUrl((int)$calEvents['link'], '',(is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full')     
+												: '('.$calEvents['link'].')'.$calEvents['link'])
+										 : $modx->makeUrl((int)$ajaxPageId,'', '&details='.$calEvents['id'].(is_numeric($calEvents['repeat']) ? '&r='.$calEvents['repeat'] : ''), 'full'));
+										 
+							$eventTitle = $calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '');
+							$eventRel = (!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : ''));
+							$eventTarget = (!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']);
+                            $title = '<a id="'.$eventUID.'"  title="'.$eventTitle.'" class="'.$param['mxcEventMonthUrlClass'].'" href="'.$eventLink.'" rel="'.$eventRel.'" target="'.$eventTarget.'" style="'.$param['mxcEventMonthUrlStyle'].'">'.$calEvents['title'].'</a>';
                         } else {
                             $mxcNodeWrap = (!isset($param['mxcEventTitleNode']) ? 'span' : $param['mxcEventTitleNode']);
-                            $title = '<'.$mxcNodeWrap.' id="mxc'.$counter.$multipleEventCnt.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" >'.$calEvents['title'].'</'.$mxcNodeWrap.'>';
+                            $title = '<'.$mxcNodeWrap.' id="'.$eventUID.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" >'.$calEvents['title'].'</'.$mxcNodeWrap.'>';
                         }
+                        
+                        // event unique id mxcevent-{date}-{eventID}-{repeatID}
+                        $mxcPH_arr['mxcEventUniqueId'] = 'mxcevent-'.$counter.'-'.$calEvents['id'].($multipleEventCnt?'-'.$multipleEventCnt:'');
+                        // Event title
+                        $mxcPH_arr['mxcEventTitle']= $calEvents['title'];
+                        // event link
+                        $mxcPH_arr['mxcEventUrl']= $eventLink;
+                        // event link Rel attribute
+                        $mxcPH_arr['mxcEventUrlRel']= $eventRel;
+                        // event link Target attribute
+                        $mxcPH_arr['mxcEventUrlTarget']= $eventTarget;
+                        // event date start Default: Raw value
+                        $mxcPH_arr['mxcEventDetailStateDateStamp']= ($param['mxcEventDetailStateDateStamp'] ? strftime($param['mxcEventDetailStateDateStamp'],strtotime($calEvents['start'])) : $calEvents['start']);
+                        // event time end Default: Raw value
+                        $mxcPH_arr['mxcEventDetailStateTimeStamp']= ($param['mxcEventDetailStateTimeStamp'] ? strftime($param['mxcEventDetailStateTimeStamp'],strtotime($calEvents['start'])) : $calEvents['start']);
+                        // event date end Default: Raw value
+                        $mxcPH_arr['mxcEventDetailEndDateStamp']= ($param['mxcEventDetailEndDateStamp'] ? strftime($param['mxcEventDetailEndDateStamp'],strtotime($calEvents['end'])) : $calEvents['end']);
+                        // event time end Default: Raw value
+                        $mxcPH_arr['mxcEventDetailEndTimeStamp']= ($param['mxcEventDetailEndTimeStamp'] ? strftime($param['mxcEventDetailEndTimeStamp'],strtotime($calEvents['end'])) : $calEvents['end']);
                         
                         /** START THE CUSTOM FIELDs **/
                         $EventArr_cft = array();
                         $cft_event = json_decode($calEvents['customFields'],true);
                         $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
                         $dyn_resource_opts = array();
-			//-- Create the row with values for each custom field type
-			foreach($dyn_config_opts AS $cft){
-				$cft_type=$cft['type'];
+						//-- Create the row with values for each custom field type
+						foreach($dyn_config_opts AS $cft){
+							$cft_type=$cft['type'];
                                 if($cft_type == 'resource'){
                                     $dyn_resource_opts[$cft['name']]=$cft['options'];
                                 }
@@ -432,6 +457,8 @@ if(!empty($param['mxcTplMonthHeading'])){
                         //-- Loop through the custom fields
                         if(count($cft_event)){
                             foreach($cft_event AS $l=>$v){
+                                //-- Set a label placeholder for each value as well
+                                $EventArr_cft['mxc'.$l.'-label'] = $v['label'];
                                 switch($v['type']){
                                     default:
                                         $EventArr_cft['mxc'.$l] = $v['val'];
@@ -443,9 +470,11 @@ if(!empty($param['mxcTplMonthHeading'])){
                                         //-- Get the TV's as set in the options for the resource in the configuration tab of mxCalendar
                                         if(!empty($dyn_resource_opts[$l])){
                                             $tvVals = $modx->getTemplateVarOutput(explode(',',$dyn_resource_opts[$l]),(int)$v['val'],1);
-                                            foreach ($tvVals AS $k=>$tvVal){
-                                                $EventArr_cft['mxcTV'.$k] = $tvVal;//'[*'.$k.'*]';
-                                            }
+                                            if(count($tvVals) && is_array($tvVals)){
+												foreach ($tvVals AS $k=>$tvVal){
+													$EventArr_cft['mxc'.$k] = $tvVal;
+												}
+											}
                                         }
                                         //-- Get predefined document values to use in mxCalendar
                                         $array_doc = $modx->getPageInfo((int)$v['val'],1,'pagetitle, description, alias, content');
@@ -453,6 +482,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                                         $EventArr_cft['mxcdescription'] = $array_doc['description'];
                                         $EventArr_cft['mxcalias'] = $array_doc['alias'];
                                         $EventArr_cft['mxccontent'] = $array_doc['content'];
+                                        $EventArr_cft['mxc'.$l] =  $v['val'];
                                         break;
                                 }
                                 
@@ -462,10 +492,10 @@ if(!empty($param['mxcTplMonthHeading'])){
                         
                         //-- Set properties for theme
                         $EventArr = array(
-                                'mxcMonthInnerEventID' => '',
-                                'mxcMonthInnerEventClass' => '',
-                                'mxcMonthInnerEventUID' => '',
-                                'mxcMonthInnerEventDescription' => '',//$calEvents['description'],
+                                'mxcMonthInnerEventID' => 'mxc'.$counter.'-'.$calEvents['id'],
+                                'mxcMonthInnerEventClass' => $param['mxcEventMonthUrlClass'],
+                                'mxcMonthInnerEventUID' => $mxcPH_arr['mxcEventUniqueId'],
+                                'mxcMonthInnerEventDescription' => $calEvents['description'],
                                 'mxcMonthInnerEventTitleClass' => 'title',
                                 'mxcMonthInnerEventTitle' => $title,
                                 'mxcMonthInnerEventDuration' => $dur,
@@ -477,7 +507,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                                 'mxcMonthInnerEventCategoryInlineCss' => $calEvents['cateogryCSS'][3]
                             );
                         
-                        $EventArr = array_merge($EventArr, $EventArr_cft);
+                        $EventArr = array_merge($EventArr, $EventArr_cft, $mxcPH_arr);
                         
                         if($this->debug){
                             echo '<br /><strong>'.$counter.'</strong><br />';
@@ -504,7 +534,7 @@ if(!empty($param['mxcTplMonthHeading'])){
             
             $dayArr = array(
                 'mxcMonthInnerDayID' => (isset($mxcMonthInnerDayID) ? $mxcMonthInnerDayID : ''),
-                'mxcMonthInnerDayClass' => trim($classToday.' '.(array_key_exists($counter, (array)$thisDayEvents) ? $param['mxcMonthHasEventClass'] : '' )), //(boolean)$param['mxcMonthListTodayOnly'] === true && $_todayOnlyCheck === false && 
+                'mxcMonthInnerDayClass' => trim($classToday.' '.(is_array($thisDayEvents[$counter]) && strftime('%Y', strtotime($thisDayEvents[$counter][0]['start'])) == strftime('%Y', strtotime($newdate))  ? $param['mxcMonthHasEventClass'] :  $param['mxcMonthNoEventClass'])), //(boolean)$param['mxcMonthListTodayOnly'] === true && $_todayOnlyCheck === false && 
                 'mxcMonthInnerDayLabelClass' => (isset($mxcMonthInnerDayLabelClass) ? $mxcMonthInnerDayLabelClass : 'datestamp'),
                 'mxcMonthInnerDayLabel' => $counter,
                 'mxcMonthInnerEvents' => $events,

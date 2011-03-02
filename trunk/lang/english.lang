@@ -193,8 +193,24 @@ define('_mxCalendar_con_mxcJSCodeSource','JS Library Source');
 define('_mxCalendar_con_mxcJSCodeSourceTT','Enter a valid location (local or external) to use in the script src tag property. Defaults to Google Map API on first load. If selecting the ModX Manager version please double check the path for your version of ModX. Example: http://ajax.googleapis.com/ajax/libs/mootools/1.1/mootools.js');
 define('_mxCalendar_con_mxcJSCodeSourceDefaultGoogle','Google API (MooTools)');
 define('_mxCalendar_con_mxcJSCodeSourceDefaultLocal','ModX Manager MooTools');
-
+//r0.1.3
 define('_mxCalendar_con_mscCustomFieldLegend','Custom Fields');
+//r0.1.3b
+define('_mxCalendar_con_mxcMonthEventItemClass','Event Item CSS Class');
+define('_mxCalendar_con_mxcMonthEventItemClassTT','CSS class attribute value to set for all event items in the monthly view');
+define('_mxCalendar_con_mscMonthEventItemStyle','Event Style </small>(inline)</small>');
+define('_mxCalendar_con_mscMonthEventItemStyleTT','Inline style property to be assigned to each event item in the monthly view');
+define('_mxCalendar_con_mscMonthEventItemStartDate','Event Start Date');
+define('_mxCalendar_con_mscMonthEventItemStartDateTT','Set the start date stamp format using valid format for PHP strftime()');
+define('_mxCalendar_con_mscMonthEventItemStartTime','Event Start Time');
+define('_mxCalendar_con_mscMonthEventItemStartTimeTT','Set the start time stamp format using valid format for PHP strftime()');
+define('_mxCalendar_con_mscMonthEventItemEndDate','Event End Date');
+define('_mxCalendar_con_mscMonthEventItemEndDateTT','Set the end date stamp format using valid format for PHP strftime()');
+define('_mxCalendar_con_mscMonthEventItemEndTime','Event End Time');
+define('_mxCalendar_con_mscMonthEventItemEndTimeTT','Set the end time stamp format using valid format for PHP strftime()');
+define('_mxCalendar_con_mxcMonthNoEventClass','Has No Events CSS Class');
+define('_mxCalendar_con_mxcMonthNoEventClassTT','Adds a special CSS class for dates without events.');
+
 
 // -- UI::EventDetail
 define('_mxCalendar_ed_backToCaltitle','Back to Calendar');
