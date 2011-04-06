@@ -31,6 +31,7 @@ Change Log:
     FULL (Month view): mxcEventUniqueId,mxcMonthNoEventClass, mxcEventTitle, mxcEventUrl, mxcEventUrlRel, mxcEventUrlTarget, mxcEventDetailStateDateStamp, mxcEventDetailStateTimeStamp, mxcEventDetailEndDateStamp, mxcEventDetailEndTimeStamp
     DETAIL: mxcEventDetailStateDateStamp, mxcEventDetailStateTimeStamp, mxcEventDetailEndDateStamp, mxcEventDetailEndTimeStamp
     LIST: mxcEventTitle, mxcEventUrl, mxcEventUrlRel, mxcEventUrlTarget, mxcEventDetailStateDateStamp, mxcEventDetailStateTimeStamp, mxcEventDetailEndDateStamp, mxcEventDetailEndTimeStamp
+- Bug fix: Event 'list' correction to event start time stamp of repeat dates after the first occurance 
 
 --------------------------
 Release: (0.1.3)

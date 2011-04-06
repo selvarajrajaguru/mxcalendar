@@ -1625,7 +1625,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    $sub_dates = explode(',',$or['repeat']);
 					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
-						    $e['start']=$child_event;
+						    $e['start']=$child_event.' '.$e['starttime'];
 						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= strftime('%Y-%m-%d'))
 						    {
 								$e['repeatID'] = $rcnt;
@@ -1736,8 +1736,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 				'mxcEventUrl' => $eventURL,
 				'mxcEventUrlRel' => $mxcEventDetailAJAX.$event['linkrel'],
 				'mxcEventUrlTarget' => $event['linktarget'],
-				'mxcEventDetailStateDateStamp' => ($param['mxcEventDetailStateDateStamp'] ? strftime($param['mxcEventDetailStateDateStamp'],strtotime($event['start'])) : $event['start']),
-				'mxcEventDetailStateTimeStamp' => ($param['mxcEventDetailStateTimeStamp'] ? strftime($param['mxcEventDetailStateTimeStamp'],strtotime($event['start'])) : $event['start']),
+				'mxcEventDetailStateDateStamp' => ($param['mxcEventDetailStartDateStamp'] ? strftime($param['mxcEventDetailStartDateStamp'],strtotime($event['start'])) : $event['start']),
+				'mxcEventDetailStateTimeStamp' => ($param['mxcEventDetailStartTimeStamp'] ? strftime($param['mxcEventDetailStartTimeStamp'],strtotime($event['start'])) : $event['start']),
 				'mxcEventDetailEndDateStamp' => ($param['mxcEventDetailEndDateStamp'] ? strftime($param['mxcEventDetailEndDateStamp'],strtotime($event['end'])) : $event['end']),
 				'mxcEventDetailEndTimeStamp' => ($param['mxcEventDetailEndTimeStamp'] ? strftime($param['mxcEventDetailEndTimeStamp'],strtotime($event['end'])) : $event['end'])
 				);
