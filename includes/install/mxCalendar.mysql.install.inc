@@ -11,14 +11,14 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_categories` (
   `disable` INT NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 //
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ##
 
 --
 -- Dumping data for table `#__mxcalendar_categories`
 --
 
 INSERT INTO `#__mxcalendar_categories` (`id`, `isdefault`, `name`, `foregroundcss`, `backgroundcss`, `inlinecss`, `disable`, `active`) VALUES
-(1, 1, 'General', '', '', '', 0, 1)//
+(1, 1, 'General', '', '', '', 0, 1)##
 
 
 --
@@ -28,9 +28,9 @@ INSERT INTO `#__mxcalendar_categories` (`id`, `isdefault`, `name`, `foregroundcs
 CREATE TABLE IF NOT EXISTS `#__mxcalendar_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `param` varchar(256) NOT NULL,
-  `value` tinytext,
+  `value` text DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 //
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 ##
 
 
 --
@@ -99,7 +99,7 @@ INSERT INTO `#__mxcalendar_config` (`id`, `param`, `value`) VALUES
 (59,'mxcEventDetailEndTimeStamp','%I:%M %p'),
 (60,'mxcEventMonthUrlClass','tt mxModal'),
 (61,'mxcEventMonthUrlStyle','color:inherit;display:block;position:relative;padding:3px;'),
-(62,'mxcMonthNoEventClass','mxcDayNoEvents')//
+(62,'mxcMonthNoEventClass','mxcDayNoEvents')##
 
 
 --
@@ -125,14 +125,14 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_events` (
   `endtime` time NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `repeat` text,
-  `lastrepeat` datetime DEFAULT NULL,
+  `lastrepeat` 	varchar(19) DEFAULT NULL,
   `event_occurance` varchar(1) DEFAULT NULL,
   `_occurance_wkly` varchar(10) DEFAULT NULL,
   `event_occurance_rep` tinyint(2) DEFAULT NULL,
   `_occurance_properties` varchar(68) DEFAULT NULL,
   `customFields` TEXT NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=99//
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=99##
 
 --
 -- Table structure for table `#__mxcalendar_pastevents`
@@ -157,10 +157,10 @@ CREATE TABLE IF NOT EXISTS `#__mxcalendar_pastevents` (
   `endtime` time NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `repeat` text,
-  `lastrepeat` datetime DEFAULT NULL,
+  `lastrepeat` 	varchar(19) DEFAULT NULL,
   `event_occurance` varchar(1) DEFAULT NULL,
   `_occurance_wkly` varchar(10) DEFAULT NULL,
   `event_occurance_rep` tinyint(2) DEFAULT NULL,
   `_occurance_properties` varchar(68) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1//
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1##

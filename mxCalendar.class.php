@@ -81,7 +81,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			    
 			    if($sql_installer){
 				$cnt = 0;
-				foreach(explode('//',$sql_installer) AS $sql){
+				foreach(explode('##',$sql_installer) AS $sql){
 				    if(!empty($sql)){
 					$cnt ++;
 					//echo '('.$cnt.')<pre><code>'.$sql.'</pre></code>';
@@ -118,7 +118,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			if(!count($tables)){
 			    $sql_installer = str_replace('#__', $pre,file_get_contents($modx->config['base_path'].'assets/modules/mxCalendar/includes/install/'.$installer));
 			    if($sql_installer){
-				foreach(explode('//',$sql_installer) AS $sql){
+				foreach(explode('##',$sql_installer) AS $sql){
 				    if($sql){
 				    $result = $modx->db->query($sql);
 				    //$this->output .= $sql;
@@ -1147,10 +1147,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    
 		    $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
 		    $dyn_config = array();
-		    foreach($dyn_config_opts AS $cft){
-			$dyn_config[$cft['name']] = array('name'=>$cft['name'], 'label'=>$cft['label'],'options'=>$cft['options'],'default'=>$cft['default'],'type'=>$cft['type']);
+		    if(count($dyn_config_opts)){
+				foreach($dyn_config_opts AS $cft){
+				$dyn_config[$cft['name']] = array('name'=>$cft['name'], 'label'=>$cft['label'],'options'=>$cft['options'],'default'=>$cft['default'],'type'=>$cft['type']);
+				}
 		    }
-		    
 		    //-- Title Override on Save of Resource if no title is defined in mxCalendar we use the resource title
 		    $rescTitle = '';
 		    
@@ -1202,9 +1203,10 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    }
 			
 		    $ar_Events = $this->_getRepeatDates($param['fmevent_occurance'], (int)$param['fmevent_occurance_rep'],365, $param['fmstartdate'],( !empty($param['fmevent_occur_until']) ? $param['fmevent_occur_until'] : $param['fmenddate']), $repOccOn);
-		    $reOcc = $ar_Events;
+
+			$reOcc = $ar_Events;
 		    $last_reOcc = explode(',', $ar_Events);
-		    $last_reOcc = $last_reOcc[count($last_reOcc)-1];
+		    $last_reOcc = (count($last_reOcc) ? $last_reOcc[count($last_reOcc)-1] : NULL);
 		    if($this->debug) print("Reoccur Date<br />".$ar_Events);
 		    
 		    $str_fmStartDate = $param['fmstartdate'];
@@ -1240,7 +1242,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                                     'enddate'    => strftime('%Y-%m-%d' , strtotime($str_fmEndDate)),
                                     'endtime'    => strftime('%H:%M:%S' , strtotime($str_fmEndDate)),
 				    '`repeat`'	 => $reOcc,
-				    'lastrepeat' => $param['fmevent_occur_until'], //$last_reOcc,
+				    'lastrepeat' => ($param['fmevent_occur_until'] || !empty($param['fmevent_occur_until']) ? $param['fmevent_occur_until'] : '') , //$last_reOcc,
 				    'event_occurance' => $modx->db->escape($param['fmevent_occurance']),
 				    '_occurance_wkly' => $modx->db->escape($param['fm_occurance_on']),
 				    'event_occurance_rep' => $modx->db->escape((int)$param['fmevent_occurance_rep']),
@@ -1248,7 +1250,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				    'customFields' => $dyn_form_vals
                                     );
 		    
-		    if(!$this->debug) print_r($fields);
+					if($this->debug) print_r($fields);
                     if($method == _mxCalendar_btn_addEvent){
                         $NID = $modx->db->insert( $fields, $table_name);
                         if($NID) $_POST = array();
@@ -1418,7 +1420,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				$modx->setPlaceholder('mxcEventDetailLabelLocation',($p_val['location']?($this->config['mxcEventDetailLabelLocation']? $this->config['mxcEventDetailLabelLocation'] :_mxCalendar_ed_location):''));
 				$modx->setPlaceholder('mxcEventDetailLocation',str_replace('|','<br />',$p_val['location']));
 				$modx->setPlaceholder('mxcEventDetailDescription',$p_val['description']);
-				$modx->setPlaceholder('mxcEventDetailGoogleMap',$googleMap.' <a href="javascript:loadScript();">Map</a>' );
+				$modx->setPlaceholder('mxcEventDetailGoogleMap',$googleMap);
 				
 				
 				/** START THE CUSTOM FIELDs **/
@@ -1650,10 +1652,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 
 			//-- Add MoodalBox if mxcAjaxPageId is set
 			if(!empty($param['mxcAjaxPageId']) != $modx->documentIdentifier){
-			    $this->_addJS('
-			    <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/moodalbox.v1.2.full.js"></script>
-			    ');
-			    $this->_addCSS('<link rel="stylesheet" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/css/moodalbox.css" type="text/css" media="screen" />');
+
 			}
 			
 			//-- Loop through the new sorted list of events
@@ -1666,21 +1665,46 @@ if(!class_exists("mxCal_APP_CLASS")){
 
 			    //-- Set the URL for the event title
 			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].(is_numeric($event['repeatID']) ? '&r='.$event['repeatID'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid'].(is_numeric($event['repeatID']) ? '&r='.$event['repeatID'] : '') ));
-			    $mxcEventDetailAJAX = ($param['mxcAjaxPageId'] != $modx->documentIdentifier ? 'moodalbox ' : '');
+			    $mxcEventDetailAJAX = ($param['mxcAjaxPageId'] != $modx->documentIdentifier ? 'moodalbox' : 'moodalbox ');
 			    if((bool)$param['mxcEventListTitleLink'] == false){
 					$title = $event['title'];
 					$eventURL='';
 			    }elseif(($param['mxcFullCalendarPgId'] || $param['mxcAjaxPageId']) && empty($event['link'])){
 					$eventURL = $mxceventDetailURL;
-					$title='<a href="'.$mxcEventDetailURL.'" class=" '.$param['mxcEventListItemClass'].'"  '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$mxcEventDetailAJAX.$event['linkrel'].'" onclick="">'.$event['title'].'</a>';
+					$title='<a href="'.$mxcEventDetailURL.'" class=" '.$mxcEventDetailAJAX.$param['mxcEventListItemClass'].'"  '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$event['linkrel'].'" onclick="">'.$event['title'].'</a>';
 			    }else{
 					$eventURL = $modx->makeUrl((int)$event['link'],'','','full');
-					$title = ( !empty($event['link'])?(is_numeric($event['link'])? '<a href="'.$modx->makeUrl((int)$event['link'],'','','full').'" '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$event['linkrel'].' moodalbox">'.$event['title'].'</a>':'<a href="'.$event['link'].'" rel="'.$event['linkrel'].'" target="'.$event['linktarget'].'">'.$event['title'].'</a>'): $event['title'] );
+					$title = ( !empty($event['link'])?(is_numeric($event['link'])? '<a href="'.$modx->makeUrl((int)$event['link'],'','','full').'" '.($event['linktarget'] ? 'target="'.$event['linktarget'].'"' : '').' rel="'.$event['linkrel'].'" class="'.$mxcEventDetailAJAX.'">'.$event['title'].'</a>':'<a href="'.$event['link'].'" rel="'.$event['linkrel'].'" target="'.$event['linktarget'].'">'.$event['title'].'</a>'): $event['title'] );
 				}
 			    
 			    //-- Add required JS Library items
 			    if(isset($param['mxcAjaxPageId']) && is_numeric((int)$param['mxcAjaxPageId'])){
-				$this->_buildJSlib();
+				//$this->_buildJSlib();
+				
+				$this->_addJS('
+				    <link rel="stylesheet" type="text/css" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.css">
+				    <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.js"></script>
+				    <script type="text/javascript">
+				    Shadowbox.init({
+					// skip the automatic setup again, we do this later manually
+					skipSetup: true
+				    });
+				    window.onload = function() {
+				    
+					// set up all anchor elements with a "movie" class to work with Shadowbox
+					Shadowbox.setup(".moodalbox", {
+					    //gallery:            "Name of the Gallery",
+					    //autoplayMovies:     true,
+					    //height:     350,
+					    width:      650,
+					    //modal: false, // Setting to true disables the standard ESC and outside click to close modal window, good for html content that has clickable elements
+					    //enableKeys: tue, // Allow keys to  invoke behavior; disable for forms in modal
+					});
+				    
+				    };
+				    </script>
+				    ');
+				
 			    }
                             
 			    $location=$event['location'];
@@ -1896,11 +1920,12 @@ if(!class_exists("mxCal_APP_CLASS")){
 			
 			
 			// ThickBox Example: <a href="ajaxOverFlow.html?height=300&width=300" title="add a caption to title attribute / or leave blank" class="thickbox">Scrolling content</a>
-			
+			/*
 			$this->_addJS('
 			    <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/moodalbox.v1.2.full.js"></script>
 			');
 			$this->_addCSS('<link rel="stylesheet" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/css/moodalbox.css" type="text/css" media="screen" />');
+			*/
 		}
 		
                 //-- Get Events and return the array
