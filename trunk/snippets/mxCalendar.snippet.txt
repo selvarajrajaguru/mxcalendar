@@ -1,8 +1,8 @@
 <?php
 /**
  * Author: Charles Sanders (charless.mxcalendar@gmail.com)
- * Date: 1/05/2010
- * Version: 0.1.2-rc2
+ * Date: 04/04/2011
+ * Version: 0.1.3b
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
