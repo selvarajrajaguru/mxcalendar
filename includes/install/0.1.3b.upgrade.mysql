@@ -10,6 +10,6 @@ VALUES
 (59,'mxcEventDetailEndTimeStamp','%I:%M %p'),
 (60,'mxcEventMonthUrlClass','tt mxModal'),
 (61,'mxcEventMonthUrlStyle','color:inherit;display:block;position:relative;padding:3px;'),
-(62,'mxcMonthNoEventClass','mxcDayNoEvents')//
-ALTER TABLE `#__mxcalendar_config` CHANGE `value` `value` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL //
-ALTER TABLE `#__mxcalendar_events` ADD `customFields` TEXT NOT NULL//
+(62,'mxcMonthNoEventClass','mxcDayNoEvents')##
+ALTER TABLE `#__mxcalendar_config` CHANGE `value` `value` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ##
+ALTER TABLE `#__mxcalendar_events` ADD `customFields` TEXT NOT NULL##

@@ -1,7 +1,7 @@
 	<?php
 	/**
 	 * Author: Charles Sanders (charless.mxcalendar@gmail.com)
-	 * Date: 02/26/2011
+	 * Date: 04/04/2011
 	 * Version: 0.1.3b
 	 * 
 	 * Purpose: Creates a easy module for administrators to manage events.
