@@ -141,35 +141,42 @@ if(defined('_mxCalendar_gl_Months') && $param['mxcGlobalMonthsOverride']==true){
         $nextURL = $modx->makeUrl($modx->documentIdentifier,'','&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : ''),'full'); //'javascript: loadCalendar(this, \''.'&dt='.$newdate.'&offset='.($monthOffset+1).'&type=next'.(!empty($_REQUEST['CatId']) && is_numeric($_REQUEST['CatId']) ? '&CatId='.$_REQUEST['CatId'] : '').'\')'; 
     }
 
-if($param['mxcAddMooJS'] || $param['mxcJSCodeLibrary'])
-    $this->_addMooJS();
+if($this->config['mxcAddMooJS'] || $this->config['mxcJSCodeLibrary']){
+    //$this->_addMooJS();
+}
 
 //-- Add ToolTip JS and CSS
-if($this->config['disptooltip']){
-    $this->_addJS('
-    <script>
-    //-- ToolTips (Duration,Time Span)
-    window.addEvent(\'domready\', function(){
-        //-- Tips 3
-        /*
-        var Tips3 = new Tips($$(\'.mxModal\'), {
-                showDelay: 400,
-                hideDelay: 400,
-                fixed: true
-        });
-        */
-        var customTips = $$(\'.mxModal\');
-        var toolTips = new Tips(customTips);
-    });
-    </script>');
+if($this->config['disptooltip'] && $this->config['mxcAddMooJS']){
     
 }
-if($this->param['mxcAjaxPageId'] != $modx->documentIdentifier){
+
+
     $this->_addJS('
-    <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/js/moodalbox.v1.2.full.js"></script>
-    ');
-    $this->_addCSS('<link rel="stylesheet" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/moodalbox121/css/moodalbox.css" type="text/css" media="screen" />');
-}
+        <link rel="stylesheet" type="text/css" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.css">
+        <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.js"></script>
+        <script type="text/javascript">
+        Shadowbox.init({
+            // skip the automatic setup again, we do this later manually
+            skipSetup: true
+        });
+        window.onload = function() {
+        
+            // set up all anchor elements with a "movie" class to work with Shadowbox
+            Shadowbox.setup(".moodalbox", {
+                //gallery:            "Name of the Gallery",
+                //autoplayMovies:     true,
+                //height:     350,
+                //width:      650,
+                //modal: false,
+                //enableKeys: tue,
+            });
+        
+        };
+        </script>
+        ');
+
+
+
 
 $testAjaxCalNavigation = false;
 if($testAjaxCalNavigation){
@@ -211,10 +218,7 @@ if(!empty($this->config["mxCalendarTheme"])){
     $activeTheme = $this->_getActiveTheme();
     $this->_addCSS('<link rel="stylesheet" type="text/css" href="assets/modules/mxCalendar/themes/'.$this->config['mxCalendarTheme'].'/'.$activeTheme["themecss"].'" /> ');
 }
-//-- Not used in this view
-// $this->_addJS('<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>');
-
-        
+     
 //-- Add Heading Area
 $modx->setPlaceholder('mxcMonthHeadingPrevious', $preURL);
 $modx->setPlaceholder('mxcMonthHeadingPreviousRel', $preURLRel);
@@ -416,7 +420,7 @@ if(!empty($param['mxcTplMonthHeading'])){
 							$eventTitle = $calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '');
 							$eventRel = (!empty($calEvents['link']) ? $calEvents['linkrel'] : ($ajaxPageId != $modx->documentIdentifier ? 'moodalbox' : ''));
 							$eventTarget = (!empty($calEvents['link']) ? $calEvents['linktarget'] : $calEvents['linktarget']);
-                            $title = '<a id="'.$eventUID.'"  title="'.$eventTitle.'" class="'.$param['mxcEventMonthUrlClass'].'" href="'.$eventLink.'" rel="'.$eventRel.'" target="'.$eventTarget.'" style="'.$param['mxcEventMonthUrlStyle'].'">'.$calEvents['title'].'</a>';
+                            $title = '<a id="'.$eventUID.'"  title="'.$eventTitle.'" class="'.$param['mxcEventMonthUrlClass'].' moodalbox" href="'.$eventLink.'" rel="'.$eventRel.'" target="'.$eventTarget.'" style="'.$param['mxcEventMonthUrlStyle'].'">'.$calEvents['title'].'</a>';
                         } else {
                             $mxcNodeWrap = (!isset($param['mxcEventTitleNode']) ? 'span' : $param['mxcEventTitleNode']);
                             $title = '<'.$mxcNodeWrap.' id="'.$eventUID.'"  title="'.$calEvents['title'] . ($this->config['disptooltip'] ? ': '.implode(' ',$toolTip) : '').'" class="tt mxModal" >'.$calEvents['title'].'</'.$mxcNodeWrap.'>';
@@ -620,15 +624,9 @@ if(!empty($param['mxcTplMonthHeading'])){
 $modx->setPlaceholder('mxcMonthInnerRows', $_mxcCalRow);
 $modx->setPlaceholder('mxcMonthInnerContainerID', (!empty($param['mxcMonthInnerContainerID']) ? $param['mxcMonthInnerContainerID'] : 'calbody'));
 $modx->setPlaceholder('mxcMonthInnerContainerClass',(!empty($param['mxcMonthInnerContainerClass']) ? $param['mxcMonthInnerContainerClass'] : ''));
-$modx->setPlaceholder('mxcAjaxJS','<script type="text/javascript">var ajax_anchors = [];
-		$A($$(\'a\')).each(function(el){
-			// we use a regexp to check for links that 
-			// have a rel attribute starting with "moodalbox"
-			if(el.rel && el.href && el.rel.test(\'^moodalbox\', \'i\')) {
-				el.onclick = MOOdalBox.click(el);
-				ajax_anchors.push(el);
-			}
-		});</script>');
+
+$modx->setPlaceholder('mxcAjaxJS','');
+
 //-- Get Inside Container for Theme
 if(!empty($param['mxcTplMonthInner'])){
         //--Get user modified theme over-ride
