@@ -1429,13 +1429,14 @@ if(!class_exists("mxCal_APP_CLASS")){
 				$dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
 				$dyn_resource_opts = array();
 				//-- Grab the "resource" field type to get the TV's that should be used
-				foreach($dyn_config_opts AS $cft){
-					$cft_type=$cft['type'];
-					if($cft_type == 'resource'){
-					    $dyn_resource_opts[$cft['name']]=$cft['options'];
-					}
-				} //-- end loop of custom field types
-	
+				if($dyn_config_opts){
+					foreach($dyn_config_opts AS $cft){
+						$cft_type=$cft['type'];
+						if($cft_type == 'resource'){
+							$dyn_resource_opts[$cft['name']]=$cft['options'];
+						}
+					} //-- end loop of custom field types
+				}
 				//-- Loop through the custom fields
 				if(count($cft_event)){
 				    foreach($cft_event AS $l=>$v){
@@ -1573,6 +1574,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    
                     //-- Prase Event template and loop through the events
 					$mxcELStartDate = isset($param['mxcStartDate']) ? strftime("%Y-%m-%d",strtotime($param['mxcStartDate'])) : strftime("%Y-%m-%d") ;
+					
                     $events = '';
                     $records = $modx->db->makeArray($this->_getNEvents($mxcELStartDate,(int)$param['mxcEventListMaxCnt'],$param['mxcDefaultCatId']));
                     
@@ -1625,7 +1627,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    $sub_dates = explode(',',$or['repeat']);
 					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
-						    $e['start']=$child_event.' '.$e['starttime'];
+						    $e['start']=$child_event;
 						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= strftime('%Y-%m-%d'))
 						    {
 								$e['repeatID'] = $rcnt;
@@ -1736,8 +1738,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 				'mxcEventUrl' => $eventURL,
 				'mxcEventUrlRel' => $mxcEventDetailAJAX.$event['linkrel'],
 				'mxcEventUrlTarget' => $event['linktarget'],
-				'mxcEventDetailStateDateStamp' => ($param['mxcEventDetailStartDateStamp'] ? strftime($param['mxcEventDetailStartDateStamp'],strtotime($event['start'])) : $event['start']),
-				'mxcEventDetailStateTimeStamp' => ($param['mxcEventDetailStartTimeStamp'] ? strftime($param['mxcEventDetailStartTimeStamp'],strtotime($event['start'])) : $event['start']),
+				'mxcEventDetailStateDateStamp' => ($param['mxcEventDetailStateDateStamp'] ? strftime($param['mxcEventDetailStateDateStamp'],strtotime($event['start'])) : $event['start']),
+				'mxcEventDetailStateTimeStamp' => ($param['mxcEventDetailStateTimeStamp'] ? strftime($param['mxcEventDetailStateTimeStamp'],strtotime($event['start'])) : $event['start']),
 				'mxcEventDetailEndDateStamp' => ($param['mxcEventDetailEndDateStamp'] ? strftime($param['mxcEventDetailEndDateStamp'],strtotime($event['end'])) : $event['end']),
 				'mxcEventDetailEndTimeStamp' => ($param['mxcEventDetailEndTimeStamp'] ? strftime($param['mxcEventDetailEndTimeStamp'],strtotime($event['end'])) : $event['end'])
 				);
@@ -1748,12 +1750,14 @@ if(!class_exists("mxCal_APP_CLASS")){
                         $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
                         $dyn_resource_opts = array();
 						//-- Create the row with values for each custom field type
-						foreach($dyn_config_opts AS $cft){
-							$cft_type=$cft['type'];
-                                if($cft_type == 'resource'){
-                                    $dyn_resource_opts[$cft['name']]=$cft['options'];
-                                }
-                        } //-- end loop of custom field types
+						if($dyn_config_opts){
+							foreach($dyn_config_opts AS $cft){
+								$cft_type=$cft['type'];
+									if($cft_type == 'resource'){
+										$dyn_resource_opts[$cft['name']]=$cft['options'];
+									}
+							} //-- end loop of custom field types
+						}
 
                         //-- Loop through the custom fields
                         if(count($cft_event)){
