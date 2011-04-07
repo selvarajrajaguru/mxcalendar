@@ -1574,7 +1574,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    
                     //-- Prase Event template and loop through the events
 					$mxcELStartDate = isset($param['mxcStartDate']) ? strftime("%Y-%m-%d",strtotime($param['mxcStartDate'])) : strftime("%Y-%m-%d") ;
-					
+					$mxcELEndDate = isset($param['mxcEndDate']) ? strftime("%Y-%m-%d",strtotime($param['mxcEndDate'])) : strftime("%Y-%m-%d", strtotime('today plus 30 days'));
+					if($this->debug){
+						echo (isset($param['mxcStartDate']) ? 'Parameter Start Date => '.strftime("%Y-%m-%d",strtotime($param['mxcStartDate'])) : 'Now: '.strftime("%Y-%m-%d"));
+						echo (isset($param['mxcEndDate']) ? '<br />Parameter End Date => '.strftime("%Y-%m-%d",strtotime($param['mxcEndDate'])) : 'Future Date: '.strftime("%Y-%m-%d", strtotime('today plus 30 days')));
+					}
                     $events = '';
                     $records = $modx->db->makeArray($this->_getNEvents($mxcELStartDate,(int)$param['mxcEventListMaxCnt'],$param['mxcDefaultCatId']));
                     
@@ -1589,7 +1593,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					$month=strftime("%m", strtotime($e['start']));
 					$day=$datePieces[2];
 					$mxcStartDateFilter = isset($mxcStartDate) ? strftime('%Y-%m-%d', strtotime($mxcStartDate)) : strftime('%Y-%m-%d');
-					if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter){
+					if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcELStartDate){
 						if($e['DurationDays']) $e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$e['start']).'23:59'));
 						$ar_events[]=$e;
 					}
@@ -1613,8 +1617,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 								$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).strftime(' %H:%M', $e['end'])));
 							}
 
-							if(strftime('%Y-%m-%d', $newOccDate) >= strftime('%Y-%m-%d'))
-							$ar_events[]=$e;
+							if(strftime('%Y-%m-%d', $newOccDate) >= $mxcStartDateFilter && strftime('%Y-%m-%d', strtotime($e['start'])) <= $mxcELEndDate)
+								$ar_events[]=$e;
 							if($this->debug){
 								echo "Start: ".$originalStartDay." => <br />&nbsp;&nbsp;".$x ." of ".$e['DurationDays'].": ".strftime('%Y-%m-%d %H:%M',$newOccDate)."<br />";
 								echo 'Original:<br /><pre><code>'.print_r($or).'</code></pre>';
@@ -1628,7 +1632,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
 						    $e['start']=$child_event;
-						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= strftime('%Y-%m-%d'))
+						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter && strftime('%Y-%m-%d', strtotime($e['start'])) <= $mxcELEndDate)
 						    {
 								$e['repeatID'] = $rcnt;
 								$ar_events[]=$e;
@@ -1684,7 +1688,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				//$this->_buildJSlib();
 				
 				$this->_addJS('
-				    <link rel="stylesheet" type="text/css" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.css">
+				    <link rel="stylesheet" type="text/css" href="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.css" />
 				    <script type="text/javascript" src="'.$this->m->config['site_url'].'assets/modules/mxCalendar/scripts/shadowbox/shadowbox.js"></script>
 				    <script type="text/javascript">
 				    Shadowbox.init({
@@ -1698,7 +1702,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    //gallery:            "Name of the Gallery",
 					    //autoplayMovies:     true,
 					    //height:     350,
-					    width:      650,
+					    //width:      650,
 					    //modal: false, // Setting to true disables the standard ESC and outside click to close modal window, good for html content that has clickable elements
 					    //enableKeys: tue, // Allow keys to  invoke behavior; disable for forms in modal
 					});
@@ -1716,7 +1720,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 			    $event['year']=strftime('%Y', strtotime($event['start']));
 			    
 				$ar_eventDetail = array(
-				'mxcEventListItemId ' => (!empty($param['mxcEventListItemId']) ? $param['mxcEventListItemId'] : $this->config['mxcEventListItemId']),
+				'mxcEventListItemId' => (!empty($param['mxcEventListItemId']) ? $param['mxcEventListItemId'] : $this->config['mxcEventListItemId']),
 				'mxcEventListItemClass' => (!empty($param['mxcEventListItemClass']) ? $param['mxcEventListItemClass'] : $this->config['mxcEventListEventClass']),
 				'mxcEventListItemTitle' => $title,
 				'mxcEventListItemLabelDateTime' => '', //-- not used in current version
