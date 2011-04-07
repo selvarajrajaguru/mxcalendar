@@ -1,8 +1,8 @@
 <?php
 /**
  * Author: Charles Sanders (charless.mxcalendar@gmail.com)
- * Date: 04/05/2011
- * Version: 0.1.3b
+ * Date: 04/07/2011
+ * Version: 0.1.3
  * 
  * Purpose: Creates a easy module for administrators to manage events.
  * For: MODx CMS 0.9.6 - 1.0.X (www.modxcms.com)
@@ -451,13 +451,14 @@ if(!empty($param['mxcTplMonthHeading'])){
                         $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
                         $dyn_resource_opts = array();
 						//-- Create the row with values for each custom field type
-						foreach($dyn_config_opts AS $cft){
-							$cft_type=$cft['type'];
-                                if($cft_type == 'resource'){
-                                    $dyn_resource_opts[$cft['name']]=$cft['options'];
-                                }
-                        } //-- end loop of custom field types
-
+						if($dyn_config_opts){
+							foreach($dyn_config_opts AS $cft){
+								$cft_type=$cft['type'];
+									if($cft_type == 'resource'){
+										$dyn_resource_opts[$cft['name']]=$cft['options'];
+									}
+							} //-- end loop of custom field types
+						}
                         //-- Loop through the custom fields
                         if(count($cft_event)){
                             foreach($cft_event AS $l=>$v){
@@ -662,5 +663,3 @@ echo $_mxcCal;
   
 
 ?>
-    
-
