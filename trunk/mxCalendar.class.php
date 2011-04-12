@@ -1589,8 +1589,10 @@ if(!class_exists("mxCal_APP_CLASS")){
 			if($this->config['eventlist_multiday']){
 				foreach( $records as $e ) {
 					//-- Event template @param chunk array
-
-					
+					$datePieces = explode("-", $e['startdate']);
+					$month=strftime("%m", strtotime($e['start']));
+					$day=$datePieces[2];
+					$mxcStartDateFilter = isset($mxcStartDate) ? strftime('%Y-%m-%d', strtotime($mxcStartDate)) : strftime('%Y-%m-%d');
 					if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcELStartDate){
 						if($e['DurationDays']) $e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$e['start']).'23:59'));
 						$ar_events[]=$e;
@@ -1615,7 +1617,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 								$e['end']=strftime('%Y-%m-%d %H:%M', strtotime(strftime('%Y-%m-%d ',$newOccDate).strftime(' %H:%M', $e['end'])));
 							}
 
-							if(strftime('%Y-%m-%d', $newOccDate) >= $mxcELStartDate && strftime('%Y-%m-%d', $newOccDate) <= $mxcELEndDate)
+							if(strftime('%Y-%m-%d', $newOccDate) >= $mxcStartDateFilter && strftime('%Y-%m-%d', strtotime($e['start'])) <= $mxcELEndDate)
 								$ar_events[]=$e;
 							if($this->debug){
 								echo "Start: ".$originalStartDay." => <br />&nbsp;&nbsp;".$x ." of ".$e['DurationDays'].": ".strftime('%Y-%m-%d %H:%M',$newOccDate)."<br />";
@@ -1630,7 +1632,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
 						    $e['start']=$child_event;
-						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcELStartDate )
+						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter)
 						    {
 								$e['repeatID'] = $rcnt;
 								$ar_events[]=$e;
@@ -1647,7 +1649,6 @@ if(!class_exists("mxCal_APP_CLASS")){
 					}
 				}
 				//-- Sort the results by start date
-				if(count($ar_events) && is_array($ar_events) && !empty($ar_events))
 				$ar_events = $this->multisort($ar_events,'start','description','title','end','location','eid','link','linkrel','linktarget','repeatID','customFields');
 			} else {
 			    foreach( $records as $event ) {
@@ -1663,10 +1664,10 @@ if(!class_exists("mxCal_APP_CLASS")){
 			//-- Loop through the new sorted list of events
 			$evCnt=0;
 			foreach ($ar_events as $event){
-				//-- Event template @param chunk array
-				$datePieces = explode("-", $event['startdate']);
-				$month=strftime("%b", strtotime($event['start']));
-				$day=$datePieces[2];
+                            //-- Event template @param chunk array
+                            $datePieces = explode("-", $event['startdate']);
+                            $month=strftime("%b", strtotime($event['start']));
+                            $day=$datePieces[2];
 
 			    //-- Set the URL for the event title
 			    $mxcEventDetailURL = (is_numeric((int)$param['mxcAjaxPageId']) && !empty($param['mxcAjaxPageId']) && $param['mxcAjaxPageId'] != $modx->documentIdentifier ? $modx->makeUrl((int)$param['mxcAjaxPageId'],'', '&details='.$event['eid'].(is_numeric($event['repeatID']) ? '&r='.$event['repeatID'] : ''), 'full') : $modx->makeUrl((int)$param['mxcFullCalendarPgId'],'','details='.$event['eid'].(is_numeric($event['repeatID']) ? '&r='.$event['repeatID'] : '') ));
@@ -1719,32 +1720,32 @@ if(!class_exists("mxCal_APP_CLASS")){
 			    $event['year']=strftime('%Y', strtotime($event['start']));
 			    
 				$ar_eventDetail = array(
-					'mxcEventListItemId' => (!empty($param['mxcEventListItemId']) ? $param['mxcEventListItemId'] : $this->config['mxcEventListItemId']),
-					'mxcEventListItemClass' => (!empty($param['mxcEventListItemClass']) ? $param['mxcEventListItemClass'] : $this->config['mxcEventListEventClass']),
-					'mxcEventListItemTitle' => $title,
-					'mxcEventListItemLabelDateTime' => '', //-- not used in current version
-					'mxcEventListItemMonth' => $event['month'],
-					'mxcEventListItemStartDateTime' => $event['day'],
-					'mxcEventListItemYear'=> $event['year'],
-					'mxcEventListItemDateTimeSeperator' => ($event['DurationDays'] ? _mxCalendar_gl_multipledaydurationsperator : ''),
-					'mxcEventListItemMultiDayStyle' => ($event['DurationDays'] ? $this->config['mxcEventListItemMultiDayStyle'] : ''),
-					'mxcEventListItemEndDateTime' => ($event['DurationDays'] ?  strftime('%d',strtotime('+'.$event['DurationDays'].' day', strtotime($event['start']))) : ''), //--Issue 23 strtotime('+'.$event['DurationDays'].' day',$event['start'])
-					'mxcEventListItemDateTimeReoccurrences' => '', //--not used in current version
-					'mxcEventListItemLabelLocation' => ($location?($this->config['mxcEventListLabelLocation']? $this->config['mxcEventListLabelLocation'] :_mxCalendar_ev_labelLocation):''),
-					'mxcEventListItemLocation' => $location,
-					'mxcEventListItemDescription' => $event['description'],
-					//-- add in full event date time output r0.0.6
-					'mxcEventListItemStateDateStamp' => strftime($this->config['mxcEventListItemStateDateStamp'], strtotime($event['start'])),
-					'mxcEventListItemEndDateStamp' => strftime($this->config['mxcEventListItemEndDateStamp'], strtotime($event['end'])),
-					//-- add in custom fields and new placeholders r0.1.3b,
-					'mxcEventTitle' => $event['title'],
-					'mxcEventUrl' => $eventURL,
-					'mxcEventUrlRel' => $mxcEventDetailAJAX.$event['linkrel'],
-					'mxcEventUrlTarget' => $event['linktarget'],
-					'mxcEventDetailStateDateStamp' => ($param['mxcEventDetailStateDateStamp'] ? strftime($param['mxcEventDetailStateDateStamp'],strtotime($event['start'])) : $event['start']),
-					'mxcEventDetailStateTimeStamp' => ($param['mxcEventDetailStateTimeStamp'] ? strftime($param['mxcEventDetailStateTimeStamp'],strtotime($event['start'])) : $event['start']),
-					'mxcEventDetailEndDateStamp' => ($param['mxcEventDetailEndDateStamp'] ? strftime($param['mxcEventDetailEndDateStamp'],strtotime($event['end'])) : $event['end']),
-					'mxcEventDetailEndTimeStamp' => ($param['mxcEventDetailEndTimeStamp'] ? strftime($param['mxcEventDetailEndTimeStamp'],strtotime($event['end'])) : $event['end'])
+				'mxcEventListItemId' => (!empty($param['mxcEventListItemId']) ? $param['mxcEventListItemId'] : $this->config['mxcEventListItemId']),
+				'mxcEventListItemClass' => (!empty($param['mxcEventListItemClass']) ? $param['mxcEventListItemClass'] : $this->config['mxcEventListEventClass']),
+				'mxcEventListItemTitle' => $title,
+				'mxcEventListItemLabelDateTime' => '', //-- not used in current version
+				'mxcEventListItemMonth' => $event['month'],
+				'mxcEventListItemStartDateTime' => $event['day'],
+				'mxcEventListItemYear'=> $event['year'],
+				'mxcEventListItemDateTimeSeperator' => ($event['DurationDays'] ? _mxCalendar_gl_multipledaydurationsperator : ''),
+				'mxcEventListItemMultiDayStyle' => ($event['DurationDays'] ? $this->config['mxcEventListItemMultiDayStyle'] : ''),
+				'mxcEventListItemEndDateTime' => ($event['DurationDays'] ?  strftime('%d',strtotime('+'.$event['DurationDays'].' day', strtotime($event['start']))) : ''), //--Issue 23 strtotime('+'.$event['DurationDays'].' day',$event['start'])
+				'mxcEventListItemDateTimeReoccurrences' => '', //--not used in current version
+				'mxcEventListItemLabelLocation' => ($location?($this->config['mxcEventListLabelLocation']? $this->config['mxcEventListLabelLocation'] :_mxCalendar_ev_labelLocation):''),
+				'mxcEventListItemLocation' => $location,
+				'mxcEventListItemDescription' => $event['description'],
+				//-- add in full event date time output r0.0.6
+				'mxcEventListItemStateDateStamp' => strftime($this->config['mxcEventListItemStateDateStamp'], strtotime($event['start'])),
+				'mxcEventListItemEndDateStamp' => strftime($this->config['mxcEventListItemEndDateStamp'], strtotime($event['end'])),
+				//-- add in custom fields and new placeholders r0.1.3b,
+				'mxcEventTitle' => $event['title'],
+				'mxcEventUrl' => $eventURL,
+				'mxcEventUrlRel' => $mxcEventDetailAJAX.$event['linkrel'],
+				'mxcEventUrlTarget' => $event['linktarget'],
+				'mxcEventDetailStateDateStamp' => ($param['mxcEventDetailStateDateStamp'] ? strftime($param['mxcEventDetailStateDateStamp'],strtotime($event['start'])) : $event['start']),
+				'mxcEventDetailStateTimeStamp' => ($param['mxcEventDetailStateTimeStamp'] ? strftime($param['mxcEventDetailStateTimeStamp'],strtotime($event['start'])) : $event['start']),
+				'mxcEventDetailEndDateStamp' => ($param['mxcEventDetailEndDateStamp'] ? strftime($param['mxcEventDetailEndDateStamp'],strtotime($event['end'])) : $event['end']),
+				'mxcEventDetailEndTimeStamp' => ($param['mxcEventDetailEndTimeStamp'] ? strftime($param['mxcEventDetailEndTimeStamp'],strtotime($event['end'])) : $event['end'])
 				);
 				
                         /** START THE CUSTOM FIELDs **/
@@ -1797,11 +1798,10 @@ if(!class_exists("mxCal_APP_CLASS")){
                         /** END THE CUSTOM FIELDs **/
                         $ar_eventDetail = array_merge($ar_eventDetail, $EventArr_cft);
 
-						//-- check for event list template over-ride chunk
-						if(!empty($param['mxcTplEventListItemWrap'])){
-							$events .= $modx->parseChunk($param['mxcTplEventListItemWrap'], $ar_eventDetail, '[+', '+]');
-						} else {
-							
+                            //-- check for event list template over-ride chunk
+                            if(!empty($param['mxcTplEventListItemWrap'])){
+                                $events .= $modx->parseChunk($param['mxcTplEventListItemWrap'], $ar_eventDetail, '[+', '+]');
+                            } else {
 				//-- load the theme event list view
 				$theme_eventlist_tpl =  $this->_getTheme('event.list.event',$this->config['mxCalendarTheme']);
 				$keys = array();
@@ -1876,7 +1876,6 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    // set order
 		    foreach ($array as $pos =>  $val)
 			$tmp_array[$pos] = $val[$sort_by];
-		    if(is_array($tmp_array))
 		    asort($tmp_array);
 		   
 		    // display the order you want
