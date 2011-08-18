@@ -1574,10 +1574,12 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    
                     //-- Prase Event template and loop through the events
 					$mxcELStartDate = isset($param['mxcStartDate']) ? strftime("%Y-%m-%d",strtotime($param['mxcStartDate'])) : strftime("%Y-%m-%d") ;
-					$mxcELEndDate = isset($param['mxcEndDate']) ? strftime("%Y-%m-%d",strtotime($param['mxcEndDate'])) : strftime("%Y-%m-%d", strtotime('today plus 30 days'));
+					$mxcELEndDate = isset($param['mxcEndDate']) ? strftime("%Y-%m-%d",strtotime($param['mxcEndDate'])) : strftime("%Y-%m-%d", strtotime('+30 day'));
 					if($this->debug){
-						echo (isset($param['mxcStartDate']) ? 'Parameter Start Date => '.strftime("%Y-%m-%d",strtotime($param['mxcStartDate'])) : 'Now: '.strftime("%Y-%m-%d"));
-						echo (isset($param['mxcEndDate']) ? '<br />Parameter End Date => '.strftime("%Y-%m-%d",strtotime($param['mxcEndDate'])) : 'Future Date: '.strftime("%Y-%m-%d", strtotime('today plus 30 days')));
+						echo '<p>'; 
+						echo (isset($param['mxcStartDate']) ? '<br />Parameter Start Date ['.$param['mxcStartDate'].']=> '.strftime("%Y-%m-%d",strtotime($param['mxcStartDate'])) : '<br />Now: '.strftime("%Y-%m-%d"));
+						echo (isset($param['mxcEndDate']) ? '<br />Parameter End Date ['.$param['mxcEndDate'].']=> '.strftime("%Y-%m-%d",strtotime($param['mxcEndDate'])) : '<br />Future Date: '.strftime("%Y-%m-%d", strtotime('+30 day')));
+						echo '</p>';
 					}
                     $events = '';
                     $records = $modx->db->makeArray($this->_getNEvents($mxcELStartDate,(int)$param['mxcEventListMaxCnt'],$param['mxcDefaultCatId']));
@@ -1632,7 +1634,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
 						    $e['start']=$child_event;
+<<<<<<< .mine
+						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter && strftime('%Y-%m-%d', strtotime($e['start'])) <= $mxcELEndDate)
+=======
 						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter)
+>>>>>>> .r132
 						    {
 								$e['repeatID'] = $rcnt;
 								$ar_events[]=$e;
@@ -1876,7 +1882,14 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    // set order
 		    foreach ($array as $pos =>  $val)
 			$tmp_array[$pos] = $val[$sort_by];
+<<<<<<< .mine
+		    if(is_array($tmp_array)) 
+				asort($tmp_array);
+			else
+				return array();
+=======
 		    asort($tmp_array);
+>>>>>>> .r132
 		   
 		    // display the order you want
 		    foreach ($tmp_array as $pos =>  $val){
@@ -2084,11 +2097,12 @@ if(!class_exists("mxCal_APP_CLASS")){
 				enddate >= \''.$date.'\')
 				or `repeat` REGEXP \'[[:alnum:]]+\' )				
 				and E.active=1
-				and C.active = 1 '.($CatId != null && !empty($_REQUEST['CatId']) ? ' and E.category IN ('.$CatId.') ' : '').' 
+				and C.active = 1 '.($CatId != null  ? ' and E.category IN ('.$CatId.') ' : '').' 
 				AND '.($WHERE_WGP && count($WHERE_WGP) ? '('.implode(' OR ',$WHERE_WGP).' OR ( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL ))' : '( E.restrictedwebusergroup = \'\' OR E.restrictedwebusergroup <=> NULL )' ).'  
                             ORDER BY startdate, starttime, enddate, endtime';
+                    
                     $results = $modx->db->query($eventsSQL);
-                    if($this->debug) echo "SQL: <br />".$eventsSQL;
+                    if(!$this->debug) echo "SQL: <br />".$eventsSQL;
                     
                     if($modx->db->getRecordCount($results) > 0){
                         while($data = $modx->db->getRow($results)){
@@ -2283,7 +2297,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 				case 'select':
 					$mxcCatOnChange = ($isMgr ? '' : 'window.location=\''.$modx->makeUrl($modx->documentIdentifier,'','',full).'?'.$uriQS.'&CatId=\'+this.value');
 					$mxcGetCategoryListFilterHTML .= '<select name="CategoryId" onChange="'.$mxcCatOnChange.'">'."\n";
-					$mxcGetCategoryListFilterHTML .= "\t".'<option value="" '.($this->params['CatId'] ? (empty($this->params['CatId']) ? 'selected=selected':'') : '').'>'._mxCalendar_el_dlAllCategories.'</option>'."\n";
+					//if($param['mxcDefaultCatId'] == 1)
+						$mxcGetCategoryListFilterHTML .= "\t".'<option value="" '.($this->params['CatId'] ? (empty($this->params['CatId']) ? 'selected=selected':'') : '').'>'._mxCalendar_el_dlAllCategories.'</option>'."\n";
 					foreach( $list as $i ) {		
 						$mxcGetCategoryListFilterHTML .= "\t".'<option value="'.$i['id'].'" '.($this->params['CatId'] ? ($this->params['CatId'] == $i['id']? 'selected=selected':'') : '').'>'.$i['name'].'</option>'."\n";
 					}
@@ -2293,7 +2308,8 @@ if(!class_exists("mxCal_APP_CLASS")){
 				default:
 					$mxcGetCategoryListFilterHTML .= '<ul>'."\n";
 					$urlFilter = $modx->makeUrl($modx->documentIdentifier,'',preg_replace('/&+/', '&', preg_replace('/(&(.*)(CatId=[0-9]*))|(&?(.*)(id=[0-9]*))/','',$_SERVER['QUERY_STRING'])),full);
-					$mxcGetCategoryListFilterHTML .= "\t".'<li id="mxcCategory'.$i['id'].'" class="'.($this->params['CatId'] ? (empty($this->params['CatId']) ? 'mxcCategoryActive':'') : '').'"><a href=\''.$modx->makeUrl($modx->documentIdentifier).'\' class="" style="">'._mxCalendar_gl_all.'</a></li>'."\n";
+					//if(!$param['mxcDefaultCatId'])
+						$mxcGetCategoryListFilterHTML .= "\t".'<li id="mxcCategory'.$i['id'].'" class="'.($this->params['CatId'] ? (empty($this->params['CatId']) ? 'mxcCategoryActive':'') : '').'"><a href=\''.$modx->makeUrl($modx->documentIdentifier).'\' class="" style="">'._mxCalendar_gl_all.'</a></li>'."\n";
 					foreach( $list as $i ) {		
 						$urlFilter = $modx->makeUrl($modx->documentIdentifier,'',$uriQS.'&CatId='.$i['id'],'',full);
 						$mxcGetCategoryListFilterHTML .= "\t".'<li id="mxcCategory'.$i['id'].'" class="'.($this->params['CatId'] ? ($this->params['CatId'] == $i['id']? 'mxcCategoryActive':'') : '').'"><a href=\''.$urlFilter.'\' class="'.$i['inlinecss'].'" style="color:'.$i['foregroundcss'].';background-color:'.$i['backgroundcss'].';">'.$i['name'].'</a></li>'."\n";
