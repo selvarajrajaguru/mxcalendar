@@ -1634,11 +1634,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 					    $rcnt='0';
 					    foreach($sub_dates as $child_event){
 						    $e['start']=$child_event;
-<<<<<<< .mine
 						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter && strftime('%Y-%m-%d', strtotime($e['start'])) <= $mxcELEndDate)
-=======
-						    if(strftime('%Y-%m-%d', strtotime($e['start'])) >= $mxcStartDateFilter)
->>>>>>> .r132
 						    {
 								$e['repeatID'] = $rcnt;
 								$ar_events[]=$e;
@@ -1882,14 +1878,11 @@ if(!class_exists("mxCal_APP_CLASS")){
 		    // set order
 		    foreach ($array as $pos =>  $val)
 			$tmp_array[$pos] = $val[$sort_by];
-<<<<<<< .mine
+
 		    if(is_array($tmp_array)) 
 				asort($tmp_array);
 			else
 				return array();
-=======
-		    asort($tmp_array);
->>>>>>> .r132
 		   
 		    // display the order you want
 		    foreach ($tmp_array as $pos =>  $val){
@@ -2102,7 +2095,7 @@ if(!class_exists("mxCal_APP_CLASS")){
                             ORDER BY startdate, starttime, enddate, endtime';
                     
                     $results = $modx->db->query($eventsSQL);
-                    if(!$this->debug) echo "SQL: <br />".$eventsSQL;
+                    if($this->debug) echo "SQL: <br />".$eventsSQL;
                     
                     if($modx->db->getRecordCount($results) > 0){
                         while($data = $modx->db->getRow($results)){
