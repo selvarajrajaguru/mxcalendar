@@ -1174,7 +1174,7 @@ if(!class_exists("mxCal_APP_CLASS")){
 				}
 			}
 		    }
-		    $dyn_form_vals = json_encode($dyn_form_vals);
+		    $dyn_form_vals = $modx->db->escape(json_encode($dyn_form_vals));
 		    
 		    //-- Create @param for entry
 		    $mxcEventTitle = trim($param['fmtitle']);
