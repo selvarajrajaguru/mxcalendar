@@ -451,7 +451,7 @@ if(!empty($param['mxcTplMonthHeading'])){
                         $dyn_config_opts = json_decode($this->config['mxcCustomFieldTypes'],true);
                         $dyn_resource_opts = array();
 						//-- Create the row with values for each custom field type
-						if($dyn_config_opts){
+						if($dyn_config_opts && is_array($dyn_config_opts) && count($dyn_config_opts)){
 							foreach($dyn_config_opts AS $cft){
 								$cft_type=$cft['type'];
 									if($cft_type == 'resource'){
